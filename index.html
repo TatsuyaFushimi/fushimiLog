@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ナレッジシェア 発表資料一覧</title>
+<title>伏見勉強録</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -57,6 +57,8 @@
     padding: 48px 32px 80px;
   }
 
+  .section { margin-bottom: 52px; }
+
   .section-title {
     font-size: 13px; font-weight: 700; color: #FF6B2B;
     letter-spacing: 0.15em; margin-bottom: 20px;
@@ -64,6 +66,11 @@
   }
   .section-title::after {
     content: ''; flex: 1; height: 1px; background: #FFD4B8;
+  }
+  .section-title .st-badge {
+    background: #FF6B2B; color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 2px 10px; border-radius: 20px;
   }
 
   /* ── カードグリッド ── */
@@ -165,121 +172,134 @@
 
 <header>
   <div class="tag">KNOWLEDGE SHARE</div>
-  <h1>ナレッジシェア<br>発表資料一覧</h1>
+  <h1>伏見勉強録</h1>
   <p>スライドをクリックして発表資料を開けます</p>
 </header>
 
 <main>
-  <div class="section-title">SLIDES</div>
-  <div class="grid" id="grid">
 
-    <!-- 01 マニュアル -->
-    <a class="card" href="slides/01_manual.html">
-      <div class="card-thumb">
-        <iframe src="slides/01_manual.html" scrolling="no" tabindex="-1"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">#01</span>
-          <span class="badge badge-gray">13枚</span>
-          <span class="badge badge-gray">2026.03.12</span>
-        </div>
-        <div class="card-title">マニュアルを<br>"読む用"から"使う用"へ</div>
-        <div class="card-desc">人間の特性「再生より再認」からマニュアル設計を考える。チェックリストと共通語の活用。</div>
-        <div class="card-footer">
-          <span class="card-date">2026.03.12</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-    </a>
+  <!-- AI活用 -->
+  <div class="section">
+    <div class="section-title">AI活用 <span class="st-badge">3本</span></div>
+    <div class="grid">
 
-    <!-- 02 オンボーディング -->
-    <a class="card" href="slides/02_onboarding.html">
-      <div class="card-thumb">
-        <iframe src="slides/02_onboarding.html" scrolling="no" tabindex="-1"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">#02</span>
-          <span class="badge badge-gray">18枚</span>
-          <span class="badge badge-gray">2026.03.26</span>
+      <!-- 03 AI素材化 -->
+      <a class="card" href="slides/03_ai_asset.html">
+        <div class="card-thumb">
+          <iframe src="slides/03_ai_asset.html" scrolling="no" tabindex="-1"></iframe>
         </div>
-        <div class="card-title">外注編集者さんにも<br>"神対応"したい！</div>
-        <div class="card-desc">オンボーディング導入のすすめ。定着率改善のためのテスト期間設計と評価の工夫。</div>
-        <div class="card-footer">
-          <span class="card-date">2026.03.26</span>
-          <span class="card-arrow">→</span>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="badge badge-orange">#03</span>
+            <span class="badge badge-gray">21枚</span>
+            <span class="badge badge-gray">2026.04.08</span>
+          </div>
+          <div class="card-title">AIに「完成形」ではなく<br>「素材」を作らせよう</div>
+          <div class="card-desc">素材化・資産化の発想でAI活用の幅を広げる。Claude Code×Blenderで3Dモデルを作る方法。</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.08</span>
+            <span class="card-arrow">→</span>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
 
-    <!-- 03 AI素材化 -->
-    <a class="card" href="slides/03_ai_asset.html">
-      <div class="card-thumb">
-        <iframe src="slides/03_ai_asset.html" scrolling="no" tabindex="-1"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">#03</span>
-          <span class="badge badge-gray">21枚</span>
-          <span class="badge badge-gray">2026.04.08</span>
+      <!-- 04 AEをとっつきやすく -->
+      <a class="card" href="slides/04_ae_prompt.html">
+        <div class="card-thumb">
+          <iframe src="slides/04_ae_prompt.html" scrolling="no" tabindex="-1"></iframe>
         </div>
-        <div class="card-title">AIに「完成形」ではなく<br>「素材」を作らせよう</div>
-        <div class="card-desc">素材化・資産化の発想でAI活用の幅を広げる。Claude Code×Blenderで3Dモデルを作る方法。</div>
-        <div class="card-footer">
-          <span class="card-date">2026.04.08</span>
-          <span class="card-arrow">→</span>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="badge badge-orange">#04</span>
+            <span class="badge badge-gray">12枚</span>
+            <span class="badge badge-gray">2026.04.23</span>
+          </div>
+          <div class="card-title">AEをとっつきやすく！</div>
+          <div class="card-desc">プロンプト実行でAfter Effectsを動かす。ClaudeCodeで自己紹介カードアニメーションを作成した話。</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.23</span>
+            <span class="card-arrow">→</span>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
 
-    <!-- 04 AEをとっつきやすく -->
-    <a class="card" href="slides/04_ae_prompt.html">
-      <div class="card-thumb">
-        <iframe src="slides/04_ae_prompt.html" scrolling="no" tabindex="-1"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">#04</span>
-          <span class="badge badge-gray">12枚</span>
-          <span class="badge badge-gray">2026.04.23</span>
+      <!-- 05 タスク管理 -->
+      <a class="card" href="slides/05_task_management.html">
+        <div class="card-thumb">
+          <iframe src="slides/05_task_management.html" scrolling="no" tabindex="-1"></iframe>
         </div>
-        <div class="card-title">AEをとっつきやすく！</div>
-        <div class="card-desc">プロンプト実行でAfter Effectsを動かす。ClaudeCodeで自己紹介カードアニメーションを作成した話。</div>
-        <div class="card-footer">
-          <span class="card-date">2026.04.23</span>
-          <span class="card-arrow">→</span>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="badge badge-orange">#05</span>
+            <span class="badge badge-gray">10枚</span>
+            <span class="badge badge-gray">2026.05.14</span>
+          </div>
+          <div class="card-title">ClaudeCodeで<br>タスク管理</div>
+          <div class="card-desc">面倒臭いは一旦ClaudeCodeに！制作管理シート×カレンダー×自動ピックアップで日々のタスクを快適に。</div>
+          <div class="card-footer">
+            <span class="card-date">2026.05.14</span>
+            <span class="card-arrow">→</span>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
 
-    <!-- 05 タスク管理 -->
-    <a class="card" href="slides/05_task_management.html">
-      <div class="card-thumb">
-        <iframe src="slides/05_task_management.html" scrolling="no" tabindex="-1"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">#05</span>
-          <span class="badge badge-gray">10枚</span>
-          <span class="badge badge-gray">2026.05.14</span>
-        </div>
-        <div class="card-title">ClaudeCodeで<br>タスク管理</div>
-        <div class="card-desc">面倒臭いは一旦ClaudeCodeに！制作管理シート×カレンダー×自動ピックアップで日々のタスクを快適に。</div>
-        <div class="card-footer">
-          <span class="card-date">2026.05.14</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- 追加予定 -->
-    <div class="card-empty">
-      <div class="ce-icon">＋</div>
-      <div class="ce-text">次の発表資料</div>
     </div>
-
   </div>
+
+  <!-- 業務改善 -->
+  <div class="section">
+    <div class="section-title">業務改善 <span class="st-badge">2本</span></div>
+    <div class="grid">
+
+      <!-- 01 マニュアル -->
+      <a class="card" href="slides/01_manual.html">
+        <div class="card-thumb">
+          <iframe src="slides/01_manual.html" scrolling="no" tabindex="-1"></iframe>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="badge badge-orange">#01</span>
+            <span class="badge badge-gray">13枚</span>
+            <span class="badge badge-gray">2026.03.12</span>
+          </div>
+          <div class="card-title">マニュアルを<br>"読む用"から"使う用"へ</div>
+          <div class="card-desc">人間の特性「再生より再認」からマニュアル設計を考える。チェックリストと共通語の活用。</div>
+          <div class="card-footer">
+            <span class="card-date">2026.03.12</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 02 オンボーディング -->
+      <a class="card" href="slides/02_onboarding.html">
+        <div class="card-thumb">
+          <iframe src="slides/02_onboarding.html" scrolling="no" tabindex="-1"></iframe>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="badge badge-orange">#02</span>
+            <span class="badge badge-gray">18枚</span>
+            <span class="badge badge-gray">2026.03.26</span>
+          </div>
+          <div class="card-title">外注編集者さんにも<br>"神対応"したい！</div>
+          <div class="card-desc">オンボーディング導入のすすめ。定着率改善のためのテスト期間設計と評価の工夫。</div>
+          <div class="card-footer">
+            <span class="card-date">2026.03.26</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 追加予定 -->
+      <div class="card-empty">
+        <div class="ce-icon">＋</div>
+        <div class="ce-text">次の発表資料</div>
+      </div>
+
+    </div>
+  </div>
+
 </main>
 
 </body>
