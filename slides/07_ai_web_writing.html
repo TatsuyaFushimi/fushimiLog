@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI WEB WRITING — 要約スライド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#111; display:flex; align-items:center; justify-content:center; height:100vh; font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif; overflow:hidden; }
+#deck { position:relative; width:960px; height:540px; }
+.slide { position:absolute; inset:0; width:960px; height:540px; background:#FFF3EC; border-radius:12px; overflow:hidden; display:none; flex-direction:column; box-shadow:0 12px 48px rgba(0,0,0,0.5); }
+.slide.active { display:flex; }
+.slide-header { display:flex; align-items:center; padding:22px 52px 16px; border-bottom:2px solid rgba(255,107,43,0.12); gap:14px; flex-shrink:0; }
+.slide-header .bar { width:8px; height:40px; background:linear-gradient(180deg,#FF6B2B,#FF9A5C); border-radius:4px; flex-shrink:0; }
+.slide-header h2 { font-size:26px; color:#1A1A2E; font-weight:800; line-height:1.3; }
+.slide-content .body { flex:1; display:flex; align-items:center; padding:16px 52px; gap:32px; }
+.points { flex:1; display:flex; flex-direction:column; gap:11px; }
+.point-item { display:flex; align-items:flex-start; gap:14px; background:#fff; border-radius:12px; padding:13px 18px; box-shadow:0 2px 8px rgba(255,107,43,0.08); border-left:5px solid #FF6B2B; }
+.point-item .icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+.point-item .text { font-size:20px; color:#1A1A2E; font-weight:600; line-height:1.5; }
+.point-item .sub { font-size:15px; color:#888; font-weight:400; margin-top:4px; }
+.slide-title .hero { background:linear-gradient(135deg,#FF6B2B 0%,#FF9A5C 60%,#FFB87A 100%); flex:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:52px 64px 44px; position:relative; overflow:hidden; }
+.slide-title .hero::after { content:''; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:rgba(255,255,255,0.08); pointer-events:none; }
+.slide-title .tag { font-size:17px; color:rgba(255,255,255,0.9); font-weight:500; letter-spacing:0.1em; margin-bottom:14px; background:rgba(255,255,255,0.2); padding:4px 16px; border-radius:20px; display:inline-block; position:relative; z-index:1; }
+.slide-title h1 { font-size:52px; color:#fff; font-weight:900; line-height:1.3; text-shadow:0 2px 8px rgba(0,0,0,0.12); position:relative; z-index:1; }
+.slide-title .subtitle { font-size:20px; color:rgba(255,255,255,0.88); margin-top:12px; font-weight:400; position:relative; z-index:1; }
+.slide-title .footer { height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 64px; background:#fff; }
+.slide-title .footer .name { color:#FF6B2B; font-weight:700; font-size:18px; }
+.slide-title .footer .date { color:#aaa; font-size:17px; }
+.slide-key { background:#fff; align-items:center; justify-content:center; }
+.key-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px 64px; text-align:center; width:100%; }
+.key-label { font-size:17px; color:#FF6B2B; font-weight:700; letter-spacing:0.15em; }
+.key-box { border:4px solid #FF6B2B; border-radius:16px; padding:24px 52px; background:#FFF3EC; position:relative; }
+.key-box::before { content:'"'; position:absolute; top:-22px; left:22px; font-size:80px; color:#FF6B2B; line-height:1; font-family:Georgia,serif; }
+.key-text { font-size:32px; color:#1A1A2E; font-weight:900; line-height:1.5; }
+.key-sub { font-size:18px; color:#888; font-weight:400; line-height:1.7; }
+.page-num { position:absolute; bottom:10px; right:16px; font-size:13px; color:#ccc; z-index:10; pointer-events:none; }
+#nav { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; background:rgba(30,30,30,0.85); padding:10px 22px; border-radius:32px; backdrop-filter:blur(8px); z-index:100; user-select:none; }
+#nav button { background:none; border:none; color:#fff; font-size:20px; cursor:pointer; padding:4px 10px; border-radius:8px; transition:background 0.15s; line-height:1; }
+#nav button:hover { background:rgba(255,107,43,0.4); }
+#nav button:disabled { color:#555; cursor:default; }
+#nav button:disabled:hover { background:none; }
+#counter { font-size:14px; color:#aaa; min-width:58px; text-align:center; font-family:monospace; }
+#fullscreen-btn { background:none; border:none; color:#aaa; font-size:16px; cursor:pointer; padding:4px 8px; border-radius:8px; line-height:1; }
+#fullscreen-btn:hover { color:#FF9A5C; }
+#back-btn { background:none; border:none; color:rgba(255,255,255,0.5); font-size:13px; cursor:pointer; padding:4px 10px; border-radius:8px; line-height:1; text-decoration:none; display:flex; align-items:center; gap:4px; }
+#back-btn:hover { color:#FF9A5C; }
+.nav-divider { width:1px; height:18px; background:rgba(255,255,255,0.15); }
+:fullscreen #nav { opacity:0.3; }
+:fullscreen #nav:hover { opacity:1; }
+
+/* スライド8 用 2カラムグリッド */
+.two-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:14px 48px; align-content:center; }
+.tg-item { background:#fff; border-radius:10px; padding:10px 14px; border-left:4px solid #FF6B2B; display:flex; align-items:center; gap:10px; font-size:16px; color:#1A1A2E; font-weight:600; line-height:1.4; box-shadow:0 1px 6px rgba(255,107,43,0.07); }
+.tg-num { width:24px; height:24px; background:linear-gradient(135deg,#FF6B2B,#FF9A5C); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; color:#fff; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ===== スライド1：タイトル ===== -->
+  <div class="slide slide-title active">
+    <div class="hero">
+      <span class="tag">資料要約</span>
+      <h1>AI WEB WRITING</h1>
+      <p class="subtitle">著者：ヒルトル・フィリップ太郎｜AIをディレクターとして使いこなす</p>
+    </div>
+    <div class="footer">
+      <span class="name">ヒルトル・フィリップ太郎（株式会社ヒルトル）</span>
+      <span class="date">2026.05.28</span>
+    </div>
+    <span class="page-num">1 / 8</span>
+  </div>
+
+  <!-- ===== スライド2：この本が伝えること ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>この本が伝えること</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">📝</span>
+          <div>
+            <div class="text">AIは「副操縦士」、人間がディレクターとして指示を出す</div>
+            <div class="sub">AIに全部丸投げせず、ゴールを示すのは人間</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🎯</span>
+          <div>
+            <div class="text">ウェブ集客・セールスに必要な文章を効率よく量産する</div>
+            <div class="sub">ブログ・オプトインページ・セールスレターに対応</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">✅</span>
+          <div>
+            <div class="text">文章作成5ステップ：①資料準備 → ②プロンプト作成 → ③チャットで執筆 → ④書き直し → ⑤人間がチェック</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="page-num">2 / 8</span>
+  </div>
+
+  <!-- ===== スライド3：推奨AIツール3選 ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>推奨AIツール 3選と使い分け</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">🟢</span>
+          <div>
+            <div class="text">Claude（Anthropic）</div>
+            <div class="sub">長文理解・文章執筆の質が高い。電子書籍・ブログに最適 ／ ★著者の文章執筆はClaude推奨</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🔵</span>
+          <div>
+            <div class="text">Gemini（Google）</div>
+            <div class="sub">Google連携・SNS広告文が得意。セールスコピーに強い ／ ★くだけた文体・広告文はGemini</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">⚪</span>
+          <div>
+            <div class="text">ChatGPT（OpenAI）</div>
+            <div class="sub">画像生成・汎用性。初心者向け ／ ★汎用・画像生成はChatGPT</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:80px; flex-shrink:0; opacity:0.7;">🤖</div>
+    </div>
+    <span class="page-num">3 / 8</span>
+  </div>
+
+  <!-- ===== スライド4：マザープロンプト（slide-key） ===== -->
+  <div class="slide slide-key">
+    <div class="key-inner">
+      <div class="key-label">最重要プロンプト</div>
+      <div class="key-box">
+        <div class="key-text">マザープロンプト<br><span style="font-size:24px;font-weight:500;color:#888">AIに「自分のビジネス」を理解させる土台</span></div>
+      </div>
+      <div class="key-sub">
+        6要素：① 自己紹介 ② ミッション ③ ターゲット ④ ベネフィット ⑤ 商品・オファー ⑥ 信念・価値観<br>
+        一度作れば毎回使い回せる。音声で話して文字起こしが最速。
+      </div>
+    </div>
+    <span class="page-num">4 / 8</span>
+  </div>
+
+  <!-- ===== スライド5：9つのプロンプト前半 ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>9つのプロンプト ― 前半4つ</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">📌</span>
+          <div>
+            <div class="text" style="font-size:18px;">①マザープロンプト</div>
+            <div class="sub">AIにビジネスを理解させる土台（毎回使い回し）</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">👔</span>
+          <div>
+            <div class="text" style="font-size:18px;">②役割プロンプト</div>
+            <div class="sub">「どんな専門家として書くか」を指示する</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">📋</span>
+          <div>
+            <div class="text" style="font-size:18px;">③依頼プロンプト</div>
+            <div class="sub">タスクを段階的に依頼。「まだ文章は書かないで」で精度アップ</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">📚</span>
+          <div>
+            <div class="text" style="font-size:18px;">④コンテンツプロンプト</div>
+            <div class="sub">過去記事・動画文字起こしをAIに学習させる</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="page-num">5 / 8</span>
+  </div>
+
+  <!-- ===== スライド6：9つのプロンプト後半 ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>9つのプロンプト ― 後半5つ</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">🏗️</span>
+          <div>
+            <div class="text" style="font-size:17px;">⑤フレームワークプロンプト</div>
+            <div class="sub">文章の骨格を指示。PASTORフォーミュラ等</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">📖</span>
+          <div>
+            <div class="text" style="font-size:17px;">⑥スワイプファイルプロンプト</div>
+            <div class="sub">実際に売れた文章をお手本として提示</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🔄</span>
+          <div>
+            <div class="text" style="font-size:17px;">⑦ビフォーアフタープロンプト</div>
+            <div class="sub">使用前後の変化を描写。感情に訴える</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🪜</span>
+          <div>
+            <div class="text" style="font-size:17px;">⑧マイルストーンプロンプト</div>
+            <div class="sub">目標達成までのステップを具体的に提示</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">👥</span>
+          <div>
+            <div class="text" style="font-size:17px;">⑨ペルソナプロンプト</div>
+            <div class="sub">顧客像を設定。バリエーション展開が楽になる</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="page-num">6 / 8</span>
+  </div>
+
+  <!-- ===== スライド7：PASTORフォーミュラ ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>セールスコピーの骨格：PASTORフォーミュラ</h2>
+    </div>
+    <div class="body">
+      <div class="points" style="gap:7px;">
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🔴</span>
+          <div>
+            <div class="text" style="font-size:17px;">P：Problem（問題）</div>
+            <div class="sub">読者が抱える課題を明確にする</div>
+          </div>
+        </div>
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🟠</span>
+          <div>
+            <div class="text" style="font-size:17px;">A：Amplify（問題の増幅）</div>
+            <div class="sub">解決しないとどうなるかを描写</div>
+          </div>
+        </div>
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🟡</span>
+          <div>
+            <div class="text" style="font-size:17px;">S：Story &amp; Solution（ストーリーと解決策）</div>
+            <div class="sub">共感と解決策の提示</div>
+          </div>
+        </div>
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🟢</span>
+          <div>
+            <div class="text" style="font-size:17px;">T：Transformation &amp; Testimony（変革と証言）</div>
+            <div class="sub">変化とお客様の声</div>
+          </div>
+        </div>
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🔵</span>
+          <div>
+            <div class="text" style="font-size:17px;">O：Offer（オファー）</div>
+            <div class="sub">商品・サービスを提示</div>
+          </div>
+        </div>
+        <div class="point-item" style="padding:10px 18px;">
+          <span class="icon" style="font-size:18px;">🟣</span>
+          <div>
+            <div class="text" style="font-size:17px;">R：Response（行動促進）</div>
+            <div class="sub">CTAで行動を促す</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="page-num">7 / 8</span>
+  </div>
+
+  <!-- ===== スライド8：まとめ8ポイント ===== -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>AIライティングで成果を出す8ポイント</h2>
+    </div>
+    <div class="two-grid">
+      <div class="tg-item">
+        <div class="tg-num">1</div>
+        AIの仕組みと特性を理解する
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">5</div>
+        マーケティング知識を身につける
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">2</div>
+        明確なゴールを設定する
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">6</div>
+        AIの生成結果を評価・編集できる「目」を持つ
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">3</div>
+        効果的なプロンプトを設計する
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">7</div>
+        反復とテストで継続的に改善する
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">4</div>
+        文章構成の基本スキルを持つ
+      </div>
+      <div class="tg-item">
+        <div class="tg-num">8</div>
+        倫理的配慮とコンプライアンスを守る
+      </div>
+    </div>
+    <span class="page-num">8 / 8</span>
+  </div>
+
+</div><!-- /#deck -->
+
+<!-- ナビゲーション -->
+<div id="nav">
+  <a id="back-btn" href="../index.html">← 一覧</a>
+  <div class="nav-divider"></div>
+  <button id="prev-btn" onclick="prev()" disabled>◀</button>
+  <span id="counter">1 / 8</span>
+  <button id="next-btn" onclick="next()">▶</button>
+  <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+function show(index) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(total - 1, index));
+  slides[current].classList.add('active');
+  document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === total - 1;
+}
+function next() { show(current + 1); }
+function prev() { show(current - 1); }
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+});
+document.getElementById('deck').addEventListener('click', (e) => {
+  if (e.target.closest('#nav') || e.target.closest('a')) return;
+  if (e.clientX > window.innerWidth / 2) next(); else prev();
+});
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+function scale() {
+  const s = Math.min(window.innerWidth / 960, window.innerHeight / 540) * 0.95;
+  document.getElementById('deck').style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', scale);
+scale();
+</script>
+</body>
+</html>

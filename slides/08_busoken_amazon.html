@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>差別化物販戦略塾 個人コンサルプラン｜物販総合研究所</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#111; display:flex; align-items:center; justify-content:center; height:100vh; font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif; overflow:hidden; }
+#deck { position:relative; width:960px; height:540px; }
+.slide { position:absolute; inset:0; width:960px; height:540px; background:#FFF3EC; border-radius:12px; overflow:hidden; display:none; flex-direction:column; box-shadow:0 12px 48px rgba(0,0,0,0.5); }
+.slide.active { display:flex; }
+.slide-header { display:flex; align-items:center; padding:22px 52px 16px; border-bottom:2px solid rgba(255,107,43,0.12); gap:14px; flex-shrink:0; }
+.slide-header .bar { width:8px; height:40px; background:linear-gradient(180deg,#FF6B2B,#FF9A5C); border-radius:4px; flex-shrink:0; }
+.slide-header h2 { font-size:26px; color:#1A1A2E; font-weight:800; line-height:1.3; }
+.slide-content .body { flex:1; display:flex; align-items:center; padding:16px 52px; gap:32px; }
+.points { flex:1; display:flex; flex-direction:column; gap:11px; }
+.point-item { display:flex; align-items:flex-start; gap:14px; background:#fff; border-radius:12px; padding:13px 18px; box-shadow:0 2px 8px rgba(255,107,43,0.08); border-left:5px solid #FF6B2B; }
+.point-item .icon { font-size:20px; flex-shrink:0; margin-top:2px; }
+.point-item .text { font-size:19px; color:#1A1A2E; font-weight:600; line-height:1.5; }
+.point-item .sub { font-size:14px; color:#888; font-weight:400; margin-top:4px; }
+.illust { width:148px; height:148px; background:linear-gradient(135deg,#FFE0CC,#FFB87A); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:60px; flex-shrink:0; }
+.slide-title .hero { background:linear-gradient(135deg,#FF6B2B 0%,#FF9A5C 60%,#FFB87A 100%); flex:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:52px 64px 44px; position:relative; overflow:hidden; }
+.slide-title .hero::after { content:''; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:rgba(255,255,255,0.08); pointer-events:none; }
+.slide-title .tag { font-size:17px; color:rgba(255,255,255,0.9); font-weight:500; letter-spacing:0.1em; margin-bottom:14px; background:rgba(255,255,255,0.2); padding:4px 16px; border-radius:20px; display:inline-block; position:relative; z-index:1; }
+.slide-title h1 { font-size:46px; color:#fff; font-weight:900; line-height:1.3; text-shadow:0 2px 8px rgba(0,0,0,0.12); position:relative; z-index:1; }
+.slide-title .subtitle { font-size:19px; color:rgba(255,255,255,0.88); margin-top:12px; font-weight:400; position:relative; z-index:1; }
+.slide-title .footer { height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 64px; background:#fff; }
+.slide-title .footer .name { color:#FF6B2B; font-weight:700; font-size:18px; }
+.slide-title .footer .date { color:#aaa; font-size:17px; }
+.slide-key { background:#fff; align-items:center; justify-content:center; }
+.key-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px 64px; text-align:center; width:100%; }
+.key-label { font-size:17px; color:#FF6B2B; font-weight:700; letter-spacing:0.15em; }
+.key-box { border:4px solid #FF6B2B; border-radius:16px; padding:24px 52px; background:#FFF3EC; position:relative; }
+.key-box::before { content:'"'; position:absolute; top:-22px; left:22px; font-size:80px; color:#FF6B2B; line-height:1; font-family:Georgia,serif; }
+.key-text { font-size:32px; color:#1A1A2E; font-weight:900; line-height:1.5; }
+.key-sub { font-size:18px; color:#888; font-weight:400; line-height:1.7; }
+.page-num { position:absolute; bottom:10px; right:16px; font-size:13px; color:#ccc; z-index:10; pointer-events:none; }
+#nav { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; background:rgba(30,30,30,0.85); padding:10px 22px; border-radius:32px; backdrop-filter:blur(8px); z-index:100; user-select:none; }
+#nav button { background:none; border:none; color:#fff; font-size:20px; cursor:pointer; padding:4px 10px; border-radius:8px; transition:background 0.15s; line-height:1; }
+#nav button:hover { background:rgba(255,107,43,0.4); }
+#nav button:disabled { color:#555; cursor:default; }
+#nav button:disabled:hover { background:none; }
+#counter { font-size:14px; color:#aaa; min-width:58px; text-align:center; font-family:monospace; }
+#fullscreen-btn { background:none; border:none; color:#aaa; font-size:16px; cursor:pointer; padding:4px 8px; border-radius:8px; line-height:1; }
+#back-btn { background:none; border:none; color:rgba(255,255,255,0.5); font-size:13px; cursor:pointer; padding:4px 10px; border-radius:8px; line-height:1; text-decoration:none; display:flex; align-items:center; gap:4px; }
+#back-btn:hover { color:#FF9A5C; }
+.nav-divider { width:1px; height:18px; background:rgba(255,255,255,0.15); }
+:fullscreen #nav { opacity:0.3; }
+:fullscreen #nav:hover { opacity:1; }
+
+/* 追加CSS */
+.two-col-body { flex:1; display:flex; padding:14px 44px; gap:20px; align-items:stretch; }
+.col-card { flex:1; background:#fff; border-radius:12px; padding:18px 22px; display:flex; flex-direction:column; gap:9px; box-shadow:0 2px 12px rgba(255,107,43,0.08); }
+.col-card .col-title { font-size:18px; font-weight:800; color:#FF6B2B; padding-bottom:10px; border-bottom:2px solid #FFE0CC; }
+.col-card .col-item { font-size:17px; color:#1A1A2E; font-weight:500; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+.col-card .col-item::before { content:'▸'; color:#FF9A5C; flex-shrink:0; }
+.step-flow { flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; padding:12px 52px; }
+.step-item { background:#fff; border-radius:10px; padding:11px 16px; display:flex; align-items:center; gap:12px; font-size:18px; color:#1A1A2E; font-weight:600; box-shadow:0 2px 6px rgba(255,107,43,0.07); }
+.step-num { width:28px; height:28px; background:linear-gradient(135deg,#FF6B2B,#FF9A5C); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#fff; flex-shrink:0; }
+.step-arrow { text-align:center; font-size:16px; color:#FF9A5C; }
+.formula-box { background:#1A1A2E; border-radius:12px; padding:16px 24px; font-size:20px; color:#FF9A5C; font-weight:700; text-align:center; font-family:monospace; }
+.kw-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:9px; padding:12px 48px; align-content:center; }
+.kw-item { background:#fff; border-radius:10px; padding:10px 14px; border-left:4px solid #FF6B2B; font-size:16px; color:#1A1A2E; font-weight:600; display:flex; align-items:center; gap:8px; box-shadow:0 1px 6px rgba(255,107,43,0.07); }
+.kw-item .ki-label { font-size:12px; color:#FF6B2B; font-weight:700; width:140px; flex-shrink:0; }
+.dark-box { background:#1A1A2E; border-radius:12px; padding:20px 22px; width:240px; flex-shrink:0; display:flex; flex-direction:column; gap:8px; }
+.dark-box .db-title { font-size:14px; font-weight:800; color:#FF9A5C; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:4px; }
+.dark-box .db-item { font-size:15px; color:rgba(255,255,255,0.75); }
+.dark-box .db-warn { font-size:16px; font-weight:700; color:#FF6B2B; margin-top:8px; }
+.success-box { background:#F0FFF4; border:2px solid #4CAF50; border-radius:12px; padding:18px 20px; width:260px; flex-shrink:0; display:flex; flex-direction:column; gap:8px; }
+.success-box .sb-title { font-size:15px; font-weight:800; color:#2E7D32; border-bottom:1px solid #A5D6A7; padding-bottom:8px; margin-bottom:4px; }
+.success-box .sb-item { font-size:14px; color:#1B5E20; font-weight:600; display:flex; gap:6px; align-items:flex-start; line-height:1.5; }
+.success-box .sb-item::before { content:'→'; color:#4CAF50; flex-shrink:0; }
+</style>
+</head>
+<body>
+<div id="deck">
+
+  <!-- スライド1：タイトル -->
+  <div class="slide slide-title active">
+    <div class="hero">
+      <span class="tag">資料要約</span>
+      <h1>差別化物販戦略塾<br>個人コンサルプラン</h1>
+      <div class="subtitle">物販総合研究所 / HIRAI｜相乗り→独占→OEMの3段階戦略</div>
+    </div>
+    <div class="footer">
+      <span class="name">物販総合研究所（busoken.com）</span>
+      <span class="date">2026.05.28</span>
+    </div>
+    <div class="page-num">1 / 9</div>
+  </div>
+
+  <!-- スライド2：スクールの理念 -->
+  <div class="slide slide-key">
+    <div class="key-inner">
+      <div class="key-label">理念</div>
+      <div class="key-box">
+        <div class="key-text">「知る」を「わかる」に<br>さらに「<span style="color:#FF6B2B">できる</span>」に変える</div>
+      </div>
+      <div class="key-sub">ノウハウを伝えるだけでなく、長期的に稼ぎ続けられる本物の実力を身につける</div>
+    </div>
+    <div class="page-num">2 / 9</div>
+  </div>
+
+  <!-- スライド3：30万円稼ぐロードマップ -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>30万円稼ぐ3段階ロードマップ</h2>
+    </div>
+    <div class="body">
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          相乗り販売
+          <span style="font-size:13px;color:#888;margin-left:8px">既存ページに乗って販売（1〜3ヶ月）</span>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          Amazon独占販売
+          <span style="font-size:13px;color:#888;margin-left:8px">メーカーと交渉し独占権を取得（4〜5ヶ月）</span>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          OEM・総代理店契約
+          <span style="font-size:13px;color:#888;margin-left:8px">オリジナル商品・ブランド展開（6ヶ月〜）</span>
+        </div>
+      </div>
+      <div class="illust">📦</div>
+    </div>
+    <div class="page-num">3 / 9</div>
+  </div>
+
+  <!-- スライド4：リサーチ7つのポイント -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>リサーチ7つのポイント</h2>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-item">
+        <span class="ki-label">❌ 有名ブランドはスルー</span>
+        <span style="font-size:13px;color:#888;font-weight:400">価格競争に巻き込まれる</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">❌ 中国輸入・広告商材はスルー</span>
+        <span style="font-size:13px;color:#888;font-weight:400">OEM化の可能性大</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">❌ メーカー直販はスルー</span>
+        <span style="font-size:13px;color:#888;font-weight:400">直接競合になる</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">❌ Amazon出品商品はスルー</span>
+        <span style="font-size:13px;color:#888;font-weight:400">カートが取れない</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">🛠️ 3ツールを活用</span>
+        <span style="font-size:13px;color:#888;font-weight:400">Keepa・モノトレーサー・セラースプライト</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">✅ ニッチすぎない商品を探す</span>
+        <span style="font-size:13px;color:#888;font-weight:400">ビッグ×専門キーワードの組合せ</span>
+      </div>
+      <div class="kw-item">
+        <span class="ki-label">💪 諦めずコツコツ継続</span>
+        <span style="font-size:13px;color:#888;font-weight:400">ギザギザKeepaグラフが売れているサイン</span>
+      </div>
+    </div>
+    <div class="page-num">4 / 9</div>
+  </div>
+
+  <!-- スライド5：メーカー交渉メール -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>メーカー交渉メール構成</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">✉️</span>
+          <div>
+            <div class="text">①自己紹介・目的</div>
+            <div class="sub">会社名・事業内容・HPを明記</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">❤️</span>
+          <div>
+            <div class="text">②背景・共感・理由</div>
+            <div class="sub">商品への共感・メーカーの理念への共感を具体的に</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🤝</span>
+          <div>
+            <div class="text">③交渉・締め</div>
+            <div class="sub">取引条件を確認したい旨を伝える</div>
+          </div>
+        </div>
+      </div>
+      <div class="dark-box">
+        <div class="db-title">NGメール</div>
+        <div class="db-item">✗ テンプレ丸コピー</div>
+        <div class="db-item">✗ リアル感なし</div>
+        <div class="db-item">✗ 情報が曖昧</div>
+        <div class="db-warn">すぐバレる！</div>
+      </div>
+    </div>
+    <div class="page-num">5 / 9</div>
+  </div>
+
+  <!-- スライド6：売上の方程式 -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>売上の方程式 &amp; 利益計算の基準</h2>
+    </div>
+    <div class="body" style="flex-direction:column; align-items:stretch; padding-top:12px; padding-bottom:12px;">
+      <div class="formula-box" style="margin-bottom:14px;">売上 ＝ セッション × 転換率 × 商品単価</div>
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">📊</span>
+          <div>
+            <div class="text">セッションが少ない → SP広告・SEO対策</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">💡</span>
+          <div>
+            <div class="text">転換率が低い → 商品ページの作り込み</div>
+            <div class="sub">まず商品ページを作り込んでから広告</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">💰</span>
+          <div>
+            <div class="text">粗利益の目安：30%以上（最低25%）・400円以上（最低300円）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">6 / 9</div>
+  </div>
+
+  <!-- スライド7：SP広告戦略 -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>SP広告（スポンサープロダクト）戦略</h2>
+    </div>
+    <div class="two-col-body">
+      <div class="col-card">
+        <div class="col-title">広告の種類</div>
+        <div class="col-item">完全一致：登録キーワードと完全一致のみ表示。無駄打ちが少ない</div>
+        <div class="col-item">フレーズ一致：前後に他のキーワードが追加されても表示</div>
+        <div class="col-item">商品ターゲティング：競合ASINに対して広告を表示</div>
+        <div class="col-item">オートターゲティング：Amazonが自動選定。発見用</div>
+      </div>
+      <div class="col-card">
+        <div class="col-title">推奨順序 &amp; 広告費の考え方</div>
+        <div class="col-item">①マニュアル（完全一致・フレーズ）でスタート</div>
+        <div class="col-item">②競合ASINに商品ターゲティング</div>
+        <div class="col-item">③オートで広げて絞る</div>
+        <div class="col-item" style="border-top:1px solid #FFE0CC; padding-top:8px; margin-top:4px;">序盤1〜2ヶ月は赤字でも初期投資として許容</div>
+        <div class="col-item">売れると→オーガニック順位UP→広告費割合DOWN</div>
+      </div>
+    </div>
+    <div class="page-num">7 / 9</div>
+  </div>
+
+  <!-- スライド8：実績例 -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>広告運用 実績例</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">📈</span>
+          <div>
+            <div class="text">月間売上：174,000円 ／ 月販50個</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">💸</span>
+          <div>
+            <div class="text">広告費：24,796円（全体Acos：14%）</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">💰</span>
+          <div>
+            <div class="text">最終利益率：41% ／ 月利：71,340円</div>
+          </div>
+        </div>
+      </div>
+      <div class="success-box">
+        <div class="sb-title">効果測定サイクル</div>
+        <div class="sb-item">毎日チェック</div>
+        <div class="sb-item">費用対効果の悪いKWを下げる</div>
+        <div class="sb-item">成果なしKWを除外</div>
+        <div class="sb-item">売れたKWに予算集中</div>
+      </div>
+    </div>
+    <div class="page-num">8 / 9</div>
+  </div>
+
+  <!-- スライド9：まとめ -->
+  <div class="slide slide-content">
+    <div class="slide-header">
+      <div class="bar"></div>
+      <h2>まとめ</h2>
+    </div>
+    <div class="body">
+      <div class="points">
+        <div class="point-item">
+          <span class="icon">🏭</span>
+          <div>
+            <div class="text">相乗り→独占→OEMの3段階で着実にスケール</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">🔍</span>
+          <div>
+            <div class="text">リサーチは「有名すぎずニッチすぎない」商品を狙う</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">📝</span>
+          <div>
+            <div class="text">メーカー交渉はリアル感と共感を大切に</div>
+          </div>
+        </div>
+        <div class="point-item">
+          <span class="icon">📊</span>
+          <div>
+            <div class="text">広告は「まずページを作り込んでから」。SEO維持のためにかけ続ける</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">9 / 9</div>
+  </div>
+
+</div><!-- /#deck -->
+
+<div id="nav">
+  <a id="back-btn" href="../index.html">← 一覧</a>
+  <div class="nav-divider"></div>
+  <button id="prev-btn" onclick="prev()" disabled>◀</button>
+  <span id="counter">1 / 9</span>
+  <button id="next-btn" onclick="next()">▶</button>
+  <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+function show(index) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(total - 1, index));
+  slides[current].classList.add('active');
+  document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === total - 1;
+}
+function next() { show(current + 1); }
+function prev() { show(current - 1); }
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+});
+document.getElementById('deck').addEventListener('click', (e) => {
+  if (e.target.closest('#nav') || e.target.closest('a')) return;
+  if (e.clientX > window.innerWidth / 2) next(); else prev();
+});
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+function scale() {
+  const s = Math.min(window.innerWidth / 960, window.innerHeight / 540) * 0.95;
+  document.getElementById('deck').style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', scale);
+scale();
+</script>
+</body>
+</html>
