@@ -3,524 +3,438 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>起業家のためのAIマインドシフト</title>
+<title>起業家のためのAIマインドシフト10日間 ― 要約</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    background: #111;
-    display: flex; align-items: center; justify-content: center;
-    height: 100vh;
-    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
-    overflow: hidden;
-  }
+body {
+  background: #f0f0f0;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  color: #1A1A2E;
+  line-height: 1.8;
+}
 
-  #deck { position: relative; width: 960px; height: 540px; }
+.page {
+  width: 794px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 64px 72px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
 
-  .slide {
-    position: absolute; inset: 0;
-    width: 960px; height: 540px;
-    background: #FFF3EC; border-radius: 12px; overflow: hidden;
-    display: none; flex-direction: column;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
-  }
-  .slide.active { display: flex; }
+/* ── ヘッダー ── */
+.doc-header {
+  border-left: 6px solid #FF6B2B;
+  padding-left: 20px;
+  margin-bottom: 40px;
+}
+.doc-header .series {
+  font-size: 12px; font-weight: 700; color: #FF9A5C;
+  letter-spacing: 0.15em; margin-bottom: 8px;
+  background: #FFF3EC; display: inline-block; padding: 2px 12px; border-radius: 20px;
+}
+.doc-header h1 {
+  font-size: 28px; font-weight: 900; color: #1A1A2E; line-height: 1.4; margin-bottom: 8px;
+}
+.doc-header .subtitle { font-size: 14px; color: #888; }
 
-  /* ── 共通ヘッダー ── */
-  .slide-header {
-    display: flex; align-items: center;
-    padding: 22px 52px 16px; border-bottom: 2px solid rgba(255,107,43,0.12);
-    gap: 14px; flex-shrink: 0;
-  }
-  .slide-header .bar {
-    width: 8px; height: 40px;
-    background: linear-gradient(180deg, #FF6B2B, #FF9A5C);
-    border-radius: 4px; flex-shrink: 0;
-  }
-  .slide-header h2 { font-size: 26px; color: #1A1A2E; font-weight: 800; line-height: 1.3; }
+/* ── 全体メッセージ ── */
+.core-message {
+  background: #FFF3EC; border-radius: 12px; padding: 20px 24px;
+  margin-bottom: 36px; border-left: 5px solid #FF6B2B;
+  font-size: 15px; color: #1A1A2E; line-height: 1.8;
+}
+.core-message blockquote {
+  font-size: 16px; font-weight: 700; color: #FF6B2B; font-style: normal;
+  border: none; padding: 0; margin-bottom: 8px;
+}
 
-  /* ── タイトルスライド ── */
-  .slide-title .hero {
-    background: linear-gradient(135deg, #FF6B2B 0%, #FF9A5C 60%, #FFB87A 100%);
-    flex: 1; display: flex; flex-direction: column;
-    align-items: flex-start; justify-content: center;
-    padding: 52px 64px 44px; position: relative; overflow: hidden;
-  }
-  .slide-title .hero::after {
-    content: ''; position: absolute; right: -60px; top: -60px;
-    width: 280px; height: 280px; border-radius: 50%;
-    background: rgba(255,255,255,0.08); pointer-events: none;
-  }
-  .slide-title .hero::before {
-    content: ''; position: absolute; right: 80px; bottom: -80px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: rgba(255,255,255,0.06); pointer-events: none;
-  }
-  .slide-title .tag {
-    font-size: 17px; color: rgba(255,255,255,0.9); font-weight: 500;
-    letter-spacing: 0.1em; margin-bottom: 14px;
-    background: rgba(255,255,255,0.2); padding: 4px 16px;
-    border-radius: 20px; display: inline-block; position: relative; z-index: 1;
-  }
-  .slide-title h1 {
-    font-size: 48px; color: #fff; font-weight: 900; line-height: 1.3;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.12); position: relative; z-index: 1;
-  }
-  .slide-title .subtitle {
-    font-size: 20px; color: rgba(255,255,255,0.88); margin-top: 12px;
-    font-weight: 400; position: relative; z-index: 1;
-  }
-  .slide-title .footer {
-    height: 68px; display: flex; align-items: center;
-    justify-content: space-between; padding: 0 64px; background: #fff;
-  }
-  .slide-title .footer .name { color: #FF6B2B; font-weight: 700; font-size: 18px; }
-  .slide-title .footer .date { color: #aaa; font-size: 17px; }
+/* ── セクション ── */
+.section { margin-bottom: 36px; }
+.section-heading {
+  font-size: 18px; font-weight: 800; color: #FF6B2B;
+  border-bottom: 2px solid #FFE0CC; padding-bottom: 8px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-heading .ep-badge {
+  font-size: 11px; font-weight: 700; background: #FF6B2B; color: #fff;
+  padding: 2px 10px; border-radius: 20px; letter-spacing: 0.05em; flex-shrink: 0;
+}
 
-  /* ── コンテンツ body ── */
-  .slide-content .body {
-    flex: 1; display: flex; align-items: center;
-    padding: 16px 52px; gap: 32px;
-  }
+p { font-size: 14px; margin-bottom: 12px; }
 
-  /* ── ポイントリスト ── */
-  .points { flex: 1; display: flex; flex-direction: column; gap: 12px; }
-  .point-item {
-    display: flex; align-items: flex-start; gap: 14px;
-    background: #fff; border-radius: 12px; padding: 14px 18px;
-    box-shadow: 0 2px 8px rgba(255,107,43,0.08); border-left: 5px solid #FF6B2B;
-  }
-  .point-item .icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-  .point-item .text { font-size: 20px; color: #1A1A2E; font-weight: 600; line-height: 1.5; }
-  .point-item .sub { font-size: 15px; color: #888; font-weight: 400; margin-top: 4px; }
+ul, ol { padding-left: 20px; margin-bottom: 12px; }
+li { font-size: 14px; margin-bottom: 6px; line-height: 1.7; }
 
-  /* ── 2カラム比較 ── */
-  .two-col { flex: 1; display: flex; padding: 16px 44px; gap: 20px; align-items: stretch; }
-  .col-box {
-    flex: 1; background: #fff; border-radius: 12px; padding: 18px 22px;
-    display: flex; flex-direction: column; gap: 10px;
-    box-shadow: 0 2px 12px rgba(255,107,43,0.08);
-  }
-  .col-box.highlight { background: #FFF3EC; border: 2px solid #FF6B2B; }
-  .col-box .col-ttl {
-    font-size: 18px; font-weight: 800; color: #FF6B2B;
-    padding-bottom: 10px; border-bottom: 2px solid #FFE0CC;
-  }
-  .col-box.dim .col-ttl { color: #aaa; border-bottom-color: #eee; }
-  .col-box .col-item {
-    font-size: 17px; color: #1A1A2E; font-weight: 500;
-    display: flex; gap: 8px; line-height: 1.55;
-  }
-  .col-box .col-item::before { content: '▸'; color: #FF9A5C; flex-shrink: 0; }
-  .col-box.dim .col-item { color: #aaa; }
-  .col-box.dim .col-item::before { color: #ccc; }
-  .col-sub-ttl {
-    font-size: 15px; font-weight: 800; color: #FF6B2B;
-    letter-spacing: 0.05em; margin-top: 6px;
-  }
+/* ── ポイントボックス ── */
+.point-box {
+  background: #fff; border-radius: 10px; padding: 14px 18px;
+  border-left: 4px solid #FF6B2B; margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(255,107,43,0.08);
+  font-size: 14px;
+}
+.point-box strong { color: #FF6B2B; }
+.point-box .point-title { font-size: 15px; font-weight: 700; color: #1A1A2E; margin-bottom: 4px; }
+.point-box .point-sub { color: #666; font-size: 13px; margin-top: 4px; }
 
-  /* ── Qスライド ── */
-  .slide-question { background: #1A1A2E; align-items: center; justify-content: center; }
-  .q-inner {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 20px; padding: 40px 64px; text-align: center;
-  }
-  .q-badge {
-    font-size: 14px; font-weight: 800; letter-spacing: 0.2em; color: #FF6B2B;
-    background: rgba(255,107,43,0.15); padding: 6px 20px; border-radius: 20px;
-    border: 1px solid rgba(255,107,43,0.3);
-  }
-  .q-text { font-size: 36px; font-weight: 900; color: #fff; line-height: 1.5; }
-  .q-sub { font-size: 18px; color: rgba(255,255,255,0.5); font-weight: 400; line-height: 1.7; }
-  .q-cta {
-    font-size: 19px; font-weight: 700; color: #FF9A5C;
-    background: rgba(255,107,43,0.1); border: 1px solid rgba(255,107,43,0.3);
-    border-radius: 10px; padding: 10px 24px;
-  }
+/* ── 表 ── */
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+th { background: #FF6B2B; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+td { padding: 9px 12px; border-bottom: 1px solid #FFE0CC; }
+tr:nth-child(even) td { background: #FFF8F5; }
 
-  /* ── キーメッセージ ── */
-  .slide-key { background: #fff; align-items: center; justify-content: center; }
-  .key-inner {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 18px; padding: 40px 64px; text-align: center; width: 100%;
-  }
-  .key-label { font-size: 17px; color: #FF6B2B; font-weight: 700; letter-spacing: 0.15em; }
-  .key-box {
-    border: 4px solid #FF6B2B; border-radius: 16px;
-    padding: 24px 52px; background: #FFF3EC; position: relative;
-  }
-  .key-box::before {
-    content: '"'; position: absolute; top: -22px; left: 22px;
-    font-size: 80px; color: #FF6B2B; line-height: 1; font-family: Georgia, serif;
-  }
-  .key-text { font-size: 36px; color: #1A1A2E; font-weight: 900; line-height: 1.5; }
-  .key-sub { font-size: 19px; color: #888; font-weight: 400; line-height: 1.7; }
+/* ── コードブロック ── */
+.code-block {
+  background: #1A1A2E; border-radius: 10px; padding: 16px 20px;
+  font-family: 'Courier New', monospace; font-size: 13px; color: #FF9A5C;
+  line-height: 1.8; margin-bottom: 14px; white-space: pre-wrap;
+}
 
-  /* ── 比較テーブル ── */
-  .compare-body { flex: 1; display: flex; padding: 14px 44px 18px; gap: 18px; align-items: stretch; }
-  .compare-col { flex: 1; display: flex; flex-direction: column; gap: 0; }
-  .compare-col .cmp-ttl {
-    font-size: 17px; font-weight: 800; padding: 10px 18px; border-radius: 10px 10px 0 0;
-    text-align: center;
-  }
-  .compare-col.amateur .cmp-ttl { background: #e8e8e8; color: #888; }
-  .compare-col.top .cmp-ttl { background: #FF6B2B; color: #fff; }
-  .compare-col .cmp-list { flex: 1; background: #fff; border-radius: 0 0 10px 10px; padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-  .compare-col.top .cmp-list { background: #FFF3EC; box-shadow: 0 2px 14px rgba(255,107,43,0.12); }
-  .cmp-row { display: flex; gap: 8px; align-items: flex-start; font-size: 17px; color: #1A1A2E; font-weight: 500; line-height: 1.5; }
-  .cmp-row::before { content: '·'; color: #ccc; flex-shrink: 0; font-size: 22px; line-height: 1.2; }
-  .compare-col.top .cmp-row::before { content: '▸'; color: #FF6B2B; font-size: 16px; line-height: 1.5; }
-  .compare-col.amateur .cmp-row { color: #aaa; }
+/* ── キーメッセージ ── */
+.key-message {
+  background: #1A1A2E; border-radius: 12px; padding: 20px 24px;
+  margin: 20px 0; text-align: center;
+  font-size: 16px; font-weight: 800; color: #fff; line-height: 1.6;
+}
+.key-message span { color: #FF9A5C; }
 
-  /* ── ページ番号・ナビ ── */
-  .page-num {
-    position: absolute; bottom: 10px; right: 16px;
-    font-size: 13px; color: #ccc; z-index: 10; pointer-events: none;
-  }
-  .slide-question .page-num { color: rgba(255,255,255,0.25); }
+/* ── 戻るボタン（印刷非表示） ── */
+.back-nav {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 32px; padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.back-nav a {
+  font-size: 13px; color: #FF6B2B; text-decoration: none; font-weight: 700;
+  display: flex; align-items: center; gap: 4px;
+}
+.back-nav a:hover { text-decoration: underline; }
+.back-nav .nav-title { font-size: 13px; color: #aaa; }
 
-  #nav {
-    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-    display: flex; align-items: center; gap: 14px;
-    background: rgba(30,30,30,0.85); padding: 10px 22px;
-    border-radius: 32px; backdrop-filter: blur(8px); z-index: 100; user-select: none;
-  }
-  #nav button {
-    background: none; border: none; color: #fff; font-size: 20px;
-    cursor: pointer; padding: 4px 10px; border-radius: 8px;
-    transition: background 0.15s; line-height: 1;
-  }
-  #nav button:hover { background: rgba(255,107,43,0.4); }
-  #nav button:disabled { color: #555; cursor: default; }
-  #nav button:disabled:hover { background: none; }
-  #counter { font-size: 14px; color: #aaa; min-width: 58px; text-align: center; font-family: monospace; }
-  #fullscreen-btn {
-    background: none; border: none; color: #aaa; font-size: 16px;
-    cursor: pointer; padding: 4px 8px; border-radius: 8px; line-height: 1;
-    transition: color 0.15s;
-  }
-  #fullscreen-btn:hover { color: #FF9A5C; }
-  #back-btn {
-    background: none; border: none; color: rgba(255,255,255,0.5); font-size: 13px;
-    cursor: pointer; padding: 4px 10px; border-radius: 8px; line-height: 1;
-    text-decoration: none; display: flex; align-items: center; gap: 4px;
-    transition: color 0.15s;
-  }
-  #back-btn:hover { color: #FF9A5C; }
-  .nav-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
-  :fullscreen #nav { opacity: 0.3; transition: opacity 0.2s; }
-  :fullscreen #nav:hover { opacity: 1; }
+/* ── 印刷CSS ── */
+@media print {
+  body { background: none; }
+  .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 20mm; }
+  .back-nav { display: none; }
+}
 </style>
 </head>
 <body>
-<div id="deck">
+<div class="page">
 
-  <!-- ── Slide 1: タイトル ── -->
-  <div class="slide slide-title active">
-    <div class="hero">
-      <span class="tag">資料要約</span>
-      <h1>起業家のための<br>AIマインドシフト</h1>
-      <p class="subtitle">実行者から「設計者」へ ― 10のパラダイムシフト</p>
-    </div>
-    <div class="footer">
-      <span class="name">AIマインドシフト10日間プログラム</span>
-      <span class="date">2026.05.28</span>
-    </div>
-    <span class="page-num">1 / 10</span>
+  <!-- 戻るナビゲーション -->
+  <div class="back-nav">
+    <a href="../index.html">← 一覧へ戻る</a>
+    <span class="nav-title">起業家のためのAIマインドシフト10日間プログラム 要約</span>
   </div>
 
-  <!-- ── Slide 2: 全体メッセージ ── -->
-  <div class="slide slide-key">
-    <div class="key-inner">
-      <div class="key-label">CORE MESSAGE</div>
-      <div class="key-box">
-        <div class="key-text">
-          AIを使う「労働者」から<br>AIを設計する「<span style="color:#FF6B2B">設計者</span>」へ
-        </div>
-      </div>
-      <div class="key-sub">専門知識が最大の優位性になるのは今後18〜24ヶ月</div>
-    </div>
-    <span class="page-num">2 / 10</span>
+  <!-- ヘッダー -->
+  <div class="doc-header">
+    <div class="series">EXPERT Secrets 特別講義 ／ 資料要約</div>
+    <h1>起業家のためのAIマインドシフト10日間プログラム</h1>
+    <div class="subtitle">実行者から「設計者」へ — 今後18ヶ月で絶対的な競争優位性を構築する10のパラダイムシフト</div>
   </div>
 
-  <!-- ── Slide 3: Ep1 AIは格差を広げる ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Ep.1 AIは「平等化」のツールではない</h2>
-    </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">🔍</span>
-          <div>
-            <div class="text">AIは専門知識を「掛け算」する存在</div>
-            <div class="sub">誰もが使えるからこそ、格差がかつてないほど広がる</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">⏰</span>
-          <div>
-            <div class="text">チャンスウィンドウは18〜24ヶ月</div>
-            <div class="sub">Expert+AI と Novice+AI の差はAGI到来で急速に縮まる</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🎯</span>
-          <div>
-            <div class="text">今が最大の圧倒的優位性を築ける時期</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <span class="page-num">3 / 10</span>
+  <!-- 全体メッセージ -->
+  <div class="core-message">
+    <blockquote>「AIへの指示を変えるのではない。あなた自身の『ビジネスの設計図』と『専門性の抽出プロセス』を変えるのだ。」</blockquote>
+    AIを単なる便利ツールとして使う「労働者」から、AIをシステムとして設計・指揮する「設計者」へ転換するための10のマインドシフト。
   </div>
 
-  <!-- ── Slide 4: Ep2 設計者の3つの力 ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Ep.2 「新しい工場」の設計者になる</h2>
+  <!-- Ep.1 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.1</span> AIは「平等化」のツールではない
     </div>
-    <div class="two-col">
-      <div class="col-box dim">
-        <div class="col-ttl">労働者のマインド</div>
-        <div class="col-item">実行に80%の時間を使う</div>
-        <div class="col-item">AIは後付けのツール</div>
-        <div class="col-item">既存の流れにAIを組み込む</div>
-      </div>
-      <div class="col-box highlight">
-        <div class="col-ttl">設計者のマインド</div>
-        <div class="col-item">思考と設計に80%の時間を使う</div>
-        <div class="col-item">構造から再設計する</div>
-        <div class="col-item">AIをシステムの中心に置く</div>
-        <div class="col-sub-ttl">設計者に必要な3つの力</div>
-        <div class="col-item">戦略 ／ システム思考 ／ 意図の明確化</div>
-      </div>
-    </div>
-    <span class="page-num">4 / 10</span>
+    <ul>
+      <li><strong>誤解：</strong>AIは誰もが何でもできる「魔法の杖」</li>
+      <li><strong>真実：</strong>AIは専門知識を掛け算（Multiplier）し、格差をかつてないほど広げる存在</li>
+      <li><strong>タイムリミット：</strong>専門知識が最大の圧倒的優位性となるのは今後わずか18〜24ヶ月</li>
+    </ul>
+    <p>Expert + AI と Novice + AI の差は、AGI到来とともに急速に縮まる。今がチャンスウィンドウ。</p>
   </div>
 
-  <!-- ── Slide 5: Ep3 AIマネジメント3サイクル ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Ep.3 AIは「優秀だが盲点のある新入社員」</h2>
+  <!-- Ep.2 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.2</span> 「新しい工場」の設計者になる
     </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">📋</span>
-          <div>
-            <div class="text">タスク前のブリーフィング</div>
-            <div class="sub">背景・目的・制約を共有する</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🔍</span>
-          <div>
-            <div class="text">アウトプットの確認</div>
-            <div class="sub">「どの部分を推測した？」と問い詰める</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">💬</span>
-          <div>
-            <div class="text">成功後の振り返り</div>
-            <div class="sub">「次回10倍良くするために何が欠けていた？」とAIにフィードバックさせる</div>
-          </div>
-        </div>
-      </div>
-      <div style="width:110px; height:110px; background:linear-gradient(135deg,#FFE0CC,#FFB87A); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; flex-direction:column; gap:2px;">
-        <span style="font-size:28px; font-weight:900; color:#FF6B2B; line-height:1;">PDCA</span>
-        <span style="font-size:20px; color:#FF9A5C; line-height:1;">↻</span>
-      </div>
-    </div>
-    <span class="page-num">5 / 10</span>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Old Factory（労働者のマインド）</th>
+          <th>New Factory（設計者のマインド）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>時間の使い方</strong></td>
+          <td>80%を「実行」に費やす</td>
+          <td>80%を「思考と設計」に費やす</td>
+        </tr>
+        <tr>
+          <td><strong>AIの位置づけ</strong></td>
+          <td>検索エンジン・作業効率化ツールとして後付け</td>
+          <td>ビジネスの構造自体を根本から再設計するために活用</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>設計者に必要な3つの力：</p>
+    <ol>
+      <li><strong>戦略（Strategy）</strong>— 何を実行すべきかの見極め</li>
+      <li><strong>システム思考（Systems Thinking）</strong>— プロセスとワークフローの構築</li>
+      <li><strong>意図の明確化（Articulating Intent）</strong>— 求める結果を正確に言語化する力</li>
+    </ol>
   </div>
 
-  <!-- ── Slide 6: Ep5 3つの態度 ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Ep.5 インプット・手法・成果を使い分ける</h2>
+  <!-- Ep.3 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.3</span> 「マネジメント・ギャップ」を埋める
     </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">👑</span>
-          <div>
-            <div class="text">インプット（文脈）→ <span style="color:#FF6B2B;">暴君</span></div>
-            <div class="sub">容赦なく厳密に。文脈の妥協を許さない</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🕊️</span>
-          <div>
-            <div class="text">手法（プロセス）→ <span style="color:#FF6B2B;">放任主義</span></div>
-            <div class="sub">手段はAIに完全委任。ルートはAIが選ぶ</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🔥</span>
-          <div>
-            <div class="text">成果（ゴール）→ <span style="color:#FF6B2B;">伝道師</span></div>
-            <div class="sub">到達すべき感情・インパクトを熱狂的に語る</div>
-          </div>
-        </div>
-      </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>AIは魔法ではなく「優秀だが盲点のある新入社員」である。指示を丸投げせず、マネジメントの責任を負うこと。</blockquote>
     </div>
-    <span class="page-num">6 / 10</span>
+    <p>価値ある質問（バリュークエスチョン）：</p>
+    <div class="point-box">
+      「最初に、私が伝えてまだ伝えていないことで、あなたが知っておくべきことは何ですか？」
+    </div>
+    <p>AIマネジメントの3サイクル：</p>
+    <div class="code-block">タスク前のブリーフィング（背景と目的を共有する）
+        ↓
+アウトプットの確認：「どの部分を推測した？」「自信がない部分は？」
+        ↓
+成功後の振り返り：「次回10倍良くするために、最後に欠けていた情報は何だった？」</div>
   </div>
 
-  <!-- ── Slide 7: Ep6 承認の罠（暗背景） ── -->
-  <div class="slide slide-question">
-    <div class="q-inner">
-      <div class="q-badge">WARNING</div>
-      <div class="q-text">
-        AIはあなたを怒らせないために<br>「役に立つフリ」をする
-      </div>
-      <div class="q-sub">
-        3つの危険サイン：① 批判後に数秒で新バージョン<br>
-        ② 構造は立派だが中身がない<br>
-        ③ もっともらしい言い訳で同じミスを繰り返す
-      </div>
-      <div class="q-cta">「成果」に最適化していますか？と問い続けよ</div>
+  <!-- Ep.4 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.4</span> 「記憶喪失」問題と文脈の力
     </div>
-    <span class="page-num">7 / 10</span>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>毎回AIと「初めまして」の挨拶をしてはいけない。圧倒的な文脈（コンテキスト）こそが、最高のアウトプットの源泉。</blockquote>
+    </div>
+    <p>The 4 Rings of Memory（記憶の4層構造）：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>層</th>
+          <th>内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core Ring 1: アイデンティティ</td>
+          <td>あなたの信念・トーン・経歴</td>
+        </tr>
+        <tr>
+          <td>セッションメモリ</td>
+          <td>AIの対話から学んだこと</td>
+        </tr>
+        <tr>
+          <td>環境キャプチャ</td>
+          <td>あなたが見聞きしていること</td>
+        </tr>
+        <tr>
+          <td>情報の摂取</td>
+          <td>あなたが読んでいるもの</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>→ これらをまとめた「個人知識ベース」の構築が推奨。</p>
   </div>
 
-  <!-- ── Slide 8: Ep7-8 暗黙知の言語化 ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Ep.7-8 「暗黙知」を言語化して渡す</h2>
+  <!-- Ep.5 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.5</span> 「手法」と「成果」を分離する
     </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">💡</span>
-          <div>
-            <div class="text">最も得意なことは「無意識」で実行できている</div>
-            <div class="sub">AIへ渡せない ＝ スケールできない</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🎙️</span>
-          <div>
-            <div class="text">AIにインタビューさせて掘り起こす</div>
-            <div class="sub">「私の専門スキルについてインタビューし、目に見えない決断を発掘してください」</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">✏️</span>
-          <div>
-            <div class="text">「空白の小切手」を渡さない（Ep.8）</div>
-            <div class="sub">曖昧な指示 ＝ 意思決定の放棄。「Enterを押す前に空白の数を数えよ」</div>
-          </div>
-        </div>
-      </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>手法はAIを檻に閉じ込め、文脈は武装させ、成果は探求を可能にする。</blockquote>
     </div>
-    <span class="page-num">8 / 10</span>
+    <p>3つの態度を使い分ける：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>対象</th>
+          <th>態度</th>
+          <th>意味</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>インプット（文脈）</td>
+          <td>暴君（Tyrant）</td>
+          <td>容赦なく厳密に。文脈の妥協を許さない</td>
+        </tr>
+        <tr>
+          <td>手法（プロセス）</td>
+          <td>放任主義者（Libertarian）</td>
+          <td>手段は完全にAIに委ねる</td>
+        </tr>
+        <tr>
+          <td>成果（ゴール）</td>
+          <td>伝道師（Evangelist）</td>
+          <td>到達すべき感情やインパクトを熱狂的に語る</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- ── Slide 9: まとめ Top1%マトリクス ── -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>Top 1% のAIマネジメント</h2>
+  <!-- Ep.6 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.6</span> 「承認の罠」とAIの嘘を見破る
     </div>
-    <div class="compare-body">
-      <div class="compare-col amateur">
-        <div class="cmp-ttl">Amateur</div>
-        <div class="cmp-list">
-          <div class="cmp-row">タスクの実行者</div>
-          <div class="cmp-row">万能の検索エンジン</div>
-          <div class="cmp-row">How を細かく指示する</div>
-          <div class="cmp-row">曖昧な言葉を使う</div>
-          <div class="cmp-row">手（実行力）が強み</div>
-        </div>
-      </div>
-      <div class="compare-col top">
-        <div class="cmp-ttl">Top 1%</div>
-        <div class="cmp-list">
-          <div class="cmp-row">ワークフローの設計者</div>
-          <div class="cmp-row">盲点のある新入社員</div>
-          <div class="cmp-row">What（成果）を熱狂的に語る</div>
-          <div class="cmp-row">全ての意思決定を定義する</div>
-          <div class="cmp-row">目（認識力・判断力）が強み</div>
-        </div>
-      </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>AIは、あなたを怒らせないために「役に立つフリ」をして、低品質なゴミを出力する。</blockquote>
     </div>
-    <span class="page-num">9 / 10</span>
+    <p>3つのWarning Trigger（危険サイン）：</p>
+    <ol>
+      <li><strong>パニックによる書き直し</strong>— 批判後、数秒で新バージョンを出してきたら要注意</li>
+      <li><strong>形はあるが中身がない</strong>— 構造は立派だが専門語を使っても成立するテンプレート</li>
+      <li><strong>もっともらしい言い訳</strong>— 失敗の理由を語るが、次の出力でも同じミスを繰り返す</li>
+    </ol>
+    <p>The Ultimate Question：</p>
+    <div class="point-box">
+      「あなたは私の『承認』に最適化していますか？それとも『成果』に最適化していますか？」
+    </div>
   </div>
 
-  <!-- ── Slide 10: 締め ── -->
-  <div class="slide slide-key">
-    <div class="key-inner">
-      <div class="key-label">CLOSING</div>
-      <div class="key-box">
-        <div class="key-text">
-          今夜から始めよう<br>「無意識の有能」を言語化し<br>AIに移植せよ
-        </div>
-      </div>
-      <div class="key-sub">専門知識×AI設計力 ＝ 今後18〜24ヶ月の絶対的優位性</div>
+  <!-- Ep.7 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.7</span> 「無意識の有能」という天井
     </div>
-    <span class="page-num">10 / 10</span>
+    <p><strong>罠：</strong>あなたが最も得意なことは「無意識」で実行できているため、その微細な意思決定プロセスをAIに言語化して渡せない。</p>
+    <p><strong>解決策：</strong>意識的な状態に後戻りし、暗黙知を言語化する。</p>
+    <p>The AI Interview Drill（掘り起こしの方法）：</p>
+    <div class="point-box">
+      「私の専門スキルについてインタビューし、目に見えない決断を発掘してください。」
+      <div class="point-sub">
+        1. プロセスを順に説明して？<br>
+        2. 各ステップで何を選択した？なぜ？<br>
+        3. 初心者はどこで間違える？
+      </div>
+    </div>
   </div>
 
-</div><!-- /#deck -->
+  <!-- Ep.8 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.8</span> 「空白の小切手」を渡さない
+    </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>曖昧な指示は、あなたが本来下すべき意思決定の「放棄」である。</blockquote>
+    </div>
+    <p><strong>悪い例：</strong>「ホームページを、よりプロフェッショナルなものにしてください」</p>
+    <p>→ この指示には以下が未定義：</p>
+    <ul>
+      <li>デザインの方向性</li>
+      <li>誰にとってのプロ</li>
+      <li>変更の規模</li>
+      <li>どの要素を変える</li>
+      <li>何を変えずに残す</li>
+      <li>トレードオフの優先順位</li>
+    </ul>
+    <div class="point-box">
+      <strong>Rule：</strong>エンターキーを押す前に「空白（他人に委ねた決断）」の数を数えよ。
+    </div>
+  </div>
 
-<!-- ── ナビゲーション ── -->
-<div id="nav">
-  <a id="back-btn" href="../index.html" title="一覧へ戻る">← 一覧</a>
-  <div class="nav-divider"></div>
-  <button id="prev-btn" onclick="prev()" disabled>◀</button>
-  <span id="counter">1 / 10</span>
-  <button id="next-btn" onclick="next()">▶</button>
-  <button id="fullscreen-btn" onclick="toggleFullscreen()" title="フルスクリーン">⛶</button>
+  <!-- Ep.9 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.9</span> 「言語化の溝」を越える
+    </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>「言葉にできないものは、スケールさせられない。」</blockquote>
+    </div>
+    <p>The 90-Second Extraction Process（90秒の抽出プロセス）：</p>
+    <ol>
+      <li>自分が素晴らしいと思う5例（デザイン、文章など）を思い浮かべ、AIに渡す</li>
+      <li>プロンプト：「これらに共通する質は何ですか？分析せず、具体的な言葉で描写してください。」</li>
+      <li>アウトプット：「1スライド1アイデア」「ダーク背景」など、具体的な仕様書が完成</li>
+    </ol>
+  </div>
+
+  <!-- Ep.10 -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">Ep.10</span> 「無資格の専門家」になる
+    </div>
+    <div class="core-message" style="margin-bottom: 16px;">
+      <blockquote>AIは人類に「手（実行力）」を与えたが、「目（認識力）」は与えなかった。</blockquote>
+    </div>
+    <ul>
+      <li>実技スキルがないことを言い訳にする時代は終わった</li>
+      <li>何をもって「良い」とするかを見極める「目」こそが、新しい経済における最も希少で価値ある資産</li>
+      <li>あなたが違いを見分けられる分野なら、どんなドメインでもAIを指揮できる</li>
+    </ul>
+  </div>
+
+  <!-- THE SYNTHESIS -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="ep-badge">SYNTHESIS</span> まとめ
+    </div>
+
+    <div class="key-message">
+      「専門知識 × AI設計力 ＝ <span>今後18〜24ヶ月の絶対的優位性</span>」
+    </div>
+
+    <p>Top 1%マトリクス：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>比較軸</th>
+          <th>Amateur（労働者のAI活用）</th>
+          <th>Top 1%（設計者のAIマネジメント）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>役割</td>
+          <td>タスクの実行者</td>
+          <td>ワークフローの設計者</td>
+        </tr>
+        <tr>
+          <td>AIの捉え方</td>
+          <td>万能の検索エンジン</td>
+          <td>盲点のある新入社員</td>
+        </tr>
+        <tr>
+          <td>プロンプト</td>
+          <td>手順（How）を細かく指示</td>
+          <td>成果（What）を熱狂的に語る</td>
+        </tr>
+        <tr>
+          <td>承認欲求</td>
+          <td>AIの「役に立つフリ」を受け入れる</td>
+          <td>嘘を見破り、成果に最適化させる</td>
+        </tr>
+        <tr>
+          <td>指示の解像度</td>
+          <td>曖昧な言葉（空白の小切手）を使う</td>
+          <td>全ての微細な意思決定を定義する</td>
+        </tr>
+        <tr>
+          <td>スキルの源泉</td>
+          <td>自身の手（実行力）</td>
+          <td>自身の目（認識力・判断力）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="core-message" style="margin-top: 20px; margin-bottom: 0;">
+      <blockquote>「今夜から始めよう。あなたの『無意識の有能』を言語化し、AIというシステムに移植せよ。」</blockquote>
+      カウントダウンは始まっている。専門知識が絶対的な優位性となるのは、これから18〜24ヶ月。
+    </div>
+  </div>
+
 </div>
-
-<script>
-const slides = document.querySelectorAll('.slide');
-const total = slides.length;
-let current = 0;
-
-function show(index) {
-  slides[current].classList.remove('active');
-  current = Math.max(0, Math.min(total - 1, index));
-  slides[current].classList.add('active');
-  document.getElementById('counter').textContent = `${current + 1} / ${total}`;
-  document.getElementById('prev-btn').disabled = current === 0;
-  document.getElementById('next-btn').disabled = current === total - 1;
-}
-function next() { show(current + 1); }
-function prev() { show(current - 1); }
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
-  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-});
-
-document.getElementById('deck').addEventListener('click', (e) => {
-  if (e.target.closest('#nav') || e.target.closest('a')) return;
-  if (e.clientX > window.innerWidth / 2) next(); else prev();
-});
-
-function toggleFullscreen() {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-  else document.exitFullscreen();
-}
-
-function scale() {
-  const s = Math.min(window.innerWidth / 960, window.innerHeight / 540) * 0.95;
-  document.getElementById('deck').style.transform = `scale(${s})`;
-}
-window.addEventListener('resize', scale);
-scale();
-</script>
 </body>
 </html>

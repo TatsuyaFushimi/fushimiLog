@@ -3,396 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>差別化物販戦略塾 個人コンサルプラン｜物販総合研究所</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>差別化物販戦略塾 個人コンサルプラン</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:#111; display:flex; align-items:center; justify-content:center; height:100vh; font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif; overflow:hidden; }
-#deck { position:relative; width:960px; height:540px; }
-.slide { position:absolute; inset:0; width:960px; height:540px; background:#FFF3EC; border-radius:12px; overflow:hidden; display:none; flex-direction:column; box-shadow:0 12px 48px rgba(0,0,0,0.5); }
-.slide.active { display:flex; }
-.slide-header { display:flex; align-items:center; padding:22px 52px 16px; border-bottom:2px solid rgba(255,107,43,0.12); gap:14px; flex-shrink:0; }
-.slide-header .bar { width:8px; height:40px; background:linear-gradient(180deg,#FF6B2B,#FF9A5C); border-radius:4px; flex-shrink:0; }
-.slide-header h2 { font-size:26px; color:#1A1A2E; font-weight:800; line-height:1.3; }
-.slide-content .body { flex:1; display:flex; align-items:center; padding:16px 52px; gap:32px; }
-.points { flex:1; display:flex; flex-direction:column; gap:11px; }
-.point-item { display:flex; align-items:flex-start; gap:14px; background:#fff; border-radius:12px; padding:13px 18px; box-shadow:0 2px 8px rgba(255,107,43,0.08); border-left:5px solid #FF6B2B; }
-.point-item .icon { font-size:20px; flex-shrink:0; margin-top:2px; }
-.point-item .text { font-size:19px; color:#1A1A2E; font-weight:600; line-height:1.5; }
-.point-item .sub { font-size:14px; color:#888; font-weight:400; margin-top:4px; }
-.illust { width:148px; height:148px; background:linear-gradient(135deg,#FFE0CC,#FFB87A); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:60px; flex-shrink:0; }
-.slide-title .hero { background:linear-gradient(135deg,#FF6B2B 0%,#FF9A5C 60%,#FFB87A 100%); flex:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:52px 64px 44px; position:relative; overflow:hidden; }
-.slide-title .hero::after { content:''; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:rgba(255,255,255,0.08); pointer-events:none; }
-.slide-title .tag { font-size:17px; color:rgba(255,255,255,0.9); font-weight:500; letter-spacing:0.1em; margin-bottom:14px; background:rgba(255,255,255,0.2); padding:4px 16px; border-radius:20px; display:inline-block; position:relative; z-index:1; }
-.slide-title h1 { font-size:46px; color:#fff; font-weight:900; line-height:1.3; text-shadow:0 2px 8px rgba(0,0,0,0.12); position:relative; z-index:1; }
-.slide-title .subtitle { font-size:19px; color:rgba(255,255,255,0.88); margin-top:12px; font-weight:400; position:relative; z-index:1; }
-.slide-title .footer { height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 64px; background:#fff; }
-.slide-title .footer .name { color:#FF6B2B; font-weight:700; font-size:18px; }
-.slide-title .footer .date { color:#aaa; font-size:17px; }
-.slide-key { background:#fff; align-items:center; justify-content:center; }
-.key-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px 64px; text-align:center; width:100%; }
-.key-label { font-size:17px; color:#FF6B2B; font-weight:700; letter-spacing:0.15em; }
-.key-box { border:4px solid #FF6B2B; border-radius:16px; padding:24px 52px; background:#FFF3EC; position:relative; }
-.key-box::before { content:'"'; position:absolute; top:-22px; left:22px; font-size:80px; color:#FF6B2B; line-height:1; font-family:Georgia,serif; }
-.key-text { font-size:32px; color:#1A1A2E; font-weight:900; line-height:1.5; }
-.key-sub { font-size:18px; color:#888; font-weight:400; line-height:1.7; }
-.page-num { position:absolute; bottom:10px; right:16px; font-size:13px; color:#ccc; z-index:10; pointer-events:none; }
-#nav { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; background:rgba(30,30,30,0.85); padding:10px 22px; border-radius:32px; backdrop-filter:blur(8px); z-index:100; user-select:none; }
-#nav button { background:none; border:none; color:#fff; font-size:20px; cursor:pointer; padding:4px 10px; border-radius:8px; transition:background 0.15s; line-height:1; }
-#nav button:hover { background:rgba(255,107,43,0.4); }
-#nav button:disabled { color:#555; cursor:default; }
-#nav button:disabled:hover { background:none; }
-#counter { font-size:14px; color:#aaa; min-width:58px; text-align:center; font-family:monospace; }
-#fullscreen-btn { background:none; border:none; color:#aaa; font-size:16px; cursor:pointer; padding:4px 8px; border-radius:8px; line-height:1; }
-#back-btn { background:none; border:none; color:rgba(255,255,255,0.5); font-size:13px; cursor:pointer; padding:4px 10px; border-radius:8px; line-height:1; text-decoration:none; display:flex; align-items:center; gap:4px; }
-#back-btn:hover { color:#FF9A5C; }
-.nav-divider { width:1px; height:18px; background:rgba(255,255,255,0.15); }
-:fullscreen #nav { opacity:0.3; }
-:fullscreen #nav:hover { opacity:1; }
-
-/* 追加CSS */
-.two-col-body { flex:1; display:flex; padding:14px 44px; gap:20px; align-items:stretch; }
-.col-card { flex:1; background:#fff; border-radius:12px; padding:18px 22px; display:flex; flex-direction:column; gap:9px; box-shadow:0 2px 12px rgba(255,107,43,0.08); }
-.col-card .col-title { font-size:18px; font-weight:800; color:#FF6B2B; padding-bottom:10px; border-bottom:2px solid #FFE0CC; }
-.col-card .col-item { font-size:17px; color:#1A1A2E; font-weight:500; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
-.col-card .col-item::before { content:'▸'; color:#FF9A5C; flex-shrink:0; }
-.step-flow { flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; padding:12px 52px; }
-.step-item { background:#fff; border-radius:10px; padding:11px 16px; display:flex; align-items:center; gap:12px; font-size:18px; color:#1A1A2E; font-weight:600; box-shadow:0 2px 6px rgba(255,107,43,0.07); }
-.step-num { width:28px; height:28px; background:linear-gradient(135deg,#FF6B2B,#FF9A5C); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#fff; flex-shrink:0; }
-.step-arrow { text-align:center; font-size:16px; color:#FF9A5C; }
-.formula-box { background:#1A1A2E; border-radius:12px; padding:16px 24px; font-size:20px; color:#FF9A5C; font-weight:700; text-align:center; font-family:monospace; }
-.kw-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:9px; padding:12px 48px; align-content:center; }
-.kw-item { background:#fff; border-radius:10px; padding:10px 14px; border-left:4px solid #FF6B2B; font-size:16px; color:#1A1A2E; font-weight:600; display:flex; align-items:center; gap:8px; box-shadow:0 1px 6px rgba(255,107,43,0.07); }
-.kw-item .ki-label { font-size:12px; color:#FF6B2B; font-weight:700; width:140px; flex-shrink:0; }
-.dark-box { background:#1A1A2E; border-radius:12px; padding:20px 22px; width:240px; flex-shrink:0; display:flex; flex-direction:column; gap:8px; }
-.dark-box .db-title { font-size:14px; font-weight:800; color:#FF9A5C; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:4px; }
-.dark-box .db-item { font-size:15px; color:rgba(255,255,255,0.75); }
-.dark-box .db-warn { font-size:16px; font-weight:700; color:#FF6B2B; margin-top:8px; }
-.success-box { background:#F0FFF4; border:2px solid #4CAF50; border-radius:12px; padding:18px 20px; width:260px; flex-shrink:0; display:flex; flex-direction:column; gap:8px; }
-.success-box .sb-title { font-size:15px; font-weight:800; color:#2E7D32; border-bottom:1px solid #A5D6A7; padding-bottom:8px; margin-bottom:4px; }
-.success-box .sb-item { font-size:14px; color:#1B5E20; font-weight:600; display:flex; gap:6px; align-items:flex-start; line-height:1.5; }
-.success-box .sb-item::before { content:'→'; color:#4CAF50; flex-shrink:0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #f0f0f0; font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif; color: #1A1A2E; line-height: 1.8; }
+.page { width: 794px; margin: 40px auto; background: #fff; padding: 64px 72px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+.doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 40px; }
+.doc-header .series { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 8px; background: #FFF3EC; display: inline-block; padding: 2px 12px; border-radius: 20px; }
+.doc-header h1 { font-size: 28px; font-weight: 900; color: #1A1A2E; line-height: 1.4; margin-bottom: 8px; }
+.doc-header .subtitle { font-size: 14px; color: #888; }
+.core-message { background: #FFF3EC; border-radius: 12px; padding: 20px 24px; margin-bottom: 36px; border-left: 5px solid #FF6B2B; font-size: 15px; color: #1A1A2E; line-height: 1.8; }
+.section { margin-bottom: 36px; }
+.section-heading { font-size: 18px; font-weight: 800; color: #FF6B2B; border-bottom: 2px solid #FFE0CC; padding-bottom: 8px; margin-bottom: 16px; }
+.section-sub-heading { font-size: 15px; font-weight: 700; color: #1A1A2E; margin: 16px 0 8px; padding-left: 10px; border-left: 3px solid #FF9A5C; }
+p { font-size: 14px; margin-bottom: 12px; }
+ul, ol { padding-left: 20px; margin-bottom: 12px; }
+li { font-size: 14px; margin-bottom: 6px; line-height: 1.7; }
+.point-box { background: #fff; border-radius: 10px; padding: 14px 18px; border-left: 4px solid #FF6B2B; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(255,107,43,0.08); font-size: 14px; }
+.point-box strong { color: #FF6B2B; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+th { background: #FF6B2B; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+td { padding: 9px 12px; border-bottom: 1px solid #FFE0CC; }
+tr:nth-child(even) td { background: #FFF8F5; }
+.code-block { background: #1A1A2E; border-radius: 10px; padding: 16px 20px; font-family: 'Courier New', monospace; font-size: 13px; color: #FF9A5C; line-height: 1.8; margin-bottom: 14px; white-space: pre-wrap; }
+.key-message { background: #1A1A2E; border-radius: 12px; padding: 20px 24px; margin: 20px 0; text-align: center; font-size: 16px; font-weight: 800; color: #fff; line-height: 1.6; }
+.key-message span { color: #FF9A5C; }
+.formula-box { background: #FFF3EC; border: 2px solid #FF6B2B; border-radius: 10px; padding: 16px 24px; margin-bottom: 16px; font-size: 16px; font-weight: 700; color: #FF6B2B; text-align: center; font-family: monospace; }
+.back-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0; }
+.back-nav a { font-size: 13px; color: #FF6B2B; text-decoration: none; font-weight: 700; }
+.back-nav .nav-title { font-size: 13px; color: #aaa; }
+.warn-box { background: #FFF3F3; border: 2px solid #FF6B2B; border-radius: 10px; padding: 14px 18px; margin-bottom: 14px; font-size: 14px; color: #C0392B; }
+.warn-box strong { color: #C0392B; }
+@media print { body { background: none; } .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 20mm; } .back-nav { display: none; } }
 </style>
 </head>
 <body>
-<div id="deck">
+<div class="page">
 
-  <!-- スライド1：タイトル -->
-  <div class="slide slide-title active">
-    <div class="hero">
-      <span class="tag">資料要約</span>
-      <h1>差別化物販戦略塾<br>個人コンサルプラン</h1>
-      <div class="subtitle">物販総合研究所 / HIRAI｜相乗り→独占→OEMの3段階戦略</div>
-    </div>
-    <div class="footer">
-      <span class="name">物販総合研究所（busoken.com）</span>
-      <span class="date">2026.05.28</span>
-    </div>
-    <div class="page-num">1 / 9</div>
+  <div class="back-nav">
+    <a href="../index.html">← 一覧へ戻る</a>
+    <span class="nav-title">差別化物販戦略塾 個人コンサルプラン 要約</span>
   </div>
 
-  <!-- スライド2：スクールの理念 -->
-  <div class="slide slide-key">
-    <div class="key-inner">
-      <div class="key-label">理念</div>
-      <div class="key-box">
-        <div class="key-text">「知る」を「わかる」に<br>さらに「<span style="color:#FF6B2B">できる</span>」に変える</div>
-      </div>
-      <div class="key-sub">ノウハウを伝えるだけでなく、長期的に稼ぎ続けられる本物の実力を身につける</div>
-    </div>
-    <div class="page-num">2 / 9</div>
+  <div class="doc-header">
+    <div class="series">差別化物販戦略塾 ／ 資料要約</div>
+    <h1>差別化物販戦略塾 個人コンサルプラン</h1>
+    <div class="subtitle">運営：物販総合研究所（busoken.com）｜メイン講師：HIRAI（2016年〜運営）</div>
   </div>
 
-  <!-- スライド3：30万円稼ぐロードマップ -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>30万円稼ぐ3段階ロードマップ</h2>
-    </div>
-    <div class="body">
-      <div class="step-flow">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          相乗り販売
-          <span style="font-size:13px;color:#888;margin-left:8px">既存ページに乗って販売（1〜3ヶ月）</span>
-        </div>
-        <div class="step-arrow">↓</div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          Amazon独占販売
-          <span style="font-size:13px;color:#888;margin-left:8px">メーカーと交渉し独占権を取得（4〜5ヶ月）</span>
-        </div>
-        <div class="step-arrow">↓</div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          OEM・総代理店契約
-          <span style="font-size:13px;color:#888;margin-left:8px">オリジナル商品・ブランド展開（6ヶ月〜）</span>
-        </div>
-      </div>
-      <div class="illust">📦</div>
-    </div>
-    <div class="page-num">3 / 9</div>
+  <div class="core-message">
+    「ノウハウを伝えるだけでなく、『知る』を『わかる』に、さらに『できる』に変え、長期的に稼ぎ続けられる本物の実力を身につける」
   </div>
 
-  <!-- スライド4：リサーチ7つのポイント -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>リサーチ7つのポイント</h2>
-    </div>
-    <div class="kw-grid">
-      <div class="kw-item">
-        <span class="ki-label">❌ 有名ブランドはスルー</span>
-        <span style="font-size:13px;color:#888;font-weight:400">価格競争に巻き込まれる</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">❌ 中国輸入・広告商材はスルー</span>
-        <span style="font-size:13px;color:#888;font-weight:400">OEM化の可能性大</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">❌ メーカー直販はスルー</span>
-        <span style="font-size:13px;color:#888;font-weight:400">直接競合になる</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">❌ Amazon出品商品はスルー</span>
-        <span style="font-size:13px;color:#888;font-weight:400">カートが取れない</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">🛠️ 3ツールを活用</span>
-        <span style="font-size:13px;color:#888;font-weight:400">Keepa・モノトレーサー・セラースプライト</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">✅ ニッチすぎない商品を探す</span>
-        <span style="font-size:13px;color:#888;font-weight:400">ビッグ×専門キーワードの組合せ</span>
-      </div>
-      <div class="kw-item">
-        <span class="ki-label">💪 諦めずコツコツ継続</span>
-        <span style="font-size:13px;color:#888;font-weight:400">ギザギザKeepaグラフが売れているサイン</span>
-      </div>
-    </div>
-    <div class="page-num">4 / 9</div>
+  <!-- サポートチーム -->
+  <div class="section">
+    <div class="section-heading">サポートチーム</div>
+    <table>
+      <tr><th>講師</th><th>専門・経歴</th></tr>
+      <tr><td>HIRAI（メイン）</td><td>スクール創設者。2016年〜運営。ネット物販・マーケティング全般</td></tr>
+      <tr><td>遠藤</td><td>食品メイン。2018年入塾後メーカー取引で大きく成長</td></tr>
+      <tr><td>久保</td><td>2017年入塾。やりたかったことを物販を通じて実現</td></tr>
+      <tr><td>MORIGAMI</td><td>2015年〜物販。会社員×副業で実践中</td></tr>
+      <tr><td>廣野</td><td>自動車整備士からネット物販へ転職。Amazon設定・システム系を担当</td></tr>
+      <tr><td>長瀬</td><td>ITフリーランス×物販。欧米輸入転売〜中国OEMまで経験</td></tr>
+    </table>
   </div>
 
-  <!-- スライド5：メーカー交渉メール -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>メーカー交渉メール構成</h2>
-    </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">✉️</span>
-          <div>
-            <div class="text">①自己紹介・目的</div>
-            <div class="sub">会社名・事業内容・HPを明記</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">❤️</span>
-          <div>
-            <div class="text">②背景・共感・理由</div>
-            <div class="sub">商品への共感・メーカーの理念への共感を具体的に</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🤝</span>
-          <div>
-            <div class="text">③交渉・締め</div>
-            <div class="sub">取引条件を確認したい旨を伝える</div>
-          </div>
-        </div>
-      </div>
-      <div class="dark-box">
-        <div class="db-title">NGメール</div>
-        <div class="db-item">✗ テンプレ丸コピー</div>
-        <div class="db-item">✗ リアル感なし</div>
-        <div class="db-item">✗ 情報が曖昧</div>
-        <div class="db-warn">すぐバレる！</div>
-      </div>
-    </div>
-    <div class="page-num">5 / 9</div>
+  <!-- ビジネスモデルの全体像 -->
+  <div class="section">
+    <div class="section-heading">ビジネスモデルの全体像</div>
+
+    <div class="section-sub-heading">30万円稼ぐロードマップ</div>
+    <div class="code-block">相乗り販売（既存ページに乗って販売）
+    ↓  約1〜3ヶ月
+Amazon独占販売（メーカーと交渉し独占権を取得）
+    ↓  約4〜5ヶ月
+OEM・総代理店契約（オリジナル商品・ブランド展開）</div>
+
+    <div class="section-sub-heading">月別スケジュール</div>
+    <table>
+      <tr><th>時期</th><th>やること</th></tr>
+      <tr><td>1ヶ月目（1週目）</td><td>ツールセットアップ・環境整備</td></tr>
+      <tr><td>1ヶ月目（2〜4週目）</td><td>相乗り販売スタート</td></tr>
+      <tr><td>2〜3ヶ月目</td><td>相乗りを続けながら独占準備</td></tr>
+      <tr><td>4〜5ヶ月目</td><td>独占販売・OEM販売スタート</td></tr>
+      <tr><td>6〜7ヶ月目</td><td>キャッシュポイントを複数に増やす</td></tr>
+    </table>
   </div>
 
-  <!-- スライド6：売上の方程式 -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>売上の方程式 &amp; 利益計算の基準</h2>
-    </div>
-    <div class="body" style="flex-direction:column; align-items:stretch; padding-top:12px; padding-bottom:12px;">
-      <div class="formula-box" style="margin-bottom:14px;">売上 ＝ セッション × 転換率 × 商品単価</div>
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">📊</span>
-          <div>
-            <div class="text">セッションが少ない → SP広告・SEO対策</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">💡</span>
-          <div>
-            <div class="text">転換率が低い → 商品ページの作り込み</div>
-            <div class="sub">まず商品ページを作り込んでから広告</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">💰</span>
-          <div>
-            <div class="text">粗利益の目安：30%以上（最低25%）・400円以上（最低300円）</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="page-num">6 / 9</div>
+  <!-- CHAPTER 1 -->
+  <div class="section">
+    <div class="section-heading">CHAPTER 1：基本準備</div>
+
+    <div class="section-sub-heading">Amazonアカウント開設の必要書類</div>
+    <ul>
+      <li>メールアドレス</li>
+      <li>物販用銀行口座（入出金履歴あり）</li>
+      <li>クレジットカード</li>
+      <li>身分証明書（運転免許証 or パスポート）</li>
+      <li>SMS受信できる電話番号</li>
+    </ul>
+    <div class="warn-box"><strong>注意：</strong>複数アカウント同時運用は規約違反。既存アカウントがある場合は新規不要。</div>
+
+    <div class="section-sub-heading">使用ツール3選</div>
+    <table>
+      <tr><th>ツール</th><th>用途</th></tr>
+      <tr><td>Keepa</td><td>価格・ランキング履歴の基本ツール</td></tr>
+      <tr><td>モノトレーサー</td><td>Keepaデータをわかりやすく整理</td></tr>
+      <tr><td>セラースプライト</td><td>キーワード調査・中国セラー判別</td></tr>
+    </table>
   </div>
 
-  <!-- スライド7：SP広告戦略 -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>SP広告（スポンサープロダクト）戦略</h2>
-    </div>
-    <div class="two-col-body">
-      <div class="col-card">
-        <div class="col-title">広告の種類</div>
-        <div class="col-item">完全一致：登録キーワードと完全一致のみ表示。無駄打ちが少ない</div>
-        <div class="col-item">フレーズ一致：前後に他のキーワードが追加されても表示</div>
-        <div class="col-item">商品ターゲティング：競合ASINに対して広告を表示</div>
-        <div class="col-item">オートターゲティング：Amazonが自動選定。発見用</div>
-      </div>
-      <div class="col-card">
-        <div class="col-title">推奨順序 &amp; 広告費の考え方</div>
-        <div class="col-item">①マニュアル（完全一致・フレーズ）でスタート</div>
-        <div class="col-item">②競合ASINに商品ターゲティング</div>
-        <div class="col-item">③オートで広げて絞る</div>
-        <div class="col-item" style="border-top:1px solid #FFE0CC; padding-top:8px; margin-top:4px;">序盤1〜2ヶ月は赤字でも初期投資として許容</div>
-        <div class="col-item">売れると→オーガニック順位UP→広告費割合DOWN</div>
-      </div>
-    </div>
-    <div class="page-num">7 / 9</div>
+  <!-- CHAPTER 2 -->
+  <div class="section">
+    <div class="section-heading">CHAPTER 2：リサーチ &amp; 交渉</div>
+
+    <div class="section-sub-heading">リサーチ7つのポイント</div>
+    <div class="point-box"><strong>1.</strong> 有名メーカー・ブランドはスルー — 価格競争に巻き込まれる</div>
+    <div class="point-box"><strong>2.</strong> 中国輸入商材・広告商材はスルー — OEM化されている可能性大</div>
+    <div class="point-box"><strong>3.</strong> メーカー直販商品はスルー — 競合として直接対峙することになる</div>
+    <div class="point-box"><strong>4.</strong> Amazonが出品している商品はスルー — カートが取れない</div>
+    <div class="point-box"><strong>5.</strong> 3つのツールを活用（Keepa・モノトレーサー・セラースプライト）</div>
+    <div class="point-box"><strong>6.</strong> 「有名すぎずニッチすぎない商品」を探す — ビッグキーワード×専門キーワードの組み合わせ</div>
+    <div class="point-box"><strong>7.</strong> 諦めずにコツコツ継続</div>
+
+    <div class="section-sub-heading">Keepaグラフの見方</div>
+    <ul>
+      <li>横ばい or 右肩上がりのまま → ほぼ売れていない</li>
+      <li>ギザギザ（下にカクンと落ちる）→ 売れている。細かいほどコンスタントに売れている</li>
+    </ul>
+
+    <div class="section-sub-heading">メーカー交渉メール構成</div>
+    <div class="code-block">① 自己紹介・目的
+   → 会社名・事業内容・HPを明記
+
+② 背景・共感・理由
+   → 商品のどこに惹かれたか具体的に
+   → 実際のレビューへの共感を伝える
+   → メーカーの理念への共感も加える
+
+③ 交渉・締め
+   → 取引可否・条件を確認したい旨を伝える</div>
+    <div class="warn-box"><strong>NGメール：</strong>テンプレ丸コピー・リアル感なし・情報が曖昧 → すぐバレる</div>
+
+    <div class="section-sub-heading">交渉のNG返答への切り返し</div>
+    <ul>
+      <li>「相乗りでNG」→ OEM提案に切り替えるチャンスになることも多い</li>
+      <li>差別化ポイントを整理してコミュニケーション手段として使う</li>
+    </ul>
   </div>
 
-  <!-- スライド8：実績例 -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>広告運用 実績例</h2>
-    </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">📈</span>
-          <div>
-            <div class="text">月間売上：174,000円 ／ 月販50個</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">💸</span>
-          <div>
-            <div class="text">広告費：24,796円（全体Acos：14%）</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">💰</span>
-          <div>
-            <div class="text">最終利益率：41% ／ 月利：71,340円</div>
-          </div>
-        </div>
-      </div>
-      <div class="success-box">
-        <div class="sb-title">効果測定サイクル</div>
-        <div class="sb-item">毎日チェック</div>
-        <div class="sb-item">費用対効果の悪いKWを下げる</div>
-        <div class="sb-item">成果なしKWを除外</div>
-        <div class="sb-item">売れたKWに予算集中</div>
-      </div>
-    </div>
-    <div class="page-num">8 / 9</div>
+  <!-- CHAPTER 3 -->
+  <div class="section">
+    <div class="section-heading">CHAPTER 3：Amazon独占・OEM販売</div>
+
+    <div class="section-sub-heading">売上の方程式</div>
+    <div class="formula-box">売上 ＝ セッション（訪問数）× 転換率 × 商品単価</div>
+
+    <div class="section-sub-heading">課題と対策</div>
+    <table>
+      <tr><th>課題</th><th>対策</th></tr>
+      <tr><td>セッションが少ない</td><td>SP広告・SEO対策</td></tr>
+      <tr><td>転換率が低い</td><td>商品ページの作り込み</td></tr>
+      <tr><td>単価が低い</td><td>品質向上・まとめ売り</td></tr>
+    </table>
+    <p>よくある間違い：商品ページが弱いまま広告費をかけても無駄。まずページを作り込む。</p>
+
+    <div class="section-sub-heading">発売まで7つのステップ</div>
+    <ol>
+      <li>市場・ライバル調査 &amp; キーワード選定</li>
+      <li>商品ページ設計（転換率・客単価を上げる）</li>
+      <li>販売促進の事前準備（セッションを増やす）</li>
+      <li>新規ページ作成 &amp; FBA納品</li>
+      <li>販売開始時にやること</li>
+      <li>レビューを集める</li>
+      <li>販売開始後の戦略 &amp; SEO対策</li>
+    </ol>
+
+    <div class="section-sub-heading">キーワード選定の条件</div>
+    <table>
+      <tr><th>条件</th><th>目安</th></tr>
+      <tr><td>月間検索ボリューム</td><td>3,000〜50,000回</td></tr>
+      <tr><td>購入率</td><td>3%以上（できれば5%以上）</td></tr>
+      <tr><td>PPC入札額</td><td>100円以下（商材による）</td></tr>
+      <tr><td>検索結果に対する検索数</td><td>20%以下</td></tr>
+      <tr><td>クリック集中度</td><td>50%以下</td></tr>
+      <tr><td>トレンド</td><td>上昇中が理想</td></tr>
+    </table>
+
+    <div class="section-sub-heading">利益計算の基準</div>
+    <div class="code-block">粗利益 = 販売価格 - Amazon手数料 - 送料 - 仕入れ原価
+
+目安：粗利益率30%以上（最低25%）、粗利益額400円以上（最低300円）</div>
+
+    <div class="section-sub-heading">商品ページ設計のポイント</div>
+    <p><strong>画像（7枚構成）：</strong></p>
+    <ul>
+      <li>メイン画像（白抜き）+ サブ画像6枚</li>
+      <li>推奨サイズ：1600×1600px</li>
+      <li>載せるべき内容：権威性・使用シーン・使い方3ステップ・同梱物</li>
+    </ul>
+    <p><strong>キーワードの散りばめ方：</strong>タイトル → 検索キーワード → 箇条書き → 商品説明 → A+コンテンツ → レビュー</p>
   </div>
 
-  <!-- スライド9：まとめ -->
-  <div class="slide slide-content">
-    <div class="slide-header">
-      <div class="bar"></div>
-      <h2>まとめ</h2>
-    </div>
-    <div class="body">
-      <div class="points">
-        <div class="point-item">
-          <span class="icon">🏭</span>
-          <div>
-            <div class="text">相乗り→独占→OEMの3段階で着実にスケール</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">🔍</span>
-          <div>
-            <div class="text">リサーチは「有名すぎずニッチすぎない」商品を狙う</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">📝</span>
-          <div>
-            <div class="text">メーカー交渉はリアル感と共感を大切に</div>
-          </div>
-        </div>
-        <div class="point-item">
-          <span class="icon">📊</span>
-          <div>
-            <div class="text">広告は「まずページを作り込んでから」。SEO維持のためにかけ続ける</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="page-num">9 / 9</div>
+  <!-- CHAPTER 4 -->
+  <div class="section">
+    <div class="section-heading">CHAPTER 4：SP広告（スポンサープロダクト広告）</div>
+
+    <div class="section-sub-heading">SP広告の目的</div>
+    <ul>
+      <li>特定キーワードでSEOを上げて全体売上アップ</li>
+      <li>売上・利益に直結させる</li>
+      <li>ブランド認知度を上げる</li>
+    </ul>
+    <p>Amazonユーザーの流入の約80%が検索経由。検索で上位に表示されることが最重要。</p>
+
+    <div class="section-sub-heading">広告の種類</div>
+    <table>
+      <tr><th>種類</th><th>特徴</th></tr>
+      <tr><td>完全一致</td><td>登録キーワードと完全一致した時のみ表示。無駄打ちが少ない</td></tr>
+      <tr><td>フレーズ一致</td><td>前後に他のキーワードが追加されても表示</td></tr>
+      <tr><td>商品ターゲティング</td><td>競合ASINに対して広告を表示</td></tr>
+      <tr><td>オートターゲティング</td><td>Amazonが自動で配信先を選定。発見用</td></tr>
+    </table>
+
+    <div class="section-sub-heading">推奨順序</div>
+    <div class="code-block">① マニュアル（完全一致 &amp; フレーズ一致）でスタート
+② 競合ASINに商品ターゲティングをかける
+③ オートターゲティングで広げて絞る（必要に応じて）</div>
+
+    <div class="section-sub-heading">広告費の考え方</div>
+    <ul>
+      <li>序盤（1〜2ヶ月）は赤字でも「初期投資」として許容する</li>
+      <li>目安：1件売って得られる利益 ≧ かかった広告費 なら続ける</li>
+      <li>広告経由で販売件数が増えると → オーガニック順位が上がる → 広告費の割合が下がる</li>
+    </ul>
+
+    <div class="section-sub-heading">実績例</div>
+    <div class="point-box"><strong>月間売上：</strong>174,000円 / 月販50個</div>
+    <div class="point-box"><strong>利益率（原価・手数料差引後）：</strong>55%</div>
+    <div class="point-box"><strong>広告費：</strong>24,796円 / 全体Acos：14%</div>
+    <div class="point-box"><strong>最終利益率：</strong>41% / 月利：71,340円</div>
+
+    <div class="section-sub-heading">効果測定サイクル</div>
+    <ol>
+      <li>商品ごとに毎日チェック（ポートフォリオ単位）</li>
+      <li>費用対効果の悪いキーワードの入札単価を下げる</li>
+      <li>成果のないキーワードを除外リストへ</li>
+      <li>売れたキーワードを「完全一致」でさらに予算を集中させる</li>
+    </ol>
   </div>
 
-</div><!-- /#deck -->
+  <!-- サポートルール -->
+  <div class="section">
+    <div class="section-heading">サポートルール</div>
 
-<div id="nav">
-  <a id="back-btn" href="../index.html">← 一覧</a>
-  <div class="nav-divider"></div>
-  <button id="prev-btn" onclick="prev()" disabled>◀</button>
-  <span id="counter">1 / 9</span>
-  <button id="next-btn" onclick="next()">▶</button>
-  <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+    <div class="section-sub-heading">質問できること / できないこと</div>
+    <table>
+      <tr><th>対象</th><th>窓口</th></tr>
+      <tr><td>メーカー取引・販売戦略・考え方</td><td>スクール講師</td></tr>
+      <tr><td>Amazonの操作方法・管理画面</td><td>Amazonテクニカルサポート</td></tr>
+      <tr><td>リサーチツールの使い方</td><td>各サービスのカスタマーサポート</td></tr>
+      <tr><td>PCの操作方法</td><td>Amazonテクニカルサポート or 自己解決</td></tr>
+    </table>
+    <p>重要：自己解決力もスキルの一つ。まずGoogle検索 &amp; Amazonサポートを活用する癖をつける。</p>
+  </div>
+
+  <!-- まとめ -->
+  <div class="section">
+    <div class="section-heading">まとめ</div>
+    <div class="key-message">「知る → わかる → できる。<span>諦めずにコツコツ継続することが最大の差別化。</span>」</div>
+  </div>
+
 </div>
-
-<script>
-const slides = document.querySelectorAll('.slide');
-const total = slides.length;
-let current = 0;
-function show(index) {
-  slides[current].classList.remove('active');
-  current = Math.max(0, Math.min(total - 1, index));
-  slides[current].classList.add('active');
-  document.getElementById('counter').textContent = `${current + 1} / ${total}`;
-  document.getElementById('prev-btn').disabled = current === 0;
-  document.getElementById('next-btn').disabled = current === total - 1;
-}
-function next() { show(current + 1); }
-function prev() { show(current - 1); }
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
-  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-});
-document.getElementById('deck').addEventListener('click', (e) => {
-  if (e.target.closest('#nav') || e.target.closest('a')) return;
-  if (e.clientX > window.innerWidth / 2) next(); else prev();
-});
-function toggleFullscreen() {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-  else document.exitFullscreen();
-}
-function scale() {
-  const s = Math.min(window.innerWidth / 960, window.innerHeight / 540) * 0.95;
-  document.getElementById('deck').style.transform = `scale(${s})`;
-}
-window.addEventListener('resize', scale);
-scale();
-</script>
 </body>
 </html>
