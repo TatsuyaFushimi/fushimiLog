@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI活用の3層構造：プロンプト・コンテキスト・ハーネス</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+  }
+  .back-nav a {
+    color: #FF6B2B;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px;
+    margin: 24px auto 60px;
+    background: #fff;
+    padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* ── ヘッダー ── */
+  .doc-header {
+    border-left: 6px solid #FF6B2B;
+    padding-left: 20px;
+    margin-bottom: 36px;
+  }
+  .doc-header .series {
+    font-size: 12px; font-weight: 700; color: #FF6B2B;
+    letter-spacing: 0.15em; margin-bottom: 8px;
+  }
+  .doc-header h1 {
+    font-size: 26px; font-weight: 900; line-height: 1.35;
+    color: #1A1A2E;
+  }
+  .doc-header .subtitle {
+    font-size: 14px; color: #888; margin-top: 6px;
+  }
+  .doc-header .meta {
+    font-size: 13px; color: #bbb; margin-top: 4px;
+  }
+
+  /* ── コアメッセージ ── */
+  .core-message {
+    background: #FFF3EC;
+    border-left: 4px solid #FF6B2B;
+    padding: 18px 22px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FF6B2B;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  /* ── セクション ── */
+  .section { margin-bottom: 40px; }
+
+  .section-heading {
+    font-size: 18px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+  }
+
+  .sub-heading {
+    font-size: 15px; font-weight: 800; color: #1A1A2E;
+    margin: 20px 0 10px;
+  }
+
+  p { font-size: 15px; color: #444; margin-bottom: 12px; }
+
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { font-size: 15px; color: #444; margin-bottom: 6px; }
+
+  /* ── ポイントボックス ── */
+  .point-box {
+    background: #FFF3EC;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .point-box .point-title {
+    font-size: 14px; font-weight: 800; color: #FF6B2B;
+    margin-bottom: 6px; letter-spacing: 0.05em;
+  }
+  .point-box p { font-size: 14px; color: #555; margin-bottom: 0; }
+
+  /* ── 警告ボックス ── */
+  .warn-box {
+    background: #FFF8EC;
+    border: 1px solid #FFD4B8;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px; color: #888;
+    margin-bottom: 14px;
+  }
+
+  /* ── テーブル ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 18px; font-size: 14px;
+  }
+  th {
+    background: #FF6B2B; color: #fff;
+    padding: 10px 14px; text-align: left; font-weight: 700;
+  }
+  td {
+    padding: 10px 14px; border-bottom: 1px solid #F0F0F0;
+    vertical-align: top; color: #444;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+
+  /* ── コードブロック ── */
+  .code-block {
+    background: #1A1A2E;
+    color: #F5F5F5;
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+    white-space: pre-wrap;
+  }
+
+  /* ── キーメッセージ ── */
+  .key-message {
+    background: #1A1A2E;
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .key-message .km-title {
+    font-size: 13px; font-weight: 700; color: #FF9A5C;
+    letter-spacing: 0.15em; margin-bottom: 12px;
+  }
+  .key-message .km-body {
+    font-size: 18px; font-weight: 800; line-height: 1.6; color: #fff;
+  }
+
+  /* ── 世代バッジ ── */
+  .gen-badge {
+    display: inline-block;
+    background: #FF6B2B; color: #fff;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+    padding: 3px 12px; border-radius: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* ── 印刷 ── */
+  @media print {
+    body { background: none; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      padding: 15mm 20mm;
+    }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav"><a href="../index.html">← 一覧へ戻る</a></div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">AI活用 #09 — 要約資料</div>
+    <h1>AI活用の3層構造<br>プロンプト・コンテキスト・ハーネス</h1>
+    <div class="subtitle">初心者でもわかる！AIの使い方を進化させる3つの概念</div>
+    <div class="meta">出典：ヒロ/VRCフルトラ猫研究所所長 note記事（2026.04.05）｜2026.05.28</div>
+  </div>
+
+  <div class="core-message">
+    AIの使い方には「プロンプト」「コンテキスト」「ハーネス」の3つのレイヤーがある。<br>
+    この3つを理解すれば、AIはただのツールからチームメイトに変わる。
+  </div>
+
+  <!-- 3世代の全体像 -->
+  <div class="section">
+    <div class="section-heading">AIの使い方 — 3つの世代</div>
+    <table>
+      <tr>
+        <th>世代</th>
+        <th>名称</th>
+        <th>一言で言うと</th>
+        <th>レストランで例えると</th>
+      </tr>
+      <tr>
+        <td><strong>第1世代</strong></td>
+        <td>プロンプトエンジニアリング</td>
+        <td>AIへの「注文」を上手くする技術</td>
+        <td>注文する</td>
+      </tr>
+      <tr>
+        <td><strong>第2世代</strong></td>
+        <td>コンテキストエンジニアリング</td>
+        <td>AIに「正しい材料」を渡す技術</td>
+        <td>食材を正しく仕入れる</td>
+      </tr>
+      <tr>
+        <td><strong>第3世代</strong></td>
+        <td>ハーネスエンジニアリング</td>
+        <td>AIが働く「厨房」を設計する技術</td>
+        <td>キッチンを設計する</td>
+      </tr>
+    </table>
+    <div class="warn-box">
+      ⚠️ 3つは「古い→新しい」ではなくレイヤー。すべてが揃って初めてAIが本気を出す。
+    </div>
+  </div>
+
+  <!-- 第1世代 -->
+  <div class="section">
+    <div class="gen-badge">第1世代</div>
+    <div class="section-heading">プロンプトエンジニアリング</div>
+    <p>「あなたはプロの編集者です。以下の文章を校正してください」のように、AIへの<strong>指示文（プロンプト）をうまく書く技術</strong>。ほとんどの人がここからAI活用をスタートする。</p>
+
+    <div class="sub-heading">限界の4つのポイント</div>
+    <div class="point-box">
+      <div class="point-title">① 毎回設定を書き直す必要がある</div>
+      <p>「一人称はボクで、カジュアル敬体で……」を毎回、限られた文字数で書かなければならない。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">② 話が長いと忘れる</div>
+      <p>会話が長くなるとAIは最初の設定を忘れ、品質がブレてくる。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">③ 品質がブレる</div>
+      <p>途中から設定したキャラと全然違うトーンになったりする。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">④ 過去の知識を活かせない</div>
+      <p>過去に書いた記事や蓄積した情報をAIに渡す手段がない。</p>
+    </div>
+  </div>
+
+  <!-- 第2世代 -->
+  <div class="section">
+    <div class="gen-badge">第2世代</div>
+    <div class="section-heading">コンテキストエンジニアリング</div>
+    <p>プロンプトが「<strong>何を聞くか</strong>」なら、コンテキストは「<strong>AIに何を見せるか</strong>」。今のタスクに必要な情報を、正しい順番・形で渡す技術。</p>
+
+    <div class="sub-heading">やること3つ</div>
+    <ol>
+      <li><strong>必要な情報だけ食わせる</strong>　― 全部ではなく今のタスクに関係あるものだけ渡す</li>
+      <li><strong>情報の鮮度を管理する</strong>　― 古い情報より新しい情報を優先して見せる</li>
+      <li><strong>情報の順番を設計する</strong>　― 「世界観 → 技術 → 今回のテーマ」の順で渡すと出力が変わる</li>
+    </ol>
+
+    <div class="sub-heading">4つの手法</div>
+    <table>
+      <tr>
+        <th>手法</th>
+        <th>内容</th>
+      </tr>
+      <tr>
+        <td><strong>セレクション</strong></td>
+        <td>必要な情報を選び出す</td>
+      </tr>
+      <tr>
+        <td><strong>コンプレッション</strong></td>
+        <td>情報を圧縮して要点だけ渡す</td>
+      </tr>
+      <tr>
+        <td><strong>セグメンテーション</strong></td>
+        <td>情報をブロックに分けて段階的に渡す</td>
+      </tr>
+      <tr>
+        <td><strong>ライティングアウト</strong></td>
+        <td>不要な情報を外に出してノイズを減らす</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 第3世代 -->
+  <div class="section">
+    <div class="gen-badge">第3世代</div>
+    <div class="section-heading">ハーネスエンジニアリング</div>
+    <p>「ハーネス」は馬を正しい方向に導く装備一式のこと。AIが常に正しい方向に走れるよう、<strong>AIが動く環境そのものを設計する技術</strong>。プロンプトでの「お願い」ではなく、仕組みとしての「構造」で制御する。</p>
+
+    <div class="sub-heading">ハーネスを構成する5つの要素</div>
+    <div class="point-box">
+      <div class="point-title">① スキル（ペルソナ）</div>
+      <p>「一人称はボク」「これは禁止」などのルールをファイルで定義。AIは最初からそのキャラとして動くので、毎回プロンプトで設定不要。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">② 知識ベース</div>
+      <p>過去記事・専門知識・デバイス情報をフォルダに整理。AIが必要なときに参照できるので、プロンプトに毎回書く必要がない。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">③ ワークフロー</div>
+      <p>「テーマ確認 → 構成 → 執筆 → 推敲」の手順をファイルで定義。AIは「まず何をすべきか」を順番に実行できる。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">④ 記憶（メモリ）</div>
+      <p>過去の判断・方針をファイルに記録。新しいセッションでもAIが読み込めるため、コンテキストウィンドウの限界を超えて記憶が引き継がれる。</p>
+    </div>
+    <div class="point-box">
+      <div class="point-title">⑤ 品質チェック（チェッカー）</div>
+      <p>出力を自動チェックして、ダメならフローチャートの最初に戻して再実行。「気をつけてね」というお願いではなく、仕組みとして保証される。</p>
+    </div>
+  </div>
+
+  <!-- 比較まとめ -->
+  <div class="section">
+    <div class="section-heading">家で例えるとわかりやすい</div>
+    <table>
+      <tr>
+        <th>レイヤー</th>
+        <th>家の例え</th>
+        <th>特徴</th>
+      </tr>
+      <tr>
+        <td><strong>ハーネス</strong></td>
+        <td>土台（基礎工事）</td>
+        <td>一度作ったらずっと使える</td>
+      </tr>
+      <tr>
+        <td><strong>コンテキスト</strong></td>
+        <td>壁と柱（構造）</td>
+        <td>タスクごとに組み替えられる</td>
+      </tr>
+      <tr>
+        <td><strong>プロンプト</strong></td>
+        <td>内装（家具の配置）</td>
+        <td>毎回変えられる</td>
+      </tr>
+    </table>
+    <p>内装（プロンプト）だけいくら凝っても、土台（ハーネス）がなければ毎回ゼロから建て直し。壁（コンテキスト）がなければ部屋にもならない。</p>
+  </div>
+
+  <!-- 「お願い」と「仕組み」の違い -->
+  <div class="section">
+    <div class="section-heading">「お願い」と「仕組み」の違い</div>
+    <div class="code-block">コンテキストエンジニアリングまで
+→ 「こうしちゃいけない」「こういう風に書いて」
+→ 実はAIへの "お願い"
+→ AIが忘れたり無視したりすることもある
+
+ハーネスエンジニアリング
+→ 正しい方向にしか走れないようにレールを敷く
+→ "構造" として制御する
+→ お願いではないので、崩れない</div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="key-message">
+    <div class="km-title">POINT</div>
+    <div class="km-body">
+      最高の注文（プロンプト）<br>
+      × 最高の食材（コンテキスト）<br>
+      × 最高のキッチン（ハーネス）<br><br>
+      3つが揃ったとき、AIはチームメイトになる。
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-heading">まとめ</div>
+    <ul>
+      <li><strong>プロンプトだけ</strong>：毎回ゼロから注文する客のまま</li>
+      <li><strong>＋ コンテキスト</strong>：AIに良い材料が渡り、出力の質が跳ね上がる</li>
+      <li><strong>＋ ハーネス</strong>：AIが自分の知識・スタイルを持つチームメイトになる</li>
+    </ul>
+    <p>どれが欠けてもダメ。3つのレイヤーを揃えて初めて「自分のAI」になっていく。</p>
+  </div>
+
+</div>
+
+</body>
+</html>
