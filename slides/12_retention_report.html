@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>視聴維持率アゲアゲ隊 チェックレポート #12</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  /* ── 戻るナビ ── */
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .back-nav a {
+    color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700;
+  }
+  .back-nav a:hover { text-decoration: underline; }
+  .back-nav .sep { color: #ccc; }
+
+  /* ── ページ ── */
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* ── ヘッダー ── */
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series {
+    font-size: 12px; font-weight: 700; color: #FF6B2B;
+    letter-spacing: 0.15em; margin-bottom: 8px;
+    background: #FFF3EC; display: inline-block; padding: 2px 12px; border-radius: 20px;
+  }
+  .doc-header h1 { font-size: 26px; font-weight: 900; line-height: 1.4; color: #1A1A2E; margin-bottom: 8px; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 4px; }
+
+  /* ── YouTube リンク ── */
+  .yt-link {
+    background: #1A1A2E; border-radius: 10px;
+    padding: 14px 20px; margin-bottom: 32px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .yt-link .yt-icon { font-size: 22px; }
+  .yt-link a { color: #FF9A5C; font-size: 13px; font-weight: 700; text-decoration: underline; word-break: break-all; }
+
+  /* ── セクション ── */
+  .section { margin-bottom: 40px; }
+
+  .section-heading {
+    font-size: 17px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  /* ── テーブル ── */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #FF6B2B; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #FFE0CC; vertical-align: top; }
+  tr:nth-child(even) td { background: #FFF8F5; }
+  tr:last-child td { border-bottom: none; }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; line-height: 1.7; }
+  strong { color: #1A1A2E; }
+
+  /* ── CRITICAL セクション（赤） ── */
+  .critical-box {
+    background: #FEF2F2; border-left: 5px solid #DC2626;
+    border-radius: 8px; padding: 20px 24px; margin-bottom: 20px;
+  }
+  .critical-box .critical-title {
+    font-size: 15px; font-weight: 900; color: #DC2626;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .critical-box .critical-label {
+    font-size: 11px; font-weight: 800; background: #DC2626; color: #fff;
+    padding: 2px 10px; border-radius: 20px; letter-spacing: 0.05em;
+  }
+  .critical-box table th { background: #DC2626; }
+  .critical-box table td { background: #fff; }
+  .critical-box table tr:nth-child(even) td { background: #FEF2F2; }
+  .critical-box p { color: #7F1D1D; }
+  .critical-box li { color: #7F1D1D; }
+
+  /* ── WARNING セクション（アンバー） ── */
+  .warning-box {
+    background: #FFFBEB; border-left: 5px solid #D97706;
+    border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .warning-box .warning-title {
+    font-size: 14px; font-weight: 800; color: #92400E;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .warning-box .warning-label {
+    font-size: 11px; font-weight: 800; background: #D97706; color: #fff;
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .warning-box p { color: #78350F; font-size: 13px; margin-bottom: 0; }
+
+  /* ── Adobe Stock 推奨画像（青） ── */
+  .point-box-blue {
+    background: #F0F9FF; border-left: 4px solid #0EA5E9;
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 10px;
+    font-size: 13px; color: #0C4A6E;
+  }
+  .point-box-blue .pb-title { font-weight: 800; margin-bottom: 4px; color: #0369A1; }
+
+  /* ── 注釈テキスト案（緑） ── */
+  .annotation-box {
+    background: #F0FDF4; border-left: 4px solid #059669;
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 10px;
+    font-size: 13px; color: #14532D;
+  }
+  .annotation-box .ab-title { font-weight: 800; margin-bottom: 4px; color: #059669; }
+
+  /* ── 優先度バッジ ── */
+  .priority-box {
+    background: #1A1A2E; border-radius: 12px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .priority-box .km-title {
+    font-size: 12px; font-weight: 700; color: #FF9A5C;
+    letter-spacing: 0.15em; margin-bottom: 14px;
+  }
+
+  /* ── コアメッセージ ── */
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 14px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  /* ── 用語集テーブル ── */
+  .glossary-table th { background: #1A1A2E; }
+  .glossary-table td { border-bottom: 1px solid #F0F0F0; color: #444; }
+  .glossary-table tr:nth-child(even) td { background: #FAFAFA; }
+
+  /* ── 印刷 ── */
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 戻るナビゲーション -->
+<div class="back-nav">
+  <a href="../index.html">← 一覧へ戻る</a>
+  <span class="sep">|</span>
+  <a href="12_retention_editing.html">← スライドへ戻る</a>
+</div>
+
+<div class="page">
+
+  <!-- ヘッダー -->
+  <div class="doc-header">
+    <div class="series">視聴維持率アゲアゲ隊 ／ チェックレポート #12</div>
+    <h1>🎯 視聴維持率アゲアゲ隊 チェックレポート</h1>
+    <div class="subtitle">背取り（セドリ）vsクラファン物販 ／ 2人対談・インタビュー形式 ／ 29分45秒</div>
+  </div>
+
+  <!-- YouTube リンク -->
+  <div class="yt-link">
+    <div class="yt-icon">▶</div>
+    <a href="https://youtu.be/nUNnB29pvb8" target="_blank">
+      https://youtu.be/nUNnB29pvb8
+    </a>
+  </div>
+
+  <!-- 動画情報 -->
+  <table>
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>動画尺</strong></td><td>29分45秒</td></tr>
+      <tr><td><strong>形式</strong></td><td>2人対談・インタビュー形式</td></tr>
+      <tr><td><strong>内容</strong></td><td>背取り（セドリ）vsクラファン物販</td></tr>
+      <tr><td><strong>チェック日</strong></td><td>2026-06-02</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 総合評価 -->
+  <div class="section">
+    <div class="section-heading">📊 総合評価サマリー</div>
+
+    <div class="core-message">
+      10〜15秒ルール遵守率わずか12%。88%の区間で15秒超の空白あり。<br>
+      動画全体を通じてテロップが散発的で視聴離脱リスクが非常に高い状態。
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>評価</th>
+          <th>詳細</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>10〜15秒ルール遵守率</td>
+          <td><strong>約12%</strong></td>
+          <td>88%の区間で15秒超の空白あり</td>
+        </tr>
+        <tr>
+          <td>専門用語への注釈</td>
+          <td><strong>20%</strong></td>
+          <td>背取り・OEM・クラファン等の説明が不十分</td>
+        </tr>
+        <tr>
+          <td>単調トーク時の画像挿入</td>
+          <td><strong>15%</strong></td>
+          <td>対談部分の大半で画像なし</td>
+        </tr>
+        <tr>
+          <td>全体的な視覚的メリハリ</td>
+          <td><strong>低</strong></td>
+          <td>テロップが散発的で視聴離脱リスク大</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 現状の視覚要素マップ -->
+  <div class="section">
+    <div class="section-heading">✅ 現状の視覚要素マップ</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>タイムコード</th>
+          <th>視覚要素</th>
+          <th>種別</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0:21〜0:27</td><td>売上金額グラフィック（¥13,601,256）</td><td>図解</td></tr>
+        <tr><td>0:27〜0:30</td><td>セミナーページスライド</td><td>画像</td></tr>
+        <tr><td>4:33〜4:36</td><td>タイトルカード（背取り/クラウドファンディング）</td><td>テロップ</td></tr>
+        <tr><td>5:27〜5:30</td><td>ホワイトボード/スライド</td><td>画像</td></tr>
+        <tr><td>6:03〜6:30</td><td>配達員写真 + テキストオーバーレイ</td><td>画像+テロップ</td></tr>
+        <tr><td>7:27</td><td>「未来が見えなかった」</td><td>テロップ</td></tr>
+        <tr><td>8:18〜8:33</td><td>iPhoneの画像</td><td>画像</td></tr>
+        <tr><td>13:00〜13:12</td><td>ポイントテロップ</td><td>テロップ</td></tr>
+        <tr><td>14:27〜14:30</td><td>「販売方法①OEM」</td><td>テロップ</td></tr>
+        <tr><td>15:00〜15:30</td><td>ロット発注説明テロップ</td><td>テロップ</td></tr>
+        <tr><td>16:03〜16:15</td><td>「販売方法②メーカー仕入れ/卸売り」</td><td>テロップ</td></tr>
+        <tr><td>17:27〜17:30</td><td>「販売方法③クラファン物販」</td><td>テロップ</td></tr>
+        <tr><td>18:00〜19:13</td><td>クラファン関連テロップ（無在庫販売等）</td><td>テロップ</td></tr>
+        <tr><td>20:15</td><td>「独占販売」</td><td>テロップ</td></tr>
+        <tr><td>22:40〜23:00</td><td>物販総合研究所ロゴ</td><td>画像</td></tr>
+        <tr><td>24:40〜25:10</td><td>セミナー告知バナー</td><td>バナー</td></tr>
+        <tr><td>26:10</td><td>「事業譲渡」</td><td>テロップ</td></tr>
+        <tr><td>29:30</td><td>テキストオーバーレイ</td><td>テロップ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 違反箇所・改善提案 -->
+  <div class="section">
+    <div class="section-heading">❌ 違反箇所・改善提案（タイムコード別）</div>
+
+    <!-- CRITICAL ① -->
+    <div class="critical-box">
+      <div class="critical-title">
+        <span class="critical-label">CRITICAL ①</span>
+        🔴【0:30〜2:28】118秒間の完全空白
+      </div>
+
+      <p><strong>話している内容：</strong>「背取りって最近どうですか？月10万稼げますか？ライバルが増えて大変ですよね」</p>
+      <p><strong>問題点：</strong>動画冒頭4分で視聴者の大半が離脱判断をする最重要区間。完全にトークのみ。</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>タイムコード</th>
+            <th>挿入すべき要素</th>
+            <th>種別</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0:35</td><td><strong>強調テロップ：「月10万は今でも背取りで可能？」</strong></td><td>テロップ</td></tr>
+          <tr><td>0:50</td><td><strong>注釈：「背取り（せどり）」とは何か</strong></td><td>注釈</td></tr>
+          <tr><td>1:10</td><td><strong>画像：スマホでリサーチする男性</strong></td><td>画像</td></tr>
+          <tr><td>1:30</td><td><strong>強調テロップ：「ライバルが激増している！」</strong></td><td>テロップ</td></tr>
+          <tr><td>1:50</td><td><strong>図解：参入者数の増加グラフ（↑急増）</strong></td><td>図解</td></tr>
+          <tr><td>2:10</td><td><strong>強調テロップ：「昔：利益率20%超 → 今：10%以下に激減」</strong></td><td>テロップ</td></tr>
+        </tbody>
+      </table>
+
+      <div class="point-box-blue">
+        <div class="pb-title">📸 推奨画像（Adobe Stock）</div>
+        ID: 286791052 — スマホを見る男性 → スマホでフリマ・リサーチをしているイメージに最適。
+      </div>
+
+      <div class="annotation-box">
+        <div class="ab-title">📝 注釈テキスト案</div>
+        <strong>背取り（せどり）とは</strong> — 店舗やネットで安く仕入れた商品を、Amazon・メルカリ等で高く転売するビジネスのこと。参入障壁が低く副業として人気だが、近年は競合急増により利益率が大幅に低下している。
+      </div>
+    </div>
+
+    <!-- CRITICAL ② -->
+    <div class="critical-box">
+      <div class="critical-title">
+        <span class="critical-label">CRITICAL ②</span>
+        🔴【2:28〜4:33】125秒間の完全空白
+      </div>
+
+      <p><strong>話している内容：</strong>「背取りが難しくなった理由3つ：①ライバル増加 ②Amazon価格競争 ③プラットフォーム規制強化」</p>
+      <p><strong>問題点：</strong>動画の核心となる分析パート。理由3つを話しているのに何も視覚化されていない。</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>タイムコード</th>
+            <th>挿入すべき要素</th>
+            <th>種別</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2:35</td><td><strong>強調テロップ：「難しくなった理由① ライバルが100倍以上に！」</strong></td><td>テロップ</td></tr>
+          <tr><td>2:55</td><td><strong>図解：参入者数の爆増グラフ</strong></td><td>図解</td></tr>
+          <tr><td>3:15</td><td><strong>強調テロップ：「難しくなった理由② Amazonで価格競争地獄に」</strong></td><td>テロップ</td></tr>
+          <tr><td>3:35</td><td><strong>図解：価格下落の仕組み（1万円→9千円→仕入れ7千円で赤字）</strong></td><td>図解</td></tr>
+          <tr><td>3:55</td><td><strong>画像：価格下落グラフ</strong></td><td>画像</td></tr>
+          <tr><td>4:15</td><td><strong>強調テロップ：「難しくなった理由③ 出品規制・ブランド締め出し強化」</strong></td><td>テロップ</td></tr>
+        </tbody>
+      </table>
+
+      <div class="point-box-blue">
+        <div class="pb-title">📸 推奨画像（Adobe Stock）</div>
+        ID: 328032988 — 上昇・下落の線グラフアイコン → 価格が上がって下がる構造をシンプルなグラフで示せる。
+      </div>
+
+      <div class="annotation-box">
+        <div class="ab-title">📝 注釈テキスト案</div>
+        <strong>Amazon価格競争の仕組み</strong> — 同じ商品を複数のセラーが出品すると最安値が上位表示。誰かが値下げすると全員追随せざるを得ず最終的に利益が消える「底値競争」が起きやすい。
+      </div>
+    </div>
+
+    <!-- CRITICAL ③ -->
+    <div class="critical-box">
+      <div class="critical-title">
+        <span class="critical-label">CRITICAL ③</span>
+        🔴【8:33〜13:00】267秒間（4分27秒！）← 最大問題
+      </div>
+
+      <p><strong>話している内容：</strong>「背取りの構造的問題（隙間産業論）→ビジネスに必要なスキルが身につかない→クラファン提案へ」</p>
+      <p><strong>問題点：</strong>動画全体で最長の空白。かつ最も重要な論点パート。</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>タイムコード</th>
+            <th>挿入すべき要素</th>
+            <th>種別</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>8:40</td><td><strong>強調テロップ：「背取りは"隙間産業"である」</strong></td><td>テロップ</td></tr>
+          <tr><td>9:00</td><td><strong>図解：隙間産業の構造</strong></td><td>図解</td></tr>
+          <tr><td>9:30</td><td><strong>強調テロップ：「背取りで身につかないスキル：①売る力 ②集客力」</strong></td><td>テロップ</td></tr>
+          <tr><td>9:50</td><td><strong>図解：背取り vs 本格ビジネスの比較表</strong></td><td>図解</td></tr>
+          <tr><td>10:20</td><td><strong>画像：スキルアップ・成長のイメージ</strong></td><td>画像</td></tr>
+          <tr><td>10:50</td><td><strong>強調テロップ：「商品の魅力も集客もメーカー＆プラットフォーム任せ」</strong></td><td>テロップ</td></tr>
+          <tr><td>11:15</td><td><strong>図解：背取りの依存構造</strong></td><td>図解</td></tr>
+          <tr><td>11:45</td><td><strong>強調テロップ：「時給換算すると驚くほど低い！」</strong></td><td>テロップ</td></tr>
+          <tr><td>12:10</td><td><strong>画像：時計・時給のイメージ</strong></td><td>画像</td></tr>
+          <tr><td>12:35</td><td><strong>強調テロップ：「入口としてはOK、でも拡大は×」</strong></td><td>テロップ</td></tr>
+        </tbody>
+      </table>
+
+      <div class="point-box-blue">
+        <div class="pb-title">📸 推奨画像（Adobe Stock）</div>
+        ID: 442669841 — 需要供給曲線グラフ（日本語ラベル付き） → 隙間産業・市場飽和の説明にピッタリ。
+      </div>
+
+      <div class="annotation-box">
+        <div class="ab-title">📝 注釈テキスト案</div>
+        <strong>隙間産業（すきまさんぎょう）とは</strong> — 大手企業が参入していない市場の「すき間」を狙うビジネス。参入者が少ない間は高収益だが情報が広まると競争激化・収益消滅するリスクがある。
+      </div>
+    </div>
+
+    <!-- WARNING ④〜⑭ -->
+    <div class="section-heading" style="margin-top: 32px;">🟠 WARNING ④〜⑭（11箇所）</div>
+
+    <!-- ④ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ④</span>
+        【4:36〜5:27】51秒 — 成田さんの自己紹介
+      </div>
+      <p>
+        強調テロップ「成田さんのストーリー」／
+        画像：宅配ドライバー（ID:206145139）／
+        強調テロップ「某大手運送会社の配達員だった！」
+      </p>
+    </div>
+
+    <!-- ⑤ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑤</span>
+        【5:30〜6:03】33秒 — 朝5時出発・夜10時帰宅
+      </div>
+      <p>
+        強調テロップ「朝5時出発 → 夜10時帰宅」／
+        画像：疲れたビジネスマン（ID:463197743）
+      </p>
+    </div>
+
+    <!-- ⑥ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑥</span>
+        【6:30〜7:27】57秒 — 副業→物販→メーカー仕入れの経緯
+      </div>
+      <p>
+        図解「配達員→副業→物販→独立」のキャリアステップ／
+        強調テロップ「高卒・田舎育ちでも物販で独立！」
+      </p>
+    </div>
+
+    <!-- ⑦ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑦</span>
+        【7:30〜8:18】48秒 — iPhone転売の限界
+      </div>
+      <p>
+        強調テロップ「iPhone転売：1台で約2万円の利益！」／
+        図解：仕入れ→売上→利益／
+        強調テロップ「でも最大2個まで…月4万円が上限」
+      </p>
+    </div>
+
+    <!-- ⑧ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑧</span>
+        【14:30〜15:00】30秒 — OEM仕入れの初期費用
+      </div>
+      <p>
+        図解「OEMフロー（中国工場→自社ブランド→販売）」／
+        強調テロップ「最小ロット300〜500個、初期費用100万円〜」／
+        画像（ID:429266124）
+      </p>
+    </div>
+
+    <!-- ⑨ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑨</span>
+        【15:30〜16:03】33秒 — メーカーとの関係構築
+      </div>
+      <p>
+        強調テロップ「直接会いに行く！関係値が利益の源泉」／
+        画像：握手（ID:511259164）
+      </p>
+    </div>
+
+    <!-- ⑩ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑩</span>
+        【16:15〜17:27】72秒 — クラファン物販の仕組み
+      </div>
+      <p>
+        強調テロップ「クラファン物販＝売ってから仕入れる！」／
+        図解：キャッシュフロー比較／
+        強調テロップ「在庫リスクほぼゼロ！」
+      </p>
+    </div>
+
+    <!-- ⑪ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑪</span>
+        【17:30〜18:00】30秒 — クラファンの利益率
+      </div>
+      <p>
+        強調テロップ「利益率：背取り10% → クラファン20〜40%！」／
+        図解：利益率比較グラフ／
+        画像（ID:1843282481）
+      </p>
+    </div>
+
+    <!-- ⑫ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑫</span>
+        【18:03〜19:13】70秒 — キャッシュフロー詳細
+      </div>
+      <p>
+        図解「キャッシュフロー比較」／
+        強調テロップ「胃がキリキリしない！精神衛生上も最高！」／
+        画像（ID:484801531）
+      </p>
+    </div>
+
+    <!-- ⑬ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑬</span>
+        【19:16〜20:15】59秒 — 独占販売権の取得
+      </div>
+      <p>
+        強調テロップ「英語ができなくてもOK！AI翻訳で交渉可能！」／
+        強調テロップ「平均1〜2ヶ月で独占契約獲得！早い人は1週間！」／
+        画像（ID:210183750）
+      </p>
+    </div>
+
+    <!-- ⑭ -->
+    <div class="warning-box">
+      <div class="warning-title">
+        <span class="warning-label">WARNING ⑭</span>
+        【20:18〜22:40】142秒 — スクール生徒実績
+      </div>
+      <p>
+        強調テロップ「初クラファンで100〜200万円の売上！」／
+        図解：売上成長ステップグラフ／
+        強調テロップ「1商品で5000万の実績者も！」／
+        強調テロップ「1年半で20回→累計億越え！」／
+        画像（ID:133678876）
+      </p>
+    </div>
+  </div>
+
+  <!-- 優先対応TOP3 -->
+  <div class="section">
+    <div class="section-heading">🏆 優先対応TOP3</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>優先度</th>
+          <th>箇所</th>
+          <th>理由</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🥇 最優先</td>
+          <td>8:33〜13:00（267秒）</td>
+          <td>最長の空白。動画の核心パート。離脱率が最大</td>
+        </tr>
+        <tr>
+          <td>🥈 次優先</td>
+          <td>0:30〜4:33（冒頭243秒）</td>
+          <td>冒頭での離脱を防ぐ。最初の印象が全て</td>
+        </tr>
+        <tr>
+          <td>🥉 3番目</td>
+          <td>全専門用語への注釈追加</td>
+          <td>背取り・OEM・クラファン・キャッシュフロー・隙間産業・ロット</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 用語集 -->
+  <div class="section">
+    <div class="section-heading">📝 用語集</div>
+
+    <table class="glossary-table">
+      <thead>
+        <tr>
+          <th>用語</th>
+          <th>説明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>背取り（せどり）</strong></td>
+          <td>店舗やネットで安く仕入れた商品を別プラットフォームで高く転売するビジネス</td>
+        </tr>
+        <tr>
+          <td><strong>OEM</strong></td>
+          <td>既存の型を活用して自社ブランドで製造・販売する方式</td>
+        </tr>
+        <tr>
+          <td><strong>クラファン物販</strong></td>
+          <td>予約販売で先に代金を集めてから仕入れるビジネスモデル。在庫リスクがほぼない</td>
+        </tr>
+        <tr>
+          <td><strong>独占販売権</strong></td>
+          <td>特定メーカーの商品を日本で自分だけが販売できる権利。価格競争が起きない</td>
+        </tr>
+        <tr>
+          <td><strong>キャッシュフロー</strong></td>
+          <td>ビジネスにおけるお金の流れ。クラファンは「先売り後仕入れ」で資金繰りが楽</td>
+        </tr>
+        <tr>
+          <td><strong>隙間産業</strong></td>
+          <td>大手が参入していない市場の「すき間」を狙うビジネス</td>
+        </tr>
+        <tr>
+          <td><strong>ロット（lot）</strong></td>
+          <td>製品の最小発注単位。最低300〜500個単位になることが多い</td>
+        </tr>
+        <tr>
+          <td><strong>プラットフォーム規制</strong></td>
+          <td>AmazonやメルカリなどのECサイトの転売締め出し策</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /.page -->
+</body>
+</html>
