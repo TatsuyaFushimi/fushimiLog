@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaudeCode 設定ファイル完全ガイド</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+  }
+  .back-nav a {
+    color: #FF6B2B; text-decoration: none;
+    font-size: 14px; font-weight: 700;
+  }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px;
+    margin: 24px auto 60px;
+    background: #fff;
+    padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* ── ヘッダー ── */
+  .doc-header {
+    border-left: 6px solid #FF6B2B;
+    padding-left: 20px;
+    margin-bottom: 36px;
+  }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 26px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  /* ── コアメッセージ ── */
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+
+  /* ── セクション ── */
+  .section { margin-bottom: 44px; }
+
+  .section-heading {
+    font-size: 17px; font-weight: 800; color: #fff;
+    padding: 10px 18px; border-radius: 8px;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .section-heading .num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; flex-shrink: 0;
+  }
+  .section-heading .badge {
+    margin-left: auto; font-size: 11px; font-weight: 800;
+    background: rgba(255,255,255,0.25); padding: 2px 10px; border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* 各セクションカラー */
+  .sh-1 { background: #2563EB; }
+  .sh-2 { background: #16A34A; }
+  .sh-3 { background: #7C3AED; }
+  .sh-4 { background: #EA580C; }
+  .sh-5 { background: #0F766E; }
+  .sh-6 { background: #B45309; }
+
+  .sub-heading {
+    font-size: 13px; font-weight: 800; color: #888;
+    letter-spacing: 0.1em; margin: 16px 0 8px;
+    text-transform: uppercase;
+  }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { font-size: 14px; color: #444; margin-bottom: 5px; }
+
+  /* ── コードブロック ── */
+  .code-block {
+    background: #1A1A2E; color: #F5F5F5;
+    border-radius: 10px; padding: 16px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px; line-height: 1.8;
+    margin-bottom: 14px; white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #888; }
+  .code-block .key { color: #FF9A5C; }
+  .code-block .val { color: #7DD3FC; }
+
+  /* ── テーブル ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 16px; font-size: 13px;
+  }
+  th {
+    background: #1A1A2E; color: #fff;
+    padding: 9px 12px; text-align: left; font-weight: 700;
+  }
+  td {
+    padding: 9px 12px; border-bottom: 1px solid #F0F0F0;
+    vertical-align: top; color: #444;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px; background: #F5F5F5;
+    padding: 1px 6px; border-radius: 4px; color: #FF6B2B;
+  }
+
+  /* ── 警告ボックス ── */
+  .warn-box {
+    background: #FFF8EC; border: 1px solid #FFD4B8;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #777; margin-bottom: 12px;
+  }
+
+  /* ── ポイントボックス ── */
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 4px; }
+  .point-box p { font-size: 13px; margin-bottom: 0; }
+
+  /* ── まとめカードグリッド ── */
+  .summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 24px;
+  }
+  .summary-card {
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .summary-card .sc-title { font-size: 14px; font-weight: 900; margin-bottom: 6px; }
+  .summary-card .sc-body { font-size: 12px; line-height: 1.6; }
+  .sc-1 { background: #EFF6FF; } .sc-1 .sc-title { color: #2563EB; }
+  .sc-2 { background: #F0FDF4; } .sc-2 .sc-title { color: #16A34A; }
+  .sc-3 { background: #F5F3FF; } .sc-3 .sc-title { color: #7C3AED; }
+  .sc-4 { background: #FFF7ED; } .sc-4 .sc-title { color: #EA580C; }
+  .sc-5 { background: #F0FDFA; } .sc-5 .sc-title { color: #0F766E; }
+  .sc-6 { background: #FFFBEB; } .sc-6 .sc-title { color: #B45309; }
+
+  /* ── キーメッセージ ── */
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 24px 28px; margin: 28px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 10px; }
+  .key-message .km-body { font-size: 16px; font-weight: 800; line-height: 1.7; }
+
+  /* ── 印刷 ── */
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav"><a href="../index.html">← 一覧へ戻る</a></div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">資料要約 #10</div>
+    <h1>ClaudeCode 設定ファイル<br>完全ガイド</h1>
+    <div class="subtitle">CLAUDE.md / Rules / Skills / Agents / Settings / Hooks</div>
+    <div class="meta">出典：ClaudeCode設定ガイド（PDF）｜2026.06.02</div>
+  </div>
+
+  <div class="core-message">
+    ClaudeCodeのプロジェクト設定は<strong>6種類のファイル・仕組み</strong>で構成される。<br>
+    CLAUDE.mdで基本行動を定義し、Rules・Skills・Agentsで機能拡張、<br>
+    Settings・Hooksで権限制御と自動化を行う。<br>
+    すべてを組み合わせることで、確認なし・全自動の資料化エージェントを構築できる。
+  </div>
+
+  <!-- 1. CLAUDE.md -->
+  <div class="section">
+    <div class="section-heading sh-1">
+      <div class="num">1</div>
+      CLAUDE.md — プロジェクトの「憲法」
+      <div class="badge">必須</div>
+    </div>
+    <p>Claudeが<strong>セッション開始時に必ず読む</strong>設定ファイル。ここに書いたことが全行動の前提になる。複数の場所に置けて、全部あれば全部読む（上書きではなく追加）。</p>
+
+    <div class="sub-heading">置き場所と読み込み優先位</div>
+    <table>
+      <tr><th>パス</th><th>適用範囲</th></tr>
+      <tr><td><code>~/.claude/CLAUDE.md</code></td><td>グローバル（全プロジェクト共通）</td></tr>
+      <tr><td><code>~/project/CLAUDE.md</code></td><td>プロジェクトルート</td></tr>
+      <tr><td><code>~/project/.claude/CLAUDE.md</code></td><td>.claudeフォルダ内</td></tr>
+    </table>
+
+    <div class="sub-heading">記入例 — 資料化PJのCLAUDE.MD</div>
+    <div class="code-block"># プロジェクト：資料化PJ
+
+## 役割
+あなたはPDF・テキスト資料を読み込み、わかりやすく要約するエージェントです。
+
+## 必須ルール
+- 確認（「YESですか？」等）は一切不要。全て実行してよい
+- 要約ファイルは必ず「要約資料/」フォルダに保存する
+- ファイル名は内容を表す日本語で命名する（例：差別化物販戦略塾_要約.md）
+
+## 要約フォーマット
+### 必ず含める項目
+1. 資料の概要（3行以内）
+2. 主要な章・セクションの構成
+3. 重要ポイント（箇条書き）
+4. キーワード・用語集
+
+## 禁止事項
+- 元ファイルを削除・移動しない
+- 要約資料フォルダ以外への保存</div>
+    <div class="warn-box">💡 CLAUDE.mdは「Claudeへの指示書」。ここに書けば毎回同じルールで動いてくれる。プロジェクトごとに作ると使いやすい。</div>
+  </div>
+
+  <!-- 2. Rules -->
+  <div class="section">
+    <div class="section-heading sh-2">
+      <div class="num">2</div>
+      Rules — ドメイン別ルールの分割管理
+      <div class="badge">整理</div>
+    </div>
+    <p>CLAUDE.mdを肥大化させないために、<strong>領域ごとにファイルを分割</strong>する仕組み。要約ルール・命名規則・フォーマットをそれぞれ独立したファイルで管理する。</p>
+
+    <div class="sub-heading">フォルダ構成テンプレート</div>
+    <div class="code-block">.claude/rules/
+├── summarize.md    <span class="comment"># 要約ルール</span>
+├── naming.md       <span class="comment"># ファイル命名規則</span>
+└── format.md       <span class="comment"># 出力フォーマット</span></div>
+
+    <div class="sub-heading">記入例 — SUMMARIZE.MD（要約ルール）</div>
+    <div class="code-block"># 要約ルール
+
+## PDFの処理
+- 画像メインのPDFは pdftoppm で画像変換してから読む
+- テキスト抽出できない場合はその旨を要約ファイルに明記する
+- 100ページ超のPDFは章ごとに分割して読む
+
+## 要約の粒度
+- 10ページ以下：全文要約
+- 10〜50ページ：章ごとに要約
+- 50ページ超：大見出しレベルで要約 ＋ 重要箇所をピックアップ
+
+## 禁止
+- 著者の主張を変えて要約しない
+- 数値・固有名詞は必ず原文のまま記載する</div>
+
+    <div class="sub-heading">記入例 — NAMING.MD（命名規則）</div>
+    <div class="code-block"># ファイル命名規則
+
+## 要約ファイルのルール
+- 形式：`{内容を表す日本語タイトル}_要約.md`
+- スペースは使わない（アンダースコアで代替）
+- 日付は不要（index.mdで管理）
+
+## OK例：差別化物販戦略塾_個人コンサルプラン要約.md
+## NG例：summary.md（内容が不明）/ 要約 2024.md（スペースあり）</div>
+  </div>
+
+  <!-- 3. Skills -->
+  <div class="section">
+    <div class="section-heading sh-3">
+      <div class="num">3</div>
+      Skills — カスタムスラッシュコマンド
+      <div class="badge">自動化</div>
+    </div>
+    <p><strong>/スキル名</strong> で呼び出せる再利用可能な手順書。複雑な作業を1コマンドで実行できるようにする。</p>
+
+    <div class="sub-heading">フォルダ構成テンプレート</div>
+    <div class="code-block">.claude/skills/
+└── pdf-summary/
+    └── SKILL.md</div>
+
+    <div class="sub-heading">記入例 — SKILL.MD（PDF要約スキル）</div>
+    <div class="code-block">---
+name: pdf-summary
+description: 指定したPDFを読み込んで要約ファイルを自動作成する
+---
+
+# PDF要約スキル
+
+## 使い方
+/pdf-summary {ファイルパスまたはフォルダパス}
+
+## 手順
+### Step 1: ファイル確認
+- 引数で指定されたパスのファイルを確認する
+- フォルダが指定された場合、中のPDF・MDファイルを全て処理対象にする
+
+### Step 2: テキスト抽出
+- `pdftotext` でテキスト抽出を試みる
+- テキストが少ない（スライド系）場合は `pdftoppm` で画像変換し読み込む
+
+### Step 3: 要約作成
+- 「要約資料/」フォルダに要約ファイルを作成する
+- ファイル名は内容を表す日本語で命名する
+
+### Step 4: index.md更新
+- `index.md` の「作成済み要約資料」テーブルに新しい行を追加する
+
+### Step 5: 完了報告
+- 作成したファイル名と要約の概要を1〜2文で報告する</div>
+
+    <div class="sub-heading">呼び出し方（ターミナル）</div>
+    <div class="code-block">/pdf-summary /Users/fushimi/Documents/新しい資料.pdf</div>
+  </div>
+
+  <!-- 4. Agents -->
+  <div class="section">
+    <div class="section-heading sh-4">
+      <div class="num">4</div>
+      Agents — 専門特化サブエージェント
+      <div class="badge">分業</div>
+    </div>
+    <p>特定タスク専用の<strong>「別人格のClaude」</strong>。専用のシステムプロンプト・ツール制限・モデルを持てる。重い処理は軽量モデルに任せるなど、コスト最適化にも使える。</p>
+
+    <div class="sub-heading">フォルダ構成テンプレート</div>
+    <div class="code-block">.claude/agents/
+├── pdf-reader.md      <span class="comment"># PDF読み込み専門</span>
+├── summarizer.md      <span class="comment"># 要約作成専門</span>
+└── index-manager.md   <span class="comment"># index.md管理専門</span></div>
+
+    <div class="sub-heading">記入例 — SUMMARIZER.MD（要約専門）</div>
+    <div class="code-block">---
+name: summarizer
+description: 渡されたテキストを構造化して要約するエージェント。資料の要約作成に使う。
+model: claude-sonnet-4-6
+tools: Read, Write, Edit
+---
+
+# 要約専門エージェント
+
+あなたは資料を読み込んで、わかりやすく構造化する専門家です。
+
+## 行動原則
+- 読者が元資料を読まなくても内容を理解できる要約を作る
+- 図表・マトリクスは積極的にMarkdownテーブルで再現する
+- 専門用語は初出時に簡単な説明を加える</div>
+
+    <div class="sub-heading">記入例 — PDF-READER.MD（ツール制限付き）</div>
+    <div class="code-block">---
+name: pdf-reader
+description: PDFからテキスト・画像を抽出する専門エージェント。Bash実行のみ許可。
+model: claude-haiku-4-5
+tools: Bash, Read
+---</div>
+
+    <div class="sub-heading">呼び出しの流れ（メインCLAUDEから）</div>
+    <div class="code-block">Agent(pdf-reader, "このPDFのページ数とテキストを抽出して")
+  → pdf-reader が抽出
+  → summarizer が要約作成（Write/Edit 権限あり）</div>
+  </div>
+
+  <!-- 5. Settings -->
+  <div class="section">
+    <div class="section-heading sh-5">
+      <div class="num">5</div>
+      Settings — 権限制御
+      <div class="badge">セキュリティ</div>
+    </div>
+    <p>Claudeが実行できるコマンドを<strong>許可リスト（allow）・拒否リスト（deny）</strong>で制御する。<code>bypassPermissions</code> にすると確認なしで全実行が可能になる。</p>
+
+    <table>
+      <tr><th>設定ファイル</th><th>適用範囲</th><th>Git管理</th></tr>
+      <tr><td><code>~/.claude/settings.json</code></td><td>グローバル（全プロジェクト）</td><td>しない</td></tr>
+      <tr><td><code>.claude/settings.json</code></td><td>プロジェクト共通</td><td>する</td></tr>
+      <tr><td><code>.claude/settings.local.json</code></td><td>個人ローカル設定</td><td>しない（.gitignoreへ）</td></tr>
+    </table>
+
+    <div class="sub-heading">記入例 — SETTINGS.JSON（資料化PJの場合）</div>
+    <div class="code-block">{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Bash(pdftotext *)",
+      "Bash(pdftoppm *)",
+      "Bash(pdfinfo *)",
+      "Bash(find * -name *.pdf)",
+      "Bash(mkdir *)",
+      "Bash(mv *)",
+      "Bash(rm -rf */slides_images)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ]
+  }
+}</div>
+    <div class="warn-box">⚠️ bypassPermissions はすべての操作を確認なしで実行する。denyリストで危険なコマンドを必ず明示的にブロックすること。</div>
+  </div>
+
+  <!-- 6. Hooks -->
+  <div class="section">
+    <div class="section-heading sh-6">
+      <div class="num">6</div>
+      Hooks — イベント駆動の自動処理
+      <div class="badge">自動化</div>
+    </div>
+    <p>特定のイベントに反応して<strong>自動でコマンドを実行</strong>する仕組み。ファイル保存後の後処理、セッション開始時の初期化、作業完了時の通知など。</p>
+
+    <table>
+      <tr><th>イベント</th><th>タイミング</th><th>使いどころ</th></tr>
+      <tr><td><code>SessionStart</code></td><td>セッション開始時</td><td>index.mdを自動読み込み・未処理ファイルを検知</td></tr>
+      <tr><td><code>PreToolUse</code></td><td>ツール実行前</td><td>危険なコマンドをブロック</td></tr>
+      <tr><td><code>PostToolUse</code></td><td>ツール実行後</td><td>ファイル保存後にindex.mdを自動更新</td></tr>
+      <tr><td><code>Stop</code></td><td>作業完了時</td><td>Mac通知・ログ記録</td></tr>
+    </table>
+
+    <div class="sub-heading">記入例1 — 作業完了時にMAC通知を出す</div>
+    <div class="code-block">{
+  "hooks": {
+    "Stop": [{
+      "hooks": [{
+        "type": "command",
+        "command": "osascript -e 'display notification \"作業が完了しました\" with title \"Claude Code\"'"
+      }]
+    }]
+  }
+}</div>
+
+    <div class="sub-heading">記入例2 — 要約ファイル保存後にINDEX.MDを自動更新</div>
+    <div class="code-block">{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "jq -r '.tool_input.file_path' | grep -q '要約資料/' && echo '要約ファイルが更新されました'"
+      }]
+    }]
+  }
+}</div>
+
+    <div class="sub-heading">記入例3 — セッション開始時に未処理ファイルを自動検知</div>
+    <div class="code-block">{
+  "hooks": {
+    "SessionStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "ls /Users/fushimi/Documents/ClaudeCode/資料化PJ/資料化してほしい/ | jq -Rs '{additionalContext: .}'"
+      }]
+    }]
+  }
+}</div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="section">
+    <div class="section-heading" style="background:#FF6B2B;">
+      <div class="num" style="background:rgba(255,255,255,0.25);">✓</div>
+      まとめ — 6要素の役割分担
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card sc-1">
+        <div class="sc-title">① CLAUDE.md</div>
+        <div class="sc-body">基本行動の定義<br>「何をするエージェントか」<br>を最初に読む憲法</div>
+      </div>
+      <div class="summary-card sc-2">
+        <div class="sc-title">② Rules</div>
+        <div class="sc-body">細かいルールを分割管理。<br>CLAUDE.mdを肥大化させない</div>
+      </div>
+      <div class="summary-card sc-3">
+        <div class="sc-title">③ Skills</div>
+        <div class="sc-body">/コマンドで呼び出せる<br>再利用手順書</div>
+      </div>
+      <div class="summary-card sc-4">
+        <div class="sc-title">④ Agents</div>
+        <div class="sc-body">専門特化した別人格Claude<br>（ツール・モデル制限可）</div>
+      </div>
+      <div class="summary-card sc-5">
+        <div class="sc-title">⑤ Settings</div>
+        <div class="sc-body">実行権限の<br>許可・拒否リスト</div>
+      </div>
+      <div class="summary-card sc-6">
+        <div class="sc-title">⑥ Hooks</div>
+        <div class="sc-body">イベントに反応する<br>自動処理</div>
+      </div>
+    </div>
+
+    <div class="key-message">
+      <div class="km-title">運用の鉄則</div>
+      <div class="km-body">CLAUDE.mdに全部書かない。<br>役割ごとに分割して管理することで、変更・追加がしやすくなる。</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
