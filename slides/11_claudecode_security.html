@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaudeCode 必須セキュリティ対策</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+  }
+  .back-nav a { color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* ── ヘッダー ── */
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 25px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  /* ── YouTube リンク ── */
+  .yt-link {
+    background: #1A1A2E; border-radius: 10px;
+    padding: 14px 20px; margin-bottom: 32px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .yt-link .yt-icon { font-size: 22px; }
+  .yt-link a { color: #FF9A5C; font-size: 13px; font-weight: 700; text-decoration: underline; word-break: break-all; }
+
+  /* ── コアメッセージ ── */
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  /* ── セクション ── */
+  .section { margin-bottom: 40px; }
+
+  .section-heading {
+    font-size: 17px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+  }
+  .section-heading .tag {
+    font-size: 11px; font-weight: 800; padding: 2px 10px;
+    border-radius: 20px; margin-left: 10px;
+    vertical-align: middle;
+  }
+  .tag-risk { background: #FEE2E2; color: #DC2626; }
+  .tag-setting { background: #DBEAFE; color: #2563EB; }
+  .tag-practice { background: #D1FAE5; color: #059669; }
+
+  .sub-heading {
+    font-size: 13px; font-weight: 800; color: #888;
+    letter-spacing: 0.1em; margin: 20px 0 10px;
+    text-transform: uppercase;
+  }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; }
+  strong { color: #1A1A2E; }
+
+  /* ── ポイントボックス ── */
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 5px; }
+  .point-box p { font-size: 13px; color: #555; margin-bottom: 0; }
+  .point-box code {
+    font-family: 'Courier New', monospace; font-size: 12px;
+    background: #fff; padding: 1px 5px; border-radius: 3px; color: #FF6B2B;
+  }
+
+  /* ── 警告ボックス ── */
+  .warn-box {
+    background: #FEF2F2; border: 1px solid #FECACA;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #991B1B; margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  /* ── ヒントボックス ── */
+  .hint-box {
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #166534; margin-bottom: 14px;
+  }
+
+  /* ── コードブロック ── */
+  .code-block {
+    background: #1A1A2E; color: #F5F5F5;
+    border-radius: 10px; padding: 16px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px; line-height: 1.8;
+    margin-bottom: 14px; white-space: pre-wrap;
+  }
+
+  /* ── テーブル ── */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #1A1A2E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+  code { font-family: 'Courier New', monospace; font-size: 12px; background: #F5F5F5; padding: 1px 6px; border-radius: 4px; color: #FF6B2B; }
+
+  /* ── チェックリスト ── */
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding: 10px 14px; border-radius: 8px;
+    margin-bottom: 8px; border: 1px solid #F0F0F0;
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 14px;
+  }
+  .checklist li:nth-child(odd) { background: #FAFAFA; }
+  .check-num {
+    background: #FF6B2B; color: #fff;
+    font-size: 11px; font-weight: 900;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .check-body .check-title { font-weight: 800; color: #1A1A2E; margin-bottom: 2px; }
+  .check-body .check-desc { font-size: 13px; color: #666; }
+
+  /* ── キーメッセージ ── */
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 24px 28px; margin: 28px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 10px; }
+  .key-message .km-body { font-size: 17px; font-weight: 800; line-height: 1.7; }
+
+  /* ── 印刷 ── */
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav"><a href="../index.html">← 一覧へ戻る</a></div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">資料要約 #11 — YouTube動画</div>
+    <h1>ClaudeCode 必須セキュリティ対策<br>AIは万能ではない / 非エンジニアでも実践可能</h1>
+    <div class="subtitle">知らずに使うと危険！ClaudeCodeを安全に使うための設定と考え方</div>
+    <div class="meta">出典：YouTube動画（2026.06.02 要約）</div>
+  </div>
+
+  <div class="yt-link">
+    <div class="yt-icon">▶</div>
+    <a href="https://youtu.be/9aqR-mzCZSI" target="_blank">
+      https://youtu.be/9aqR-mzCZSI
+    </a>
+  </div>
+
+  <div class="core-message">
+    ClaudeCodeは強力だが<strong>万能ではない</strong>。<br>
+    AIを使うなら「何を許可し、何を禁止するか」を設計するのは人間の仕事。<br>
+    非エンジニアでも今日から実践できる7つの対策がある。
+  </div>
+
+  <!-- 1. AIは万能ではない -->
+  <div class="section">
+    <div class="section-heading">
+      AIは万能ではない — 知っておくべきリスク
+      <span class="tag tag-risk">リスク理解</span>
+    </div>
+    <p>ClaudeCodeは非常に高性能だが、<strong>指示した内容を忠実に実行するがゆえに危険</strong>になることがある。AIを安全に使うにはまず「何が怖いか」を知ることが出発点。</p>
+
+    <div class="point-box">
+      <div class="pt">⚠️ 巻き戻せない操作がある</div>
+      <p>ファイルの削除・データベース更新・デプロイ・課金処理など、<strong>一度実行したら取り消せない操作</strong>がある。「やってしまってから気づく」では手遅れ。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">⚠️ 知らないコマンドを許可してはいけない</div>
+      <p>AIが「このコマンドを実行していいですか？」と聞いてきたとき、内容を理解せずに「OK」を押してはいけない。<strong>何をするコマンドか確認してから許可する</strong>こと。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">⚠️ プロンプトインジェクションのリスク</div>
+      <p>悪意のあるテキストが含まれたファイルをAIに読み込ませると、そのテキストの指示に従って意図しない動作をする可能性がある。外部ファイルの取り扱いに注意。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">⚠️ 機密情報の漏洩リスク</div>
+      <p>APIキー・パスワード・個人情報をチャット欄に直接貼り付けると、ログや会話履歴に残る。<strong>機密情報はファイル経由で渡す</strong>のが原則。</p>
+    </div>
+  </div>
+
+  <!-- 2. 非エンジニアでも実践可能な7つの対策 -->
+  <div class="section">
+    <div class="section-heading">
+      非エンジニアでも実践可能 — 7つのセキュリティ対策
+      <span class="tag tag-setting">設定</span>
+    </div>
+
+    <ul class="checklist">
+      <li>
+        <div class="check-num">1</div>
+        <div class="check-body">
+          <div class="check-title">機密ファイル（.env）を作業フォルダの外に隔離する</div>
+          <div class="check-desc">APIキーやパスワードが入った<code>.env</code>ファイルは、ClaudeCodeが作業するフォルダの外に移動。誤って読み込ませるリスクをゼロにする。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">2</div>
+        <div class="check-body">
+          <div class="check-title">.claudeignore で読み込み禁止エリアを設定する</div>
+          <div class="check-desc">ClaudeCodeに見せたくないファイル・フォルダを<code>.claudeignore</code>に記載。<code>.env</code>・パスワードファイル・個人情報フォルダなどを指定する。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">3</div>
+        <div class="check-body">
+          <div class="check-title">settings.json で実行できるコマンドを制限する</div>
+          <div class="check-desc">allowリスト（許可）・denyリスト（禁止）を設定。特に<code>Bash(rm -rf /)</code>などの危険なコマンドは必ずdenyに入れる。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">4</div>
+        <div class="check-body">
+          <div class="check-title">CLAUDE.mdにセキュリティルールを明記する</div>
+          <div class="check-desc">「元ファイルを削除しない」「外部に送信しない」などのルールをCLAUDE.mdに書く。毎セッション読み込まれるので、常にルールが守られる。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">5</div>
+        <div class="check-body">
+          <div class="check-title">AI学習設定をオフにする</div>
+          <div class="check-desc">Anthropicの設定画面で、入力データが学習に使われないよう設定を確認・変更する。Pro/Teamプランではデフォルトでオフだが、必ず確認すること。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">6</div>
+        <div class="check-body">
+          <div class="check-title">タスクが終わったら会話をリセットする</div>
+          <div class="check-desc">1つのタスクが完了したら新しい会話を開始する。長い会話はトークン消費が増えるだけでなく、情報の混在リスクも高まる。</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-num">7</div>
+        <div class="check-body">
+          <div class="check-title">知らないコマンドは許可しない</div>
+          <div class="check-desc">AIが何か実行しようとしたとき、内容を理解してから許可する。「よくわからないけどOK」は厳禁。必要なら「このコマンドは何をするの？」とAIに聞く。</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 3. 設定ファイル例 -->
+  <div class="section">
+    <div class="section-heading">
+      settings.json の設定例
+      <span class="tag tag-setting">コード例</span>
+    </div>
+    <p>プロジェクトの<code>.claude/settings.json</code>に以下を記載することで、実行できるコマンドを制限できる。</p>
+
+    <div class="code-block">{
+  "permissions": {
+    "allow": [
+      "Bash(pdftotext *)",
+      "Bash(find * -name *.pdf)",
+      "Bash(mkdir *)",
+      "Bash(mv *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(ssh *)"
+    ]
+  }
+}</div>
+
+    <div class="warn-box">
+      ⚠️ bypassPermissionsモードを使う場合は、denyリストで危険なコマンドを必ずブロックすること。設定なしの全許可は危険。
+    </div>
+
+    <div class="sub-heading">.claudeignore の設定例</div>
+    <div class="code-block"># 機密ファイル
+.env
+.env.local
+secrets/
+credentials/
+
+# 個人情報フォルダ
+personal/
+private/</div>
+  </div>
+
+  <!-- 4. Human-in-the-Loop の考え方 -->
+  <div class="section">
+    <div class="section-heading">
+      「Human-in-the-Loop」の考え方
+      <span class="tag tag-practice">実践</span>
+    </div>
+    <p>ClaudeCodeは「AIが全部やる」ではなく、<strong>人間が要所でチェックしながら進める設計</strong>になっている。これが「AIは万能ではない」という前提の本質。</p>
+
+    <table>
+      <tr><th>AIに任せていいこと</th><th>人間が必ず確認すること</th></tr>
+      <tr><td>ファイルの読み込み・要約</td><td>外部へのデータ送信</td></tr>
+      <tr><td>ドキュメントの作成・編集</td><td>ファイルの削除・移動</td></tr>
+      <tr><td>コードの生成・レビュー</td><td>デプロイ・公開処理</td></tr>
+      <tr><td>反復的な定型作業</td><td>課金・決済が発生する操作</td></tr>
+      <tr><td>情報の整理・分類</td><td>パスワード・APIキーを含む操作</td></tr>
+    </table>
+
+    <div class="hint-box">
+      💡 「巻き戻せる操作」はAIに任せ、「巻き戻せない操作」は人間が最終確認するのが鉄則。
+    </div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="key-message">
+    <div class="km-title">まとめ</div>
+    <div class="km-body">
+      AIは「怖い」でも「なんでもできる」でもない。<br>
+      設計次第で「安全に使えるツール」になる。<br><br>
+      7つの対策を今日から1つずつ実践しよう。
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-heading">実践チェック — まず今日やること</div>
+    <ol>
+      <li><code>.env</code>ファイルが作業フォルダ内にないか確認する</li>
+      <li>Anthropicの設定画面でAI学習設定を確認する</li>
+      <li>CLAUDE.mdに「元ファイルを削除しない」と書く</li>
+      <li>次からタスクが終わったら会話をリセットする習慣をつける</li>
+    </ol>
+  </div>
+
+</div>
+</body>
+</html>
