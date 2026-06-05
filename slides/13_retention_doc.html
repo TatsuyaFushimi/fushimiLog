@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>視聴維持の為の添削 — 資料版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; gap: 20px;
+  }
+  .back-nav a { color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* ── ヘッダー ── */
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 26px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  /* ── コアメッセージ ── */
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  /* ── セクション ── */
+  .section { margin-bottom: 44px; }
+
+  .section-heading {
+    font-size: 18px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+  }
+
+  .sub-heading {
+    font-size: 14px; font-weight: 800; color: #1A1A2E;
+    margin: 20px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sub-heading::before { content: '▍'; color: #FF6B2B; font-size: 12px; }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; }
+  strong { color: #1A1A2E; }
+  code { font-family: 'Courier New', monospace; font-size: 12px; background: #F5F5F5; padding: 1px 6px; border-radius: 4px; color: #FF6B2B; }
+
+  /* ── ポイントボックス ── */
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 5px; }
+  .point-box p { font-size: 13px; color: #555; margin-bottom: 0; }
+
+  /* ── ヒント／警告ボックス ── */
+  .hint-box {
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #166534; margin-bottom: 14px; font-weight: 700;
+  }
+  .warn-box {
+    background: #FFF8EC; border: 1px solid #FFD4B8;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #888; margin-bottom: 14px;
+  }
+
+  /* ── テーブル ── */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #1A1A2E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+
+  /* ── 2カラムグリッド ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .col-box { border-radius: 10px; padding: 16px 18px; }
+  .col-left { background: #EFF6FF; border-top: 3px solid #2563EB; }
+  .col-left .col-title { font-size: 13px; font-weight: 800; color: #2563EB; margin-bottom: 8px; }
+  .col-right { background: #FFF7ED; border-top: 3px solid #EA580C; }
+  .col-right .col-title { font-size: 13px; font-weight: 800; color: #EA580C; margin-bottom: 8px; }
+  .col-box ul { padding-left: 16px; margin-bottom: 0; }
+  .col-box li { font-size: 13px; color: #555; margin-bottom: 5px; }
+
+  /* ── ワークフローステップ ── */
+  .workflow {
+    display: flex; flex-direction: column; gap: 0; margin-bottom: 18px;
+  }
+  .wf-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 18px; background: #FAFAFA; border-radius: 0;
+    border-left: 3px solid #FFD4B8; position: relative;
+  }
+  .wf-step:first-child { border-radius: 10px 10px 0 0; }
+  .wf-step:last-child { border-radius: 0 0 10px 10px; }
+  .wf-step + .wf-step { border-top: 1px solid #F0F0F0; }
+  .wf-step.active { background: #FFF3EC; border-left-color: #FF6B2B; }
+  .wf-num {
+    background: #FF6B2B; color: #fff;
+    font-size: 12px; font-weight: 900;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .wf-body .wf-title { font-size: 14px; font-weight: 800; color: #1A1A2E; margin-bottom: 3px; }
+  .wf-body p { font-size: 13px; color: #666; margin-bottom: 0; }
+
+  /* ── 実績バー ── */
+  .stat-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .stat-label { font-size: 13px; color: #444; width: 200px; flex-shrink: 0; }
+  .stat-bar-wrap { flex: 1; background: #F0F0F0; border-radius: 20px; height: 14px; }
+  .stat-bar { height: 14px; border-radius: 20px; }
+  .stat-val { font-size: 13px; font-weight: 800; color: #FF6B2B; width: 50px; text-align: right; }
+
+  /* ── 結果サマリーカード ── */
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .result-card { border-radius: 10px; padding: 16px 18px; text-align: center; }
+  .rc-critical { background: #FEF2F2; border: 2px solid #DC2626; }
+  .rc-warning  { background: #FFFBEB; border: 2px solid #D97706; }
+  .rc-glossary { background: #EFF6FF; border: 2px solid #2563EB; }
+  .rc-stock    { background: #F0FDF4; border: 2px solid #059669; }
+  .result-card .rc-num { font-size: 36px; font-weight: 900; margin-bottom: 4px; }
+  .rc-critical .rc-num { color: #DC2626; }
+  .rc-warning .rc-num  { color: #D97706; }
+  .rc-glossary .rc-num { color: #2563EB; }
+  .rc-stock .rc-num    { color: #059669; }
+  .result-card .rc-label { font-size: 13px; font-weight: 700; color: #555; }
+
+  /* ── リンクボタン ── */
+  .link-btn {
+    display: inline-block;
+    background: #FF6B2B; color: #fff;
+    font-size: 14px; font-weight: 800;
+    padding: 12px 28px; border-radius: 30px;
+    text-decoration: none;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .link-btn:hover { background: #E55A1F; }
+  .link-btn-outline {
+    display: inline-block;
+    background: transparent; color: #FF6B2B;
+    border: 2px solid #FF6B2B;
+    font-size: 14px; font-weight: 800;
+    padding: 10px 24px; border-radius: 30px;
+    text-decoration: none; margin-left: 12px;
+  }
+
+  /* ── キーメッセージ ── */
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 28px 32px; margin: 32px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .key-message .km-body { font-size: 17px; font-weight: 800; line-height: 1.8; }
+
+  /* ── 印刷 ── */
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+    .link-btn, .link-btn-outline { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../index.html">← 一覧へ戻る</a>
+  <a href="12_retention_editing.html">▶ スライド版を見る</a>
+</div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">AI活用 #13 — 実践レポート</div>
+    <h1>視聴維持の為の添削<br>ClaudeとAdobeで、動画の「ここを直すべき」がわかる</h1>
+    <div class="subtitle">AI勉強会での悩みがきっかけ。対談動画の視聴維持率をAIで改善する試み。</div>
+    <div class="meta">2026.06.02</div>
+  </div>
+
+  <div class="core-message">
+    動画の「どこに何を入れるか」の判断も、Adobe Stockの素材選定も、全部AIに任せられる。<br>
+    あとは人間が<strong>「作る」だけ</strong>の状態を作れるかどうかが鍵。
+  </div>
+
+  <!-- 1. きっかけ -->
+  <div class="section">
+    <div class="section-heading">きっかけ — 平山さんの悩み</div>
+    <p>AI勉強会で<strong>平山さん</strong>が話していた悩みがそのままヒントになった。</p>
+
+    <div class="point-box">
+      <div class="pt">😔 対談・インタビュー形式の動画あるある</div>
+      <p>人物のトークがメインになる対談動画は、どうしても画像・テロップが少なくなりがち。「どこに何を入れるか」の判断が難しい上に、素材を探す作業も重い。視聴維持率が落ちるのはわかっているのに、手が出ない。</p>
+    </div>
+
+    <div class="sub-heading">具体的に困っていること</div>
+    <ul>
+      <li>15秒以上トークだけが続く「空白区間」がたくさんある</li>
+      <li>専門用語が出てきても注釈テロップを入れるかどうか迷う</li>
+      <li>どんな画像を入れればいいか毎回イメージが湧かない</li>
+      <li>Adobe Stockで素材を探すと時間がかかる</li>
+      <li>編集者への指示に「ここにこれを入れて」と伝えるのも一仕事</li>
+    </ul>
+
+    <div class="hint-box">💡 これ、AIに全部判断させて、素材まで用意させたらどうなる？</div>
+  </div>
+
+  <!-- 2. 課題の整理 -->
+  <div class="section">
+    <div class="section-heading">視聴維持率を下げる3つの原因</div>
+    <p>対談・インタビュー形式の動画で視聴維持率が落ちる原因を整理すると、ほぼ3つに集約される。</p>
+
+    <table>
+      <tr><th>原因</th><th>具体的な問題</th><th>必要な対策</th></tr>
+      <tr>
+        <td><strong>① 視覚的空白</strong></td>
+        <td>15秒以上、画像もテロップも変化しない区間が続く</td>
+        <td>強調テロップ・画像・図解の挿入</td>
+      </tr>
+      <tr>
+        <td><strong>② 専門用語の壁</strong></td>
+        <td>業界用語が出ても説明がなく、初心者が置いてけぼりになる</td>
+        <td>注釈テロップの追加</td>
+      </tr>
+      <tr>
+        <td><strong>③ 感情の起伏がない</strong></td>
+        <td>テロップが散発的で、視聴者の「ここ大事！」が伝わらない</td>
+        <td>強調テロップの設計と配置</td>
+      </tr>
+    </table>
+
+    <div class="warn-box">⚠️ これらの判断と素材準備を人間が毎回やると、1本の動画で数時間かかることも。</div>
+  </div>
+
+  <!-- 3. ClaudeとAdobeの連携 -->
+  <div class="section">
+    <div class="section-heading">ClaudeとAdobeの連携</div>
+    <p><strong>Claude for Adobe</strong> は、Adobe Creative Cloud のアプリ内から直接Claudeに指示できる機能。Premiere Pro・After Effects・Illustratorなど主要ツールと統合されている。</p>
+
+    <div class="two-col">
+      <div class="col-box col-left">
+        <div class="col-title">Claudeができること</div>
+        <ul>
+          <li>動画のトランスクリプト（字幕データ）を解析</li>
+          <li>15秒ルールを基に空白区間を特定</li>
+          <li>テロップ文・注釈テキストを生成</li>
+          <li>挿入すべき画像の内容を提案</li>
+          <li>優先度付きの改善レポートを出力</li>
+        </ul>
+      </div>
+      <div class="col-box col-right">
+        <div class="col-title">Adobeとの連携でできること</div>
+        <ul>
+          <li>Adobe Stockを自然言語で検索</li>
+          <li>候補画像をIDと説明付きで提案</li>
+          <li>ライセンス済み素材をそのまま使用</li>
+          <li>Premiere Proのタイムライン上に直接配置</li>
+          <li>テロップデザインの自動生成</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub-heading">従来との違い</div>
+    <table>
+      <tr><th></th><th>従来（人力）</th><th>Claude + Adobe連携</th></tr>
+      <tr><td><strong>空白区間の特定</strong></td><td>動画を見ながら手動でメモ</td><td>字幕データから自動検出</td></tr>
+      <tr><td><strong>テロップ文の作成</strong></td><td>会話を聞いて自分で考える</td><td>文脈に沿って自動生成</td></tr>
+      <tr><td><strong>画像素材の選定</strong></td><td>Adobe Stockを手動で検索</td><td>内容に合う素材をID付きで提案</td></tr>
+      <tr><td><strong>編集者への指示書</strong></td><td>時間をかけて文章化</td><td>タイムコード付きで自動出力</td></tr>
+    </table>
+  </div>
+
+  <!-- 4. Adobe Stock連携 -->
+  <div class="section">
+    <div class="section-heading">Adobe Stock連携 — for Adobeでできること</div>
+    <p>Claude for Adobeを使うと、<strong>Adobe Stockの検索から素材の挿入まで</strong>をAdobeアプリを離れずに行える。</p>
+
+    <div class="point-box">
+      <div class="pt">🔍 自然言語で素材を検索できる</div>
+      <p>「疲れて帰宅するサラリーマンのイラスト」「右肩上がりのグラフ・青色・シンプル」のような日本語の説明でStockを検索できる。キーワードを考える必要がない。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">✅ ライセンス済みで商用利用OK</div>
+      <p>Adobe Stockの素材はCreative Cloudサブスクリプションに含まれるライセンスで商用利用できる。著作権フリーなので動画に使っても問題ない。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">📋 AIが画像IDと用途コメントを一緒に提案</div>
+      <p>「どの場面にどの画像を使うか」の判断もAIがやってくれる。タイムコード・挿入理由・Adobe Stock IDがセットで出力されるので、編集者への指示書としてそのまま使える。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">🎨 動画の雰囲気に合わせた絞り込みも可能</div>
+      <p>「青系のカラーで統一」「日本語テキスト入りのもの」「ベクターイラストのみ」など、動画のトーンに合わせてフィルタリングもできる。</p>
+    </div>
+  </div>
+
+  <!-- 5. ワークフロー -->
+  <div class="section">
+    <div class="section-heading">AIに全部用意させる — ワークフロー</div>
+    <p>添削（判断）と素材（準備）を一気通貫でAIに処理させるフロー。</p>
+
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-num">1</div>
+        <div class="wf-body">
+          <div class="wf-title">字幕データ・トランスクリプトを用意する</div>
+          <p>YouTube自動字幕やYouTube Studio からSRTファイルをエクスポート。これをClaudeに渡す素材にする。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">2</div>
+        <div class="wf-body">
+          <div class="wf-title">Claudeが空白区間を検出・改善提案を生成</div>
+          <p>字幕のタイムコードを読んで、15秒以上の空白を自動検出。各区間に対してテロップ文・挿入すべき画像の種類・注釈テキストを生成する。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">3</div>
+        <div class="wf-body">
+          <div class="wf-title">Adobe Stockから推奨素材を検索・提案</div>
+          <p>各挿入ポイントに合う画像をStock検索し、Adobe Stock IDと使い方コメントをセットで出力。優先度（CRITICAL/WARNING）も付けてくれる。</p>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-num">4</div>
+        <div class="wf-body">
+          <div class="wf-title">タイムコード付きの編集指示書が完成</div>
+          <p>「0:35 → 強調テロップ『月10万は今でも背取りで可能？』」のように、編集者がそのまま使える指示書が出力される。</p>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-num">5</div>
+        <div class="wf-body">
+          <div class="wf-title">人間は「作る」だけ</div>
+          <p>あとは指示書通りに素材を配置するだけ。「どこに何を入れるか」の判断はAIが全部やっている。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. やってみた -->
+  <div class="section">
+    <div class="section-heading">やってみた — 実際の解析結果</div>
+
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>動画</td><td>背取り（セドリ）vs クラファン物販 対談</td></tr>
+      <tr><td>尺</td><td>29分45秒</td></tr>
+      <tr><td>形式</td><td>2人対談・インタビュー形式</td></tr>
+      <tr><td>チェック日</td><td>2026-06-02</td></tr>
+    </table>
+
+    <div class="sub-heading">総合評価</div>
+
+    <div class="stat-row">
+      <div class="stat-label">10〜15秒ルール遵守率</div>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:12%; background:#DC2626;"></div></div>
+      <div class="stat-val">12%</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">専門用語への注釈</div>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:20%; background:#D97706;"></div></div>
+      <div class="stat-val">20%</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">単調トーク時の画像挿入</div>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:15%; background:#D97706;"></div></div>
+      <div class="stat-val">15%</div>
+    </div>
+
+    <div class="sub-heading">発見した問題と提案</div>
+
+    <div class="result-grid">
+      <div class="result-card rc-critical">
+        <div class="rc-num">3</div>
+        <div class="rc-label">🔴 CRITICAL<br>深刻な空白（最大267秒）</div>
+      </div>
+      <div class="result-card rc-warning">
+        <div class="rc-num">11</div>
+        <div class="rc-label">🟠 WARNING<br>改善推奨箇所</div>
+      </div>
+      <div class="result-card rc-glossary">
+        <div class="rc-num">8</div>
+        <div class="rc-label">📝 用語解説<br>注釈テキスト生成</div>
+      </div>
+      <div class="result-card rc-stock">
+        <div class="rc-num">12</div>
+        <div class="rc-label">🖼 Adobe Stock<br>推奨素材（ID付き）</div>
+      </div>
+    </div>
+
+    <div class="point-box">
+      <div class="pt">🔴 最大の問題：8:33〜13:00（267秒＝4分27秒の空白）</div>
+      <p>動画全体の核心パートで最長の視覚的空白。「背取りは隙間産業である」という最も重要な論点をトークだけで展開しており、視聴離脱が最大化するポイント。10個の挿入提案と推奨素材をセットで提案済み。</p>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <a class="link-btn" href="12_retention_report.html" target="_blank">📋 詳細レポートを見る</a>
+      <a class="link-btn-outline" href="12_retention_editing.html">▶ スライド版</a>
+    </div>
+  </div>
+
+  <!-- 7. 応用・考察 -->
+  <div class="section">
+    <div class="section-heading">応用できる動画ジャンル</div>
+    <p>今回は対談形式の物販系チャンネルで試したが、同じアプローチはジャンルを問わず使える。</p>
+
+    <table>
+      <tr><th>動画ジャンル</th><th>AIが判断できること</th><th>素材の活用</th></tr>
+      <tr>
+        <td>対談・インタビュー</td>
+        <td>空白区間の検出・テロップ文生成</td>
+        <td>状況に合う人物・背景画像</td>
+      </tr>
+      <tr>
+        <td>解説・教育系</td>
+        <td>専門用語の注釈・図解のタイミング</td>
+        <td>インフォグラフィック・図解アイコン</td>
+      </tr>
+      <tr>
+        <td>商品紹介・レビュー</td>
+        <td>スペック説明時のテロップ設計</td>
+        <td>商品イメージ・比較グラフ</td>
+      </tr>
+      <tr>
+        <td>Vlog・日常系</td>
+        <td>感情の起伏に合わせたテロップ提案</td>
+        <td>雰囲気に合うライフスタイル写真</td>
+      </tr>
+      <tr>
+        <td>セミナー・講演</td>
+        <td>要点まとめテロップの自動生成</td>
+        <td>スライドの視覚補強素材</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- まとめ -->
+  <div class="key-message">
+    <div class="km-title">まとめ</div>
+    <div class="km-body">
+      判断（どこに何を入れるか）も<br>
+      素材（Adobe Stockから何を使うか）も<br>
+      指示書（編集者への共有）も<br><br>
+      全部AIに任せられる。<br>
+      <span style="color:#FF9A5C;">あとは人間が「作る」だけ。</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-heading">次のアクション</div>
+    <ol>
+      <li>YouTube Studioから字幕SRTファイルをエクスポートする</li>
+      <li>Claudeに「この字幕データで視聴維持率の改善提案をして」と投げる</li>
+      <li>出てきたレポートを編集者に共有する</li>
+      <li>Adobe Stock IDをそのまま素材選定に使う</li>
+    </ol>
+  </div>
+
+</div>
+</body>
+</html>
