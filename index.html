@@ -5,18 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>伏見勉強録</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     background: #F5F5F5;
     font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
     min-height: 100vh;
+    color: #1A1A2E;
   }
 
   /* ── ヘッダー ── */
   header {
     background: linear-gradient(135deg, #FF6B2B 0%, #FF9A5C 60%, #FFB87A 100%);
-    padding: 48px 64px 40px;
+    padding: 40px 48px 36px;
     position: relative;
     overflow: hidden;
   }
@@ -35,56 +38,159 @@
     pointer-events: none;
   }
   header .tag {
-    font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 700;
+    font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 700;
     letter-spacing: 0.15em; background: rgba(255,255,255,0.2);
-    padding: 4px 16px; border-radius: 20px; display: inline-block;
-    margin-bottom: 14px; position: relative; z-index: 1;
+    padding: 3px 14px; border-radius: 20px; display: inline-block;
+    margin-bottom: 12px; position: relative; z-index: 1;
   }
   header h1 {
-    font-size: 40px; color: #fff; font-weight: 900;
+    font-size: 36px; color: #fff; font-weight: 900;
     line-height: 1.3; position: relative; z-index: 1;
     text-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
   header p {
-    font-size: 17px; color: rgba(255,255,255,0.82);
-    margin-top: 8px; position: relative; z-index: 1;
+    font-size: 15px; color: rgba(255,255,255,0.82);
+    margin-top: 6px; position: relative; z-index: 1;
   }
 
-  /* ── メイン ── */
-  main {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 48px 32px 80px;
+  /* ── ページレイアウト ── */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 130px);
   }
 
-  .section { margin-bottom: 52px; }
+  /* ── 左サイドバー ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid #EAEAEA;
+    padding: 32px 16px;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 130px);
+    overflow-y: auto;
+  }
 
-  .section-title {
-    font-size: 13px; font-weight: 700; color: #FF6B2B;
-    letter-spacing: 0.15em; margin-bottom: 20px;
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; color: #CCC;
+    letter-spacing: 0.18em; padding: 0 8px; margin-bottom: 12px;
+  }
+
+  .tab-btn {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 12px 14px;
+    border: none; background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    margin-bottom: 4px;
+    transition: background 0.15s, color 0.15s;
+    color: #888;
+    font-family: inherit;
+  }
+  .tab-btn:hover {
+    background: #FFF3EC;
+    color: #FF6B2B;
+  }
+  .tab-btn.active {
+    background: #FF6B2B;
+    color: #fff;
+  }
+  .tab-btn .tb-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .tab-btn .tb-body { flex: 1; }
+  .tab-btn .tb-label {
+    font-size: 13px; font-weight: 800;
+    display: block; line-height: 1.2;
+  }
+  .tab-btn .tb-count {
+    font-size: 11px; font-weight: 700; opacity: 0.7;
+    display: block; margin-top: 2px;
+  }
+  .tab-btn.active .tb-count { opacity: 0.85; }
+
+  .sidebar-divider {
+    height: 1px; background: #F0F0F0;
+    margin: 16px 8px;
+  }
+
+  .tab-btn-all {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 14px;
+    border: none; background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    margin-bottom: 4px;
+    transition: background 0.15s, color 0.15s;
+    color: #AAA;
+    font-family: inherit;
+    font-size: 12px; font-weight: 700;
+  }
+  .tab-btn-all:hover { background: #F5F5F5; color: #666; }
+  .tab-btn-all.active { background: #1A1A2E; color: #fff; }
+
+  /* ── メインコンテンツ ── */
+  .content {
+    flex: 1;
+    padding: 40px 36px 80px;
+    min-width: 0;
+  }
+
+  /* ── タブパネル ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── セクションヘッダー ── */
+  .panel-header {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #F0F0F0;
+  }
+  .panel-header .ph-label {
+    font-size: 11px; font-weight: 700; color: #FF6B2B;
+    letter-spacing: 0.18em; margin-bottom: 6px;
+  }
+  .panel-header h2 {
+    font-size: 22px; font-weight: 900; color: #1A1A2E;
+    margin-bottom: 4px;
+  }
+  .panel-header p {
+    font-size: 13px; color: #999; line-height: 1.6;
+  }
+
+  /* ── セクション区切り（全表示モード用） ── */
+  .section-sep {
+    font-size: 12px; font-weight: 700; color: #FF6B2B;
+    letter-spacing: 0.15em; margin: 36px 0 18px;
     display: flex; align-items: center; gap: 10px;
   }
-  .section-title::after {
+  .section-sep::after {
     content: ''; flex: 1; height: 1px; background: #FFD4B8;
   }
-  .section-title .st-badge {
+  .section-sep .ss-badge {
     background: #FF6B2B; color: #fff;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
-    padding: 2px 10px; border-radius: 20px;
+    font-size: 10px; padding: 2px 9px; border-radius: 20px;
   }
+  .section-sep:first-of-type { margin-top: 0; }
 
   /* ── カードグリッド ── */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+    margin-bottom: 8px;
   }
 
   .card {
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     text-decoration: none;
     display: flex; flex-direction: column;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -92,11 +198,11 @@
   }
   .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(255,107,43,0.18);
+    box-shadow: 0 8px 32px rgba(255,107,43,0.16);
   }
 
   .card-thumb {
-    height: 168px;
+    height: 160px;
     position: relative;
     overflow: hidden;
     background: #FFF3EC;
@@ -110,7 +216,6 @@
     pointer-events: none;
     display: block;
   }
-  /* navバーを隠すグラデーションマスク */
   .card-thumb::after {
     content: '';
     position: absolute; bottom: 0; left: 0; right: 0;
@@ -121,51 +226,69 @@
   }
 
   .card-body {
-    padding: 18px 20px 20px;
-    flex: 1; display: flex; flex-direction: column; gap: 8px;
+    padding: 16px 18px 18px;
+    flex: 1; display: flex; flex-direction: column; gap: 7px;
   }
   .card-meta {
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 6px;
     flex-wrap: wrap;
   }
   .badge {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 2px 9px; border-radius: 20px;
   }
   .badge-orange { background: #FFF3EC; color: #FF6B2B; }
   .badge-gray   { background: #F0F0F0; color: #888; }
+  .badge-blue   { background: #EFF6FF; color: #2563EB; }
+
   .card-title {
-    font-size: 20px; font-weight: 800; color: #1A1A2E; line-height: 1.4;
+    font-size: 16px; font-weight: 800; color: #1A1A2E; line-height: 1.4;
   }
   .card-desc {
-    font-size: 14px; color: #888; line-height: 1.7;
+    font-size: 13px; color: #888; line-height: 1.7;
     flex: 1;
   }
   .card-footer {
     display: flex; align-items: center; justify-content: space-between;
-    padding-top: 12px; border-top: 1px solid #F0F0F0;
+    padding-top: 10px; border-top: 1px solid #F0F0F0;
     margin-top: 4px;
   }
-  .card-date { font-size: 13px; color: #bbb; }
+  .card-date { font-size: 12px; color: #bbb; }
   .card-arrow {
-    font-size: 18px; color: #FF9A5C; font-weight: 700;
+    font-size: 16px; color: #FF9A5C; font-weight: 700;
     transition: transform 0.15s;
   }
   .card:hover .card-arrow { transform: translateX(4px); }
 
-  /* ── 空カード（追加予定） ── */
+  /* ── 空カード ── */
   .card-empty {
     background: #fff;
     border-radius: 16px;
     border: 2px dashed #FFD4B8;
-    height: 240px;
+    height: 220px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    gap: 10px;
-    color: #FFB87A;
+    gap: 8px; color: #FFB87A;
   }
-  .card-empty .ce-icon { font-size: 36px; }
-  .card-empty .ce-text { font-size: 15px; font-weight: 600; }
+  .card-empty .ce-icon { font-size: 30px; }
+  .card-empty .ce-text { font-size: 13px; font-weight: 600; }
+
+  /* ── レスポンシブ ── */
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%; height: auto;
+      position: static;
+      padding: 16px;
+      border-right: none;
+      border-bottom: 1px solid #EAEAEA;
+      display: flex; gap: 8px; overflow-x: auto;
+    }
+    .sidebar-label, .sidebar-divider { display: none; }
+    .tab-btn { min-width: 110px; margin-bottom: 0; }
+    .tab-btn-all { min-width: 80px; margin-bottom: 0; }
+    .content { padding: 24px 16px 60px; }
+  }
 </style>
 </head>
 <body>
@@ -176,339 +299,563 @@
   <p>資料を開けます</p>
 </header>
 
-<main>
+<div class="layout">
 
-  <!-- AI活用 -->
-  <div class="section">
-    <div class="section-title">AI活用 <span class="st-badge">8本</span></div>
-    <div class="grid">
+  <!-- ── 左サイドバー ── -->
+  <aside class="sidebar">
+    <div class="sidebar-label">カテゴリ</div>
 
-      <!-- 03 AI素材化 -->
-      <a class="card" href="slides/03_ai_asset.html">
-        <div class="card-thumb">
-          <iframe src="slides/03_ai_asset.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#03</span>
-            <span class="badge badge-gray">21枚</span>
-            <span class="badge badge-gray">2026.04.08</span>
-          </div>
-          <div class="card-title">AIに「完成形」ではなく<br>「素材」を作らせよう</div>
-          <div class="card-desc">素材化・資産化の発想でAI活用の幅を広げる。Claude Code×Blenderで3Dモデルを作る方法。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.04.08</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <button class="tab-btn active" onclick="switchTab('ai')" id="tab-ai">
+      <span class="tb-icon">🤖</span>
+      <span class="tb-body">
+        <span class="tb-label">AI関連</span>
+        <span class="tb-count">8本</span>
+      </span>
+    </button>
 
-      <!-- 04 AEをとっつきやすく -->
-      <a class="card" href="slides/04_ae_prompt.html">
-        <div class="card-thumb">
-          <iframe src="slides/04_ae_prompt.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#04</span>
-            <span class="badge badge-gray">12枚</span>
-            <span class="badge badge-gray">2026.04.23</span>
-          </div>
-          <div class="card-title">AEをとっつきやすく！</div>
-          <div class="card-desc">プロンプト実行でAfter Effectsを動かす。ClaudeCodeで自己紹介カードアニメーションを作成した話。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.04.23</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <button class="tab-btn" onclick="switchTab('summary')" id="tab-summary">
+      <span class="tb-icon">📄</span>
+      <span class="tb-body">
+        <span class="tb-label">要約資料</span>
+        <span class="tb-count">5本</span>
+      </span>
+    </button>
 
-      <!-- 05 タスク管理 -->
-      <a class="card" href="slides/05_task_management.html">
-        <div class="card-thumb">
-          <iframe src="slides/05_task_management.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#05</span>
-            <span class="badge badge-gray">10枚</span>
-            <span class="badge badge-gray">2026.05.14</span>
-          </div>
-          <div class="card-title">ClaudeCodeで<br>タスク管理</div>
-          <div class="card-desc">面倒臭いは一旦ClaudeCodeに！制作管理シート×カレンダー×自動ピックアップで日々のタスクを快適に。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.05.14</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <button class="tab-btn" onclick="switchTab('work')" id="tab-work">
+      <span class="tb-icon">💼</span>
+      <span class="tb-body">
+        <span class="tb-label">発表資料</span>
+        <span class="tb-count">2本</span>
+      </span>
+    </button>
 
-      <!-- 12 視聴維持の為の添削 -->
-      <a class="card" href="slides/12_retention_editing.html">
-        <div class="card-thumb">
-          <iframe src="slides/12_retention_editing.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#12</span>
-            <span class="badge badge-gray">7枚</span>
-            <span class="badge badge-gray">2026.06.02</span>
-          </div>
-          <div class="card-title">視聴維持の為の添削</div>
-          <div class="card-desc">ClaudeとAdobeの連携で動画の空白区間を検出。テロップ文・注釈テキスト・Adobe Stock画像まで全部AIに用意させる。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.06.02</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <div class="sidebar-divider"></div>
 
-      <!-- 13 視聴維持の為の添削（資料版） -->
-      <a class="card" href="slides/13_retention_doc.html">
-        <div class="card-thumb">
-          <iframe src="slides/13_retention_doc.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#13</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.06.05</span>
-          </div>
-          <div class="card-title">視聴維持の為の添削<br>（資料版）</div>
-          <div class="card-desc">ワークフロー・Adobe Stock連携の詳細・実際の解析結果サマリーまで網羅した文書版。スライド#12の補足資料。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.06.05</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <button class="tab-btn-all" onclick="switchTab('all')" id="tab-all">
+      　すべて見る
+    </button>
+  </aside>
 
-      <!-- 14 AIに素材を作らせよう（資料版） -->
-      <a class="card" href="slides/14_ai_asset_doc.html">
-        <div class="card-thumb">
-          <iframe src="slides/14_ai_asset_doc.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#14</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.04.08</span>
-          </div>
-          <div class="card-title">AIに「素材」を作らせよう<br>（資料版）</div>
-          <div class="card-desc">素材化・資産化の発想で広がるAI活用。Blender×ClaudeCodeで3Dモデルを作る3ステップ。スライド#03の補足資料。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.04.08</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+  <!-- ── メインコンテンツ ── -->
+  <main class="content">
 
-      <!-- 15 AEをとっつきやすく（資料版） -->
-      <a class="card" href="slides/15_ae_prompt_doc.html">
-        <div class="card-thumb">
-          <iframe src="slides/15_ae_prompt_doc.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#15</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.04.23</span>
-          </div>
-          <div class="card-title">AEをとっつきやすく！<br>（資料版）</div>
-          <div class="card-desc">ExtendScript × ClaudeCodeでAfter Effectsの壁を越える。Adobeアプリ全体への応用まで網羅。スライド#04の補足資料。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.04.23</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-      </a>
+    <!-- AI関連 -->
+    <div class="tab-panel active" id="panel-ai">
+      <div class="panel-header">
+        <div class="ph-label">AI関連</div>
+        <h2>AI活用・ClaudeCode実践</h2>
+        <p>AI活用の発表スライドと、各テーマの補足A4文書。ClaudeCode・Blender・AE・タスク管理・視聴維持などの実践記録。</p>
+      </div>
+      <div class="grid">
 
-      <!-- 16 ClaudeCodeでタスク管理（資料版） -->
-      <a class="card" href="slides/16_task_management_doc.html">
-        <div class="card-thumb">
-          <iframe src="slides/16_task_management_doc.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#16</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.05.14</span>
+        <!-- 03 AI素材化 -->
+        <a class="card" href="slides/03_ai_asset.html">
+          <div class="card-thumb">
+            <iframe src="slides/03_ai_asset.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">ClaudeCodeでタスク管理<br>（資料版）</div>
-          <div class="card-desc">制作管理シート×カレンダー連携の設定フロー・できるようになったこと5つ・今後の展望まで詳解。スライド#05の補足資料。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.05.14</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#03</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">21枚</span>
+            </div>
+            <div class="card-title">AIに「完成形」ではなく<br>「素材」を作らせよう</div>
+            <div class="card-desc">素材化・資産化の発想でAI活用の幅を広げる。Claude Code×Blenderで3Dモデルを作る方法。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.04.08</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
+        <!-- 14 AI素材化（資料版） -->
+        <a class="card" href="slides/14_ai_asset_doc.html">
+          <div class="card-thumb">
+            <iframe src="slides/14_ai_asset_doc.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#14</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">AIに「素材」を作らせよう<br>（資料版）</div>
+            <div class="card-desc">素材化・資産化の発想で広がるAI活用。Blender×ClaudeCodeで3Dモデルを作る3ステップ。スライド#03の補足資料。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.04.08</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 04 AEをとっつきやすく -->
+        <a class="card" href="slides/04_ae_prompt.html">
+          <div class="card-thumb">
+            <iframe src="slides/04_ae_prompt.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#04</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">12枚</span>
+            </div>
+            <div class="card-title">AEをとっつきやすく！</div>
+            <div class="card-desc">プロンプト実行でAfter Effectsを動かす。ClaudeCodeで自己紹介カードアニメーションを作成した話。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.04.23</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 15 AEをとっつきやすく（資料版） -->
+        <a class="card" href="slides/15_ae_prompt_doc.html">
+          <div class="card-thumb">
+            <iframe src="slides/15_ae_prompt_doc.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#15</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">AEをとっつきやすく！<br>（資料版）</div>
+            <div class="card-desc">ExtendScript × ClaudeCodeでAfter Effectsの壁を越える。Adobeアプリ全体への応用まで網羅。スライド#04の補足資料。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.04.23</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 05 タスク管理 -->
+        <a class="card" href="slides/05_task_management.html">
+          <div class="card-thumb">
+            <iframe src="slides/05_task_management.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#05</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">10枚</span>
+            </div>
+            <div class="card-title">ClaudeCodeで<br>タスク管理</div>
+            <div class="card-desc">面倒臭いは一旦ClaudeCodeに！制作管理シート×カレンダー×自動ピックアップで日々のタスクを快適に。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.05.14</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 16 タスク管理（資料版） -->
+        <a class="card" href="slides/16_task_management_doc.html">
+          <div class="card-thumb">
+            <iframe src="slides/16_task_management_doc.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#16</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">ClaudeCodeでタスク管理<br>（資料版）</div>
+            <div class="card-desc">制作管理シート×カレンダー連携の設定フロー・できるようになったこと5つ・今後の展望まで詳解。スライド#05の補足資料。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.05.14</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 12 視聴維持の為の添削 -->
+        <a class="card" href="slides/12_retention_editing.html">
+          <div class="card-thumb">
+            <iframe src="slides/12_retention_editing.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#12</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">7枚</span>
+            </div>
+            <div class="card-title">視聴維持の為の添削</div>
+            <div class="card-desc">ClaudeとAdobeの連携で動画の空白区間を検出。テロップ文・注釈テキスト・Adobe Stock画像まで全部AIに用意させる。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.06.02</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 13 視聴維持の為の添削（資料版） -->
+        <a class="card" href="slides/13_retention_doc.html">
+          <div class="card-thumb">
+            <iframe src="slides/13_retention_doc.html" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#13</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">視聴維持の為の添削<br>（資料版）</div>
+            <div class="card-desc">ワークフロー・Adobe Stock連携の詳細・実際の解析結果サマリーまで網羅した文書版。スライド#12の補足資料。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.06.05</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
     </div>
-  </div>
 
-  <!-- 資料要約 -->
-  <div class="section">
-    <div class="section-title">資料要約 <span class="st-badge">5本</span></div>
-    <div class="grid">
+    <!-- 要約資料 -->
+    <div class="tab-panel" id="panel-summary">
+      <div class="panel-header">
+        <div class="ph-label">要約資料</div>
+        <h2>外部資料・勉強会資料の要約</h2>
+        <p>書籍・記事・勉強会コンテンツをA4文書形式でまとめたもの。AIマインドシフト・WEBライティング・ClaudeCode関連など。</p>
+      </div>
+      <div class="grid">
 
-      <!-- 06 AIマインドシフト -->
-      <a class="card" href="slides/06_ai_mindshift.html">
-        <div class="card-thumb">
-          <iframe src="slides/06_ai_mindshift.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#06</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.05.28</span>
+        <!-- 06 AIマインドシフト -->
+        <a class="card" href="slides/06_ai_mindshift.html">
+          <div class="card-thumb">
+            <iframe src="slides/06_ai_mindshift.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">起業家のための<br>AIマインドシフト10日間</div>
-          <div class="card-desc">実行者から「設計者」へ。AI活用における10のパラダイムシフト。承認の罠・暗黙知の言語化・空白の小切手など。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.05.28</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#06</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">起業家のための<br>AIマインドシフト10日間</div>
+            <div class="card-desc">実行者から「設計者」へ。AI活用における10のパラダイムシフト。承認の罠・暗黙知の言語化・空白の小切手など。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.05.28</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 07 AI WEBライティング -->
-      <a class="card" href="slides/07_ai_web_writing.html">
-        <div class="card-thumb">
-          <iframe src="slides/07_ai_web_writing.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#07</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.05.28</span>
+        <!-- 07 AI WEBライティング -->
+        <a class="card" href="slides/07_ai_web_writing.html">
+          <div class="card-thumb">
+            <iframe src="slides/07_ai_web_writing.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">AI WEB WRITING</div>
-          <div class="card-desc">AIをディレクターとして使いこなす。9つのプロンプト設計・PASTORフォーミュラ・ツール3選の使い分け。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.05.28</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#07</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">AI WEB WRITING</div>
+            <div class="card-desc">AIをディレクターとして使いこなす。9つのプロンプト設計・PASTORフォーミュラ・ツール3選の使い分け。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.05.28</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 09 AI3層構造 -->
-      <a class="card" href="slides/09_ai_three_layers.html">
-        <div class="card-thumb">
-          <iframe src="slides/09_ai_three_layers.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#09</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.05.28</span>
+        <!-- 09 AI3層構造 -->
+        <a class="card" href="slides/09_ai_three_layers.html">
+          <div class="card-thumb">
+            <iframe src="slides/09_ai_three_layers.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">AI活用の3層構造<br>プロンプト・コンテキスト・ハーネス</div>
-          <div class="card-desc">初心者でもわかる！AIの使い方を進化させる3つの概念。プロンプト×コンテキスト×ハーネスが揃ってAIはチームメイトになる。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.05.28</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#09</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">AI活用の3層構造<br>プロンプト・コンテキスト・ハーネス</div>
+            <div class="card-desc">初心者でもわかる！AIの使い方を進化させる3つの概念。プロンプト×コンテキスト×ハーネスが揃ってAIはチームメイトになる。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.05.28</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 10 ClaudeCode設定ファイル -->
-      <a class="card" href="slides/10_claudecode_settings.html">
-        <div class="card-thumb">
-          <iframe src="slides/10_claudecode_settings.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#10</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.06.02</span>
+        <!-- 10 ClaudeCode設定ファイル -->
+        <a class="card" href="slides/10_claudecode_settings.html">
+          <div class="card-thumb">
+            <iframe src="slides/10_claudecode_settings.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">ClaudeCode<br>設定ファイル完全ガイド</div>
-          <div class="card-desc">CLAUDE.md・Rules・Skills・Agents・Settings・Hooksの6種類を解説。確認なし・全自動エージェントの構築方法。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.06.02</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#10</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">ClaudeCode<br>設定ファイル完全ガイド</div>
+            <div class="card-desc">CLAUDE.md・Rules・Skills・Agents・Settings・Hooksの6種類を解説。確認なし・全自動エージェントの構築方法。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.06.02</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 11 ClaudeCodeセキュリティ -->
-      <a class="card" href="slides/11_claudecode_security.html">
-        <div class="card-thumb">
-          <iframe src="slides/11_claudecode_security.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#11</span>
-            <span class="badge badge-gray">A4文書</span>
-            <span class="badge badge-gray">2026.06.02</span>
+        <!-- 11 ClaudeCodeセキュリティ -->
+        <a class="card" href="slides/11_claudecode_security.html">
+          <div class="card-thumb">
+            <iframe src="slides/11_claudecode_security.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">ClaudeCode<br>必須セキュリティ対策</div>
-          <div class="card-desc">AIは万能ではない。非エンジニアでも実践できる7つの対策。settings.json・.claudeignore・Human-in-the-Loop設計。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.06.02</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#11</span>
+              <span class="badge badge-blue">A4文書</span>
+            </div>
+            <div class="card-title">ClaudeCode<br>必須セキュリティ対策</div>
+            <div class="card-desc">AIは万能ではない。非エンジニアでも実践できる7つの対策。settings.json・.claudeignore・Human-in-the-Loop設計。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.06.02</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
+      </div>
     </div>
-  </div>
 
-  <!-- 業務改善 -->
-  <div class="section">
-    <div class="section-title">業務改善 <span class="st-badge">2本</span></div>
-    <div class="grid">
+    <!-- 発表資料 -->
+    <div class="tab-panel" id="panel-work">
+      <div class="panel-header">
+        <div class="ph-label">発表資料</div>
+        <h2>業務改善の発表スライド</h2>
+        <p>社内勉強会で発表した業務改善テーマのスライド。マニュアル設計・オンボーディングなど。</p>
+      </div>
+      <div class="grid">
 
-      <!-- 01 マニュアル -->
-      <a class="card" href="slides/01_manual.html">
-        <div class="card-thumb">
-          <iframe src="slides/01_manual.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#01</span>
-            <span class="badge badge-gray">13枚</span>
-            <span class="badge badge-gray">2026.03.12</span>
+        <!-- 01 マニュアル -->
+        <a class="card" href="slides/01_manual.html">
+          <div class="card-thumb">
+            <iframe src="slides/01_manual.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">マニュアルを<br>"読む用"から"使う用"へ</div>
-          <div class="card-desc">人間の特性「再生より再認」からマニュアル設計を考える。チェックリストと共通語の活用。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.03.12</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#01</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">13枚</span>
+            </div>
+            <div class="card-title">マニュアルを<br>"読む用"から"使う用"へ</div>
+            <div class="card-desc">人間の特性「再生より再認」からマニュアル設計を考える。チェックリストと共通語の活用。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.03.12</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 02 オンボーディング -->
-      <a class="card" href="slides/02_onboarding.html">
-        <div class="card-thumb">
-          <iframe src="slides/02_onboarding.html" scrolling="no" tabindex="-1"></iframe>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="badge badge-orange">#02</span>
-            <span class="badge badge-gray">18枚</span>
-            <span class="badge badge-gray">2026.03.26</span>
+        <!-- 02 オンボーディング -->
+        <a class="card" href="slides/02_onboarding.html">
+          <div class="card-thumb">
+            <iframe src="slides/02_onboarding.html" scrolling="no" tabindex="-1"></iframe>
           </div>
-          <div class="card-title">外注編集者さんにも<br>"神対応"したい！</div>
-          <div class="card-desc">オンボーディング導入のすすめ。定着率改善のためのテスト期間設計と評価の工夫。</div>
-          <div class="card-footer">
-            <span class="card-date">2026.03.26</span>
-            <span class="card-arrow">→</span>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="badge badge-orange">#02</span>
+              <span class="badge badge-gray">スライド</span>
+              <span class="badge badge-gray">18枚</span>
+            </div>
+            <div class="card-title">外注編集者さんにも<br>"神対応"したい！</div>
+            <div class="card-desc">オンボーディング導入のすすめ。定着率改善のためのテスト期間設計と評価の工夫。</div>
+            <div class="card-footer">
+              <span class="card-date">2026.03.26</span>
+              <span class="card-arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- 追加予定 -->
-      <div class="card-empty">
-        <div class="ce-icon">＋</div>
-        <div class="ce-text">次の発表資料</div>
+        <!-- 追加予定 -->
+        <div class="card-empty">
+          <div class="ce-icon">＋</div>
+          <div class="ce-text">次の発表資料</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- すべて -->
+    <div class="tab-panel" id="panel-all">
+      <div class="panel-header">
+        <div class="ph-label">すべて</div>
+        <h2>全コンテンツ一覧</h2>
+        <p>伏見勉強録に掲載されているすべての資料。</p>
+      </div>
+
+      <div class="section-sep">AI関連 <span class="ss-badge">8本</span></div>
+      <div class="grid">
+        <a class="card" href="slides/03_ai_asset.html">
+          <div class="card-thumb"><iframe src="slides/03_ai_asset.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#03</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">AIに「完成形」ではなく「素材」を作らせよう</div>
+            <div class="card-desc">素材化・資産化の発想でAI活用の幅を広げる。Claude Code×Blenderで3Dモデルを作る方法。</div>
+            <div class="card-footer"><span class="card-date">2026.04.08</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/14_ai_asset_doc.html">
+          <div class="card-thumb"><iframe src="slides/14_ai_asset_doc.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#14</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">AIに「素材」を作らせよう（資料版）</div>
+            <div class="card-desc">スライド#03の補足A4文書。3ステップ詳解。</div>
+            <div class="card-footer"><span class="card-date">2026.04.08</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/04_ae_prompt.html">
+          <div class="card-thumb"><iframe src="slides/04_ae_prompt.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#04</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">AEをとっつきやすく！</div>
+            <div class="card-desc">ExtendScript×ClaudeCodeでAfter Effectsの壁を越える。</div>
+            <div class="card-footer"><span class="card-date">2026.04.23</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/15_ae_prompt_doc.html">
+          <div class="card-thumb"><iframe src="slides/15_ae_prompt_doc.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#15</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">AEをとっつきやすく！（資料版）</div>
+            <div class="card-desc">スライド#04の補足A4文書。</div>
+            <div class="card-footer"><span class="card-date">2026.04.23</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/05_task_management.html">
+          <div class="card-thumb"><iframe src="slides/05_task_management.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#05</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">ClaudeCodeでタスク管理</div>
+            <div class="card-desc">面倒臭いは一旦ClaudeCodeに！</div>
+            <div class="card-footer"><span class="card-date">2026.05.14</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/16_task_management_doc.html">
+          <div class="card-thumb"><iframe src="slides/16_task_management_doc.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#16</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">ClaudeCodeでタスク管理（資料版）</div>
+            <div class="card-desc">スライド#05の補足A4文書。</div>
+            <div class="card-footer"><span class="card-date">2026.05.14</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/12_retention_editing.html">
+          <div class="card-thumb"><iframe src="slides/12_retention_editing.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#12</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">視聴維持の為の添削</div>
+            <div class="card-desc">ClaudeとAdobeの連携で動画の空白区間を検出。</div>
+            <div class="card-footer"><span class="card-date">2026.06.02</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/13_retention_doc.html">
+          <div class="card-thumb"><iframe src="slides/13_retention_doc.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#13</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">視聴維持の為の添削（資料版）</div>
+            <div class="card-desc">スライド#12の補足A4文書。</div>
+            <div class="card-footer"><span class="card-date">2026.06.05</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+      </div>
+
+      <div class="section-sep">要約資料 <span class="ss-badge">5本</span></div>
+      <div class="grid">
+        <a class="card" href="slides/06_ai_mindshift.html">
+          <div class="card-thumb"><iframe src="slides/06_ai_mindshift.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#06</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">起業家のためのAIマインドシフト10日間</div>
+            <div class="card-desc">実行者から「設計者」へ。10のパラダイムシフト。</div>
+            <div class="card-footer"><span class="card-date">2026.05.28</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/07_ai_web_writing.html">
+          <div class="card-thumb"><iframe src="slides/07_ai_web_writing.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#07</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">AI WEB WRITING</div>
+            <div class="card-desc">AIをディレクターとして使いこなす。9つのプロンプト設計。</div>
+            <div class="card-footer"><span class="card-date">2026.05.28</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/09_ai_three_layers.html">
+          <div class="card-thumb"><iframe src="slides/09_ai_three_layers.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#09</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">AI活用の3層構造</div>
+            <div class="card-desc">プロンプト・コンテキスト・ハーネスの3概念。</div>
+            <div class="card-footer"><span class="card-date">2026.05.28</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/10_claudecode_settings.html">
+          <div class="card-thumb"><iframe src="slides/10_claudecode_settings.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#10</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">ClaudeCode設定ファイル完全ガイド</div>
+            <div class="card-desc">6種類の設定ファイルを解説。</div>
+            <div class="card-footer"><span class="card-date">2026.06.02</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/11_claudecode_security.html">
+          <div class="card-thumb"><iframe src="slides/11_claudecode_security.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#11</span><span class="badge badge-blue">A4文書</span></div>
+            <div class="card-title">ClaudeCode必須セキュリティ対策</div>
+            <div class="card-desc">非エンジニアでも実践できる7つの対策。</div>
+            <div class="card-footer"><span class="card-date">2026.06.02</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+      </div>
+
+      <div class="section-sep">発表資料 <span class="ss-badge">2本</span></div>
+      <div class="grid">
+        <a class="card" href="slides/01_manual.html">
+          <div class="card-thumb"><iframe src="slides/01_manual.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#01</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">マニュアルを"読む用"から"使う用"へ</div>
+            <div class="card-desc">人間の特性からマニュアル設計を考える。</div>
+            <div class="card-footer"><span class="card-date">2026.03.12</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
+        <a class="card" href="slides/02_onboarding.html">
+          <div class="card-thumb"><iframe src="slides/02_onboarding.html" scrolling="no" tabindex="-1"></iframe></div>
+          <div class="card-body">
+            <div class="card-meta"><span class="badge badge-orange">#02</span><span class="badge badge-gray">スライド</span></div>
+            <div class="card-title">外注編集者さんにも"神対応"したい！</div>
+            <div class="card-desc">オンボーディング導入のすすめ。</div>
+            <div class="card-footer"><span class="card-date">2026.03.26</span><span class="card-arrow">→</span></div>
+          </div>
+        </a>
       </div>
 
     </div>
-  </div>
 
-</main>
+  </main>
+</div>
+
+<script>
+  function switchTab(id) {
+    // ボタン
+    document.querySelectorAll('.tab-btn, .tab-btn-all').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById('tab-' + id);
+    if (btn) btn.classList.add('active');
+
+    // パネル
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + id);
+    if (panel) panel.classList.add('active');
+
+    // URLハッシュ更新（ブラウザバック対応）
+    history.replaceState(null, '', '#' + id);
+  }
+
+  // ページ読み込み時にハッシュ復元
+  (function() {
+    const hash = location.hash.replace('#', '');
+    if (['ai', 'summary', 'work', 'all'].includes(hash)) {
+      switchTab(hash);
+    }
+  })();
+</script>
 
 </body>
 </html>
