@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEをとっつきやすく！ — 資料版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; gap: 20px;
+  }
+  .back-nav a { color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 26px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-heading {
+    font-size: 18px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+  }
+
+  .sub-heading {
+    font-size: 14px; font-weight: 800; color: #1A1A2E;
+    margin: 20px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sub-heading::before { content: '▍'; color: #FF6B2B; font-size: 12px; }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; }
+  strong { color: #1A1A2E; }
+  code { font-family: 'Courier New', monospace; font-size: 12px; background: #F5F5F5; padding: 1px 6px; border-radius: 4px; color: #FF6B2B; }
+
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 5px; }
+  .point-box p { font-size: 13px; color: #555; margin-bottom: 0; }
+
+  .hint-box {
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #166534; margin-bottom: 14px; font-weight: 700;
+  }
+  .warn-box {
+    background: #FFF8EC; border: 1px solid #FFD4B8;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #888; margin-bottom: 14px;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #1A1A2E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .col-box { border-radius: 10px; padding: 16px 18px; }
+  .col-left { background: #EFF6FF; border-top: 3px solid #2563EB; }
+  .col-left .col-title { font-size: 13px; font-weight: 800; color: #2563EB; margin-bottom: 8px; }
+  .col-right { background: #FFF7ED; border-top: 3px solid #EA580C; }
+  .col-right .col-title { font-size: 13px; font-weight: 800; color: #EA580C; margin-bottom: 8px; }
+  .col-box ul { padding-left: 16px; margin-bottom: 0; }
+  .col-box li { font-size: 13px; color: #555; margin-bottom: 5px; }
+
+  .workflow { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; }
+  .wf-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 18px; background: #FAFAFA; border-radius: 0;
+    border-left: 3px solid #FFD4B8; position: relative;
+  }
+  .wf-step:first-child { border-radius: 10px 10px 0 0; }
+  .wf-step:last-child { border-radius: 0 0 10px 10px; }
+  .wf-step + .wf-step { border-top: 1px solid #F0F0F0; }
+  .wf-step.active { background: #FFF3EC; border-left-color: #FF6B2B; }
+  .wf-num {
+    background: #FF6B2B; color: #fff;
+    font-size: 12px; font-weight: 900;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .wf-body .wf-title { font-size: 14px; font-weight: 800; color: #1A1A2E; margin-bottom: 3px; }
+  .wf-body p { font-size: 13px; color: #666; margin-bottom: 0; }
+
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 28px 32px; margin: 32px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .key-message .km-body { font-size: 17px; font-weight: 800; line-height: 1.8; }
+
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../index.html">← 一覧へ戻る</a>
+  <a href="04_ae_prompt.html">▶ スライド版を見る</a>
+</div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">AI活用 #15 — 実践資料</div>
+    <h1>AEをとっつきやすく！<br>プロンプト実行でAfter Effectsを動かす</h1>
+    <div class="subtitle">使ったことがないAEでも、ClaudeCodeとExtendScriptがあれば編集ド素人でも思い通りの動きが作れる。</div>
+    <div class="meta">2026.04.23 ／ スライド#04の資料版</div>
+  </div>
+
+  <div class="core-message">
+    AEは「100時間かけて覚えるもの」ではなく、<br>
+    <strong>「ClaudeCodeでコードを書かせて、動かす場所」</strong>として使えば怖くない。
+  </div>
+
+  <!-- 1. きっかけ -->
+  <div class="section">
+    <div class="section-heading">きっかけ — 萬田さんchのフォーマット作成</div>
+    <p>萬田さんchのフォーマット作成でAfter Effectsが必要になった。ただし<strong>使ったことがない状態</strong>からのスタート。</p>
+
+    <div class="sub-heading">AEって難しいの？ — ネットの評判</div>
+    <ul>
+      <li>使いこなすのに<strong>100時間〜</strong>かかると言われる</li>
+      <li>やれることが多すぎて迷子になる</li>
+      <li>「どのアニメーションを使えばいい？」を調べる時間が大半</li>
+      <li>Premiere Proとは操作感がかなり違う</li>
+    </ul>
+
+    <div class="point-box">
+      <div class="pt">💡 でも、AEにはプロンプト実行という抜け道がある</div>
+      <p>AEは<strong>ExtendScript（.jsx）</strong>というコード形式で動きを制御できる。つまりClaudeCodeでコードを書かせれば、操作を知らなくても動かせる。</p>
+    </div>
+  </div>
+
+  <!-- 2. ExtendScriptとは -->
+  <div class="section">
+    <div class="section-heading">ExtendScriptとは — AEをコードで動かす仕組み</div>
+    <p><strong>ExtendScript（.jsx）</strong>は、Adobe製品をコードで自動操作するためのスクリプト言語。JavaScriptベースで書かれており、AEのスクリプトエディタで実行できる。</p>
+
+    <div class="two-col">
+      <div class="col-box col-left">
+        <div class="col-title">コードでできること</div>
+        <ul>
+          <li>レイヤーの追加・削除</li>
+          <li>キーフレームの設定</li>
+          <li>アニメーションの動きを定義</li>
+          <li>エフェクトの適用</li>
+          <li>コンポジションの作成</li>
+        </ul>
+      </div>
+      <div class="col-box col-right">
+        <div class="col-title">ClaudeCodeとの組み合わせ</div>
+        <ul>
+          <li>「〇〇の動きを作って」→ .jsx生成</li>
+          <li>画像を渡してレイアウト指示</li>
+          <li>細かい数値も日本語で調整指示</li>
+          <li>エラーが出ても修正コードをすぐ生成</li>
+          <li>操作を覚えなくてもいい</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hint-box">💡 ClaudeCodeの出番！ — 「AEのコードを書く」という仕事が完全に任せられる</div>
+  </div>
+
+  <!-- 3. 実際にやってみた -->
+  <div class="section">
+    <div class="section-heading">実際にやってみた — 萬田さんch自己紹介カード</div>
+    <p>萬田さんchの自己紹介カードアニメーションを、<strong>ClaudeCodeとExtendScriptだけで作った</strong>記録。</p>
+
+    <div class="sub-heading">ClaudeCodeへの指示（日本語でOK）</div>
+    <div class="point-box">
+      <div class="pt">実際に送った指示文</div>
+      <p>「コイン画像が左からコロコロ転がって出てきて倒れると同時に自己紹介カードが飛び出してくる」</p>
+    </div>
+
+    <p>画像を用意して、この1文を送るだけ。あとはClaudeCodeがExtendScript（.jsx）を生成してくれる。</p>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <div class="wf-num">1</div>
+        <div class="wf-body">
+          <div class="wf-title">素材画像を用意する</div>
+          <p>コイン画像・自己紹介カード画像を用意。背景透過のPNGが理想。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">2</div>
+        <div class="wf-body">
+          <div class="wf-title">ClaudeCodeに動きを日本語で指示する</div>
+          <p>「コインが左からコロコロ → 倒れる → 同時にカードが飛び出す」とそのまま伝える。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">3</div>
+        <div class="wf-body">
+          <div class="wf-title">生成された.jsxをAEのスクリプトエディタで実行</div>
+          <p>AEメニュー → ファイル → スクリプト → スクリプトエディタで.jsxを実行するだけ。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">4</div>
+        <div class="wf-body">
+          <div class="wf-title">PremierePro感覚で微調整</div>
+          <p>カードのサイズ・位置・スピードをPremiereProと同じ感覚で調整。操作になれていればすぐできる。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn-box">⚠️ 細かい調整（サイズ・位置・スピード）はAEのGUIでやる。ここだけPremierePro感覚で操作できれば十分。調べること自体がAEの勉強になる。</div>
+  </div>
+
+  <!-- 4. 生成結果 -->
+  <div class="section">
+    <div class="section-heading">生成結果と調整ポイント</div>
+    <p>最初の生成結果で「指定の素材で動きができている」状態になっていた。あとは細部の調整のみ。</p>
+
+    <table>
+      <tr><th>調整項目</th><th>内容</th><th>対応方法</th></tr>
+      <tr>
+        <td><strong>カードのサイズ</strong></td>
+        <td>少し大きすぎた</td>
+        <td>AEのスケールプロパティで調整</td>
+      </tr>
+      <tr>
+        <td><strong>位置</strong></td>
+        <td>画面中央から少しズレていた</td>
+        <td>Positionキーフレームを手動で移動</td>
+      </tr>
+      <tr>
+        <td><strong>スピード</strong></td>
+        <td>全体的に少し速かった</td>
+        <td>ClaudeCodeに「全体を1.5倍遅くして」と再指示</td>
+      </tr>
+    </table>
+
+    <div class="hint-box">💡 重本さんに相談しながら調整。完成版はYouTubeに公開済み（youtu.be/EFifosD_N24）</div>
+  </div>
+
+  <!-- 5. スクリプト対応Adobeアプリ一覧 -->
+  <div class="section">
+    <div class="section-heading">スクリプト実行できる主要Adobeアプリ</div>
+    <p>今回はAEを使ったが、<strong>Adobeの主要アプリはほぼスクリプト実行に対応</strong>している。ClaudeCodeとの組み合わせはAEだけの話ではない。</p>
+
+    <table>
+      <tr><th>アプリ</th><th>スクリプト形式</th><th>ClaudeCodeでできること</th></tr>
+      <tr>
+        <td><strong>After Effects</strong></td>
+        <td><code>.jsx</code>（ExtendScript）</td>
+        <td>アニメーション自動生成、エフェクト適用（← 今回）</td>
+      </tr>
+      <tr>
+        <td><strong>Photoshop</strong></td>
+        <td><code>.jsx</code>（ExtendScript）</td>
+        <td>バッチ処理、レイヤー操作、画像一括変換</td>
+      </tr>
+      <tr>
+        <td><strong>Illustrator</strong></td>
+        <td><code>.jsx</code>（ExtendScript）</td>
+        <td>データ結合、レイヤー操作自動化、SVG書き出し</td>
+      </tr>
+      <tr>
+        <td><strong>InDesign</strong></td>
+        <td><code>.jsx</code>（ExtendScript）</td>
+        <td>自動組版、テンプレートからの一括生成</td>
+      </tr>
+      <tr>
+        <td><strong>Premiere Pro</strong></td>
+        <td>CEP / UXP</td>
+        <td>カット編集自動化、テロップ一括生成</td>
+      </tr>
+      <tr>
+        <td><strong>Animate</strong></td>
+        <td>ActionScript / JSFL</td>
+        <td>フレームアニメーション自動生成</td>
+      </tr>
+    </table>
+
+    <div class="point-box">
+      <div class="pt">つまり何ができる？</div>
+      <p>Adobe製品を使う編集業務の多くが、「ClaudeCodeに指示する → コードを実行する」というフローに置き換えられる可能性がある。操作を覚える前にコードを使う時代。</p>
+    </div>
+  </div>
+
+  <!-- 6. まとめ -->
+  <div class="section">
+    <div class="section-heading">まとめ</div>
+
+    <div class="point-box">
+      <div class="pt">01 AEはExtendScriptでコード実行できる</div>
+      <p>GUIでの操作を覚えなくても、.jsxファイルを実行するだけで動きが作れる。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">02 ClaudeCodeで.jsxを生成できる</div>
+      <p>「〇〇の動きを作って」と日本語で伝えるだけ。画像を渡せばレイアウトも考慮してくれる。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">03 細かい調整はPremierePro感覚でOK</div>
+      <p>「指定の素材で動きができている」状態さえ作れれば、あとはPremierePro感覚で調整できる。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">04 AEだけじゃない — Adobeアプリ全体に応用できる</div>
+      <p>Photoshop・Illustrator・InDesign・Premiere Proも同じ考え方が使える。</p>
+    </div>
+
+    <div class="key-message">
+      <div class="km-title">今日のTAKEAWAY</div>
+      <div class="km-body">スクリプト実行 × ClaudeCode = AEの壁を越える<br>
+      AIをうまく使えば編集ド素人でもAEで思い通りの動きが作れる！</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIに「素材」を作らせよう — 資料版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; gap: 20px;
+  }
+  .back-nav a { color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 26px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-heading {
+    font-size: 18px; font-weight: 800; color: #FF6B2B;
+    border-bottom: 2px solid #FFE0CC;
+    padding-bottom: 8px; margin-bottom: 18px;
+  }
+
+  .sub-heading {
+    font-size: 14px; font-weight: 800; color: #1A1A2E;
+    margin: 20px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sub-heading::before { content: '▍'; color: #FF6B2B; font-size: 12px; }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; }
+  strong { color: #1A1A2E; }
+  code { font-family: 'Courier New', monospace; font-size: 12px; background: #F5F5F5; padding: 1px 6px; border-radius: 4px; color: #FF6B2B; }
+
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 5px; }
+  .point-box p { font-size: 13px; color: #555; margin-bottom: 0; }
+
+  .hint-box {
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #166534; margin-bottom: 14px; font-weight: 700;
+  }
+  .warn-box {
+    background: #FFF8EC; border: 1px solid #FFD4B8;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #888; margin-bottom: 14px;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #1A1A2E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .col-box { border-radius: 10px; padding: 16px 18px; }
+  .col-left { background: #EFF6FF; border-top: 3px solid #2563EB; }
+  .col-left .col-title { font-size: 13px; font-weight: 800; color: #2563EB; margin-bottom: 8px; }
+  .col-right { background: #FFF7ED; border-top: 3px solid #EA580C; }
+  .col-right .col-title { font-size: 13px; font-weight: 800; color: #EA580C; margin-bottom: 8px; }
+  .col-box ul { padding-left: 16px; margin-bottom: 0; }
+  .col-box li { font-size: 13px; color: #555; margin-bottom: 5px; }
+
+  .workflow { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; }
+  .wf-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 18px; background: #FAFAFA; border-radius: 0;
+    border-left: 3px solid #FFD4B8; position: relative;
+  }
+  .wf-step:first-child { border-radius: 10px 10px 0 0; }
+  .wf-step:last-child { border-radius: 0 0 10px 10px; }
+  .wf-step + .wf-step { border-top: 1px solid #F0F0F0; }
+  .wf-step.active { background: #FFF3EC; border-left-color: #FF6B2B; }
+  .wf-num {
+    background: #FF6B2B; color: #fff;
+    font-size: 12px; font-weight: 900;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .wf-body .wf-title { font-size: 14px; font-weight: 800; color: #1A1A2E; margin-bottom: 3px; }
+  .wf-body p { font-size: 13px; color: #666; margin-bottom: 0; }
+
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 28px 32px; margin: 32px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .key-message .km-body { font-size: 17px; font-weight: 800; line-height: 1.8; }
+
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../index.html">← 一覧へ戻る</a>
+  <a href="03_ai_asset.html">▶ スライド版を見る</a>
+</div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">AI活用 #14 — 実践資料</div>
+    <h1>AIに「完成形」ではなく「素材」を作らせよう<br>素材化・資産化の発想でAI活用の幅を広げる</h1>
+    <div class="subtitle">YouTubeで見た3Dプリンターの動画がきっかけ。BlenderとClaudeCodeで3Dモデル制作の新しいやり方を発見した話。</div>
+    <div class="meta">2026.04.08 ／ スライド#03の資料版</div>
+  </div>
+
+  <div class="core-message">
+    AIに「完成品を一発で作らせる」のではなく、<strong>「素材をパーツで作らせる」</strong>発想に変えるだけで、<br>
+    再利用性が上がり、流用できる資産になる。
+  </div>
+
+  <!-- 1. きっかけ -->
+  <div class="section">
+    <div class="section-heading">きっかけ — YouTubeで見た3Dプリンターの動画</div>
+    <p>YouTubeで<strong>プッカさん</strong>の動画を見ていたとき、「写真から3Dモデルが作れるツール」が紹介されていた。</p>
+    <p>そのとき「これ、アニメーション素材に使えるんじゃないか？」と直感した。前林さんに相談しながら、<strong>AI×Blenderで3Dモデルを作る</strong>という方向性が固まっていった。</p>
+
+    <div class="sub-heading">今のAI活用でよくある使い方</div>
+    <ul>
+      <li>自動添削ツールで文章を一発で仕上げる</li>
+      <li>画像生成AIでイラストを完成品として出力する</li>
+      <li>動画生成AIで映像を一本まるごと作らせる</li>
+    </ul>
+
+    <div class="point-box">
+      <div class="pt">💡 共通する問題点</div>
+      <p>完成形を一発で生成しようとすると、ニュアンスがズレる・品質にバラつきが出る・修正が難しい・再利用できない、という壁に毎回ぶつかる。</p>
+    </div>
+  </div>
+
+  <!-- 2. 発想の転換 -->
+  <div class="section">
+    <div class="section-heading">発想の転換 — 「作る」から「素材を分解する」へ</div>
+
+    <div class="two-col">
+      <div class="col-box col-left">
+        <div class="col-title">今までの発想（完成品志向）</div>
+        <ul>
+          <li>「AIでアニメーションを作らせる」</li>
+          <li>ニュアンスが伝わらない</li>
+          <li>モデルが崩れる・動きが単調</li>
+          <li>オリジナリティが出にくい</li>
+          <li>作り直しが一から必要</li>
+        </ul>
+      </div>
+      <div class="col-box col-right">
+        <div class="col-title">新しい発想（素材分解志向）</div>
+        <ul>
+          <li>「AIに素材（コード）を作らせる」</li>
+          <li>モデルと動きを別で管理</li>
+          <li>再利用・組み合わせが簡単</li>
+          <li>細かい調整は別ソフトで</li>
+          <li>資産として蓄積できる</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="key-message">
+      <div class="km-title">発想の転換ポイント</div>
+      <div class="km-body">AIにお願いするのは「完成品」ではなく<br>「コード生成」→ 別ツールで動かす</div>
+    </div>
+
+    <p>Cursor / Claude Code内で完結させる必要はない。Pythonで使えるツール・ソフトは多い。<strong>AIにはコード生成だけお願いして、実行・調整は別ソフト</strong>で行うのが強い使い方。</p>
+  </div>
+
+  <!-- 3. やること2つ -->
+  <div class="section">
+    <div class="section-heading">やること2つ — 「作る」と「動かす」を分ける</div>
+
+    <div class="point-box">
+      <div class="pt">① 3Dモデル・素材を作る（資産になる）</div>
+      <p>一度作ったモデルはファイルとして保存される。別のアニメーションにも流用できる。積み重なるほど価値が増す。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">② アニメーションさせる（コードで細かく指定）</div>
+      <p>モデルの動きはコードで指定。日本語で「左から右にフワっと飛んでくる」と伝えるだけでBlenderのコードを生成してくれる。</p>
+    </div>
+
+    <div class="warn-box">⚠️ 課題2点：①キャラクター・3Dモデルの精度 / ②アニメーション作成の難易度。この2点を解決するのがClaude CodeとBlenderの組み合わせ。</div>
+  </div>
+
+  <!-- 4. 実際の手順 -->
+  <div class="section">
+    <div class="section-heading">実際の手順 — 3ステップで3Dモデルを作る</div>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <div class="wf-num">1</div>
+        <div class="wf-body">
+          <div class="wf-title">白黒の濃淡イラストを用意する</div>
+          <p>Nanobananaなどのツールで、陰影のある白黒イラストを用意する。立体化しやすい状態（表・裏の2面）に整えておく。シンプルなほど精度が上がる。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">2</div>
+        <div class="wf-body">
+          <div class="wf-title">画像からClaude CodeでBlender用コードを生成</div>
+          <p>画像をClaude Codeに渡して「この画像をBlenderで3D化するコードを書いて」と伝えるだけ。Blenderで実行できるPythonコードが出力される。</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">3</div>
+        <div class="wf-body">
+          <div class="wf-title">Blenderで確認・微調整してモデル完成</div>
+          <p>生成されたコードをBlenderで実行し、モデルを確認。細かい調整はBlender上のGUI操作か、再度Claude Codeに指示して修正コードを生成。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-box">💡 「この画像をBlenderで3D化するコードを書いて」— このひと言だけでClaude Codeがコードを生成してくれる。専門知識は不要。</div>
+  </div>
+
+  <!-- 5. 動きの付け方 -->
+  <div class="section">
+    <div class="section-heading">動きの付け方 — Blender内で日本語指示</div>
+    <p>3Dモデルができたら、次は動きを付ける。モデルとアニメーションは<strong>別ファイル・別作業</strong>として管理するのがポイント。</p>
+
+    <div class="sub-heading">指示の例</div>
+    <div class="point-box">
+      <div class="pt">実際にClaude Codeに伝えた指示</div>
+      <p>「左から右にフワっと飛んでくる動きを作って」「着地したときに少しバウンドさせて」— このレベルの日本語でBlender用のアニメーションコードが生成される。</p>
+    </div>
+
+    <table>
+      <tr><th>動きの種類</th><th>指示の例</th><th>Blenderでの実装</th></tr>
+      <tr>
+        <td><strong>移動</strong></td>
+        <td>「左から右へフワっと飛んでくる」</td>
+        <td>Location キーフレーム + イージング</td>
+      </tr>
+      <tr>
+        <td><strong>回転</strong></td>
+        <td>「コインが転がって倒れる」</td>
+        <td>Rotation キーフレーム</td>
+      </tr>
+      <tr>
+        <td><strong>バウンド</strong></td>
+        <td>「着地後に少し跳ねる」</td>
+        <td>Bounce カーブ設定</td>
+      </tr>
+      <tr>
+        <td><strong>フェード</strong></td>
+        <td>「だんだん透明になって消える」</td>
+        <td>Alpha キーフレーム</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 6. 素材化・資産化のメリット -->
+  <div class="section">
+    <div class="section-heading">素材化・資産化のメリット</div>
+    <p>一度作ったものが<strong>その場限りで終わらない</strong>。これが素材化発想の最大の強み。</p>
+
+    <div class="two-col">
+      <div class="col-box col-left">
+        <div class="col-title">同じモデルで別の動きができる</div>
+        <ul>
+          <li>じっちゃまモデルを作ったら → 歩く・飛ぶ・回転など何通りでも</li>
+          <li>アニメーションだけ差し替えれば再利用できる</li>
+          <li>撮り直し・描き直しがいらない</li>
+        </ul>
+      </div>
+      <div class="col-box col-right">
+        <div class="col-title">同じ動きで別モデルに使える</div>
+        <ul>
+          <li>「フワっと飛んでくる」動きを別キャラに適用</li>
+          <li>動きのコードをライブラリ化できる</li>
+          <li>制作スピードが回を重ねるごとに上がる</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub-heading">3Dモデルはアニメーション以外にも使える</div>
+    <ul>
+      <li><strong>動画素材</strong> — サムネイル・OPアニメーション・Bロール</li>
+      <li><strong>他モデルへの流用</strong> — 同じリグ・同じ動きをベースに派生キャラを作れる</li>
+      <li><strong>3Dプリント</strong> — データをそのまま3Dプリンターに送れる</li>
+    </ul>
+  </div>
+
+  <!-- 7. Claude Codeの強み -->
+  <div class="section">
+    <div class="section-heading">Claude Codeとの組み合わせが強い理由</div>
+
+    <div class="point-box">
+      <div class="pt">Claude Codeはコード生成が圧倒的に強い</div>
+      <p>画像や動画を直接生成するAIツールと異なり、Claude Codeは「コードを書く」ことに特化している。Blender（Python）・AfterEffects（ExtendScript）・Premiere Pro（CEP）など、コードで制御できるソフトは全部使える。</p>
+    </div>
+
+    <table>
+      <tr><th>アプローチ</th><th>できること</th><th>課題</th></tr>
+      <tr>
+        <td><strong>AIで直接生成</strong></td>
+        <td>一発で動画・画像が出る</td>
+        <td>ニュアンスがズレる、修正が難しい、再利用できない</td>
+      </tr>
+      <tr>
+        <td><strong>Claude Code × 外部ソフト</strong></td>
+        <td>コードで細かく制御できる</td>
+        <td>ソフトの基本操作は必要（Blender・AE等）</td>
+      </tr>
+    </table>
+
+    <div class="hint-box">💡 Claude Code をある程度使っている人なら十分試せる内容。Blenderは無料で使える。</div>
+  </div>
+
+  <!-- 8. まとめ -->
+  <div class="section">
+    <div class="section-heading">まとめ</div>
+
+    <div class="point-box">
+      <div class="pt">01 AIは完成品を作るためだけでない</div>
+      <p>素材を作らせる使い方が強い。モデルと動きを分けて考えると再利用しやすくなる。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">02 Claude Codeはコード生成を軸に使うと特に強い</div>
+      <p>Blender・AE・Premiere Proなど、コードで操作できるソフトとの組み合わせが最大の武器。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">03 使う場所を変えるだけでAI活用の幅は広がる</div>
+      <p>ClaudeCodeの中だけで完結させる必要はない。外部ソフトに連携させることで、できることが格段に増える。</p>
+    </div>
+    <div class="point-box">
+      <div class="pt">04 作るたびに資産が積み上がる</div>
+      <p>素材として残すことで、次回以降の制作コストが下がる。一度の手間が長期的なリターンになる。</p>
+    </div>
+
+    <div class="key-message">
+      <div class="km-title">今日のTAKEAWAY</div>
+      <div class="km-body">「AIで素材を作る」発想に変えれば<br>制作物は「使い捨て」から「資産」になる</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
