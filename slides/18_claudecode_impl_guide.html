@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaudeCode 設定ファイル 実装手順書 — Cursor / VS Code版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #F0F0F0;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    color: #1A1A2E;
+    line-height: 1.8;
+  }
+
+  .back-nav {
+    max-width: 794px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; gap: 20px;
+  }
+  .back-nav a { color: #FF6B2B; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .back-nav a:hover { text-decoration: underline; }
+
+  .page {
+    width: 794px; margin: 24px auto 60px;
+    background: #fff; padding: 64px 72px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  .doc-header { border-left: 6px solid #FF6B2B; padding-left: 20px; margin-bottom: 36px; }
+  .doc-header .series { font-size: 12px; font-weight: 700; color: #FF6B2B; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .doc-header h1 { font-size: 24px; font-weight: 900; line-height: 1.35; color: #1A1A2E; }
+  .doc-header .subtitle { font-size: 14px; color: #888; margin-top: 6px; }
+  .doc-header .meta { font-size: 13px; color: #bbb; margin-top: 4px; }
+
+  .core-message {
+    background: #FFF3EC; border-left: 4px solid #FF6B2B;
+    padding: 18px 22px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; color: #FF6B2B;
+    margin-bottom: 36px; line-height: 1.7;
+  }
+
+  .section { margin-bottom: 48px; }
+
+  .section-heading {
+    font-size: 16px; font-weight: 900; color: #fff;
+    padding: 10px 18px; border-radius: 8px;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .section-heading .num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; flex-shrink: 0;
+  }
+  .sh-prep  { background: #374151; }
+  .sh-1     { background: #2563EB; }
+  .sh-2     { background: #16A34A; }
+  .sh-3     { background: #7C3AED; }
+  .sh-4     { background: #EA580C; }
+  .sh-5     { background: #0F766E; }
+  .sh-6     { background: #B45309; }
+  .sh-auto  { background: #FF6B2B; }
+  .sh-tips  { background: #1A1A2E; }
+
+  .sub-heading {
+    font-size: 13px; font-weight: 800; color: #666;
+    letter-spacing: 0.1em; margin: 20px 0 8px;
+    text-transform: uppercase;
+  }
+
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 14px; color: #444; margin-bottom: 6px; line-height: 1.7; }
+  strong { color: #1A1A2E; }
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px; background: #F5F5F5;
+    padding: 1px 6px; border-radius: 4px; color: #FF6B2B;
+  }
+
+  .code-block {
+    background: #1A1A2E; color: #F5F5F5;
+    border-radius: 10px; padding: 16px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px; line-height: 1.8;
+    margin-bottom: 14px; white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #6B7280; }
+  .code-block .key { color: #FF9A5C; }
+  .code-block .str { color: #7DD3FC; }
+  .code-block .accent { color: #A78BFA; }
+  .code-block .hl { color: #86EFAC; }
+
+  .chat-bubble {
+    border-radius: 12px; padding: 14px 18px;
+    font-size: 13px; line-height: 1.7; margin-bottom: 10px;
+    position: relative;
+  }
+  .chat-user {
+    background: #EFF6FF; border-left: 4px solid #2563EB; color: #1e40af;
+  }
+  .chat-user::before {
+    content: '💬 あなた'; font-size: 10px; font-weight: 800;
+    color: #2563EB; display: block; margin-bottom: 6px; letter-spacing: 0.1em;
+  }
+  .chat-claude {
+    background: #F0FDF4; border-left: 4px solid #16A34A; color: #166534;
+  }
+  .chat-claude::before {
+    content: '🤖 Claude'; font-size: 10px; font-weight: 800;
+    color: #16A34A; display: block; margin-bottom: 6px; letter-spacing: 0.1em;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #1A1A2E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+
+  .point-box {
+    background: #FFF3EC; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .point-box .pt { font-size: 13px; font-weight: 800; color: #FF6B2B; margin-bottom: 5px; }
+  .point-box p { font-size: 13px; color: #555; margin-bottom: 0; }
+
+  .hint-box {
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #166534; margin-bottom: 14px; font-weight: 700;
+    line-height: 1.7;
+  }
+  .warn-box {
+    background: #FFF8EC; border: 1px solid #FFD4B8;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #888; margin-bottom: 14px; line-height: 1.7;
+  }
+  .info-box {
+    background: #EFF6FF; border: 1px solid #BFDBFE;
+    border-radius: 8px; padding: 13px 17px;
+    font-size: 13px; color: #1e40af; margin-bottom: 14px; line-height: 1.7;
+  }
+
+  .workflow { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; }
+  .wf-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 18px; background: #FAFAFA; border-radius: 0;
+    border-left: 3px solid #FFD4B8;
+  }
+  .wf-step:first-child { border-radius: 10px 10px 0 0; }
+  .wf-step:last-child  { border-radius: 0 0 10px 10px; }
+  .wf-step + .wf-step  { border-top: 1px solid #F0F0F0; }
+  .wf-step.active      { background: #FFF3EC; border-left-color: #FF6B2B; }
+  .wf-num {
+    background: #FF6B2B; color: #fff;
+    font-size: 12px; font-weight: 900;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .wf-body .wf-title { font-size: 14px; font-weight: 800; color: #1A1A2E; margin-bottom: 4px; }
+  .wf-body p { font-size: 13px; color: #666; margin-bottom: 0; }
+
+  .key-message {
+    background: #1A1A2E; color: #fff; border-radius: 12px;
+    padding: 24px 28px; margin: 28px 0; text-align: center;
+  }
+  .key-message .km-title { font-size: 12px; font-weight: 700; color: #FF9A5C; letter-spacing: 0.15em; margin-bottom: 10px; }
+  .key-message .km-body { font-size: 16px; font-weight: 800; line-height: 1.8; }
+
+  .folder-tree {
+    background: #1A1A2E; color: #F5F5F5;
+    border-radius: 10px; padding: 20px 24px;
+    font-family: 'Courier New', monospace; font-size: 13px;
+    line-height: 2; margin-bottom: 14px;
+  }
+  .folder-tree .folder  { color: #FF9A5C; font-weight: 700; }
+  .folder-tree .file    { color: #7DD3FC; }
+  .folder-tree .note    { color: #6B7280; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .col-box { border-radius: 10px; padding: 16px 18px; }
+  .col-good { background: #F0FDF4; border-top: 3px solid #16A34A; }
+  .col-good .col-title { font-size: 13px; font-weight: 800; color: #16A34A; margin-bottom: 8px; }
+  .col-better { background: #FFF7ED; border-top: 3px solid #EA580C; }
+  .col-better .col-title { font-size: 13px; font-weight: 800; color: #EA580C; margin-bottom: 8px; }
+  .col-box ul { padding-left: 16px; margin-bottom: 0; }
+  .col-box li { font-size: 13px; color: #555; margin-bottom: 5px; }
+
+  @media print {
+    body { background: none; }
+    .page { box-shadow: none; margin: 0; width: 100%; padding: 15mm 18mm; }
+    .back-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../index.html">← 一覧へ戻る</a>
+  <a href="10_claudecode_settings.html">▶ 設定ファイル完全ガイド（#10）</a>
+</div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="series">要約資料 #18 — 実装手順書</div>
+    <h1>ClaudeCode 設定ファイル<br>実装手順書 — Cursor / VS Code版</h1>
+    <div class="subtitle">チャットからフォルダ生成 ＋ skill自動蓄積の仕組みまで。#10「設定ファイル完全ガイド」の実践編。</div>
+    <div class="meta">2026.07.06 ／ Claude Code for VS Code を使っている人向け</div>
+  </div>
+
+  <div class="core-message">
+    理論を知っても「どこから始めればいいかわからない」をなくす。<br>
+    チャット1本で<strong>フォルダ・ファイルを生成</strong>し、<br>
+    使いながら<strong>skillが自動で蓄積されていく</strong>仕組みの作り方。
+  </div>
+
+  <!-- 0. 前提 -->
+  <div class="section">
+    <div class="section-heading sh-prep">
+      <div class="num">0</div>
+      前提 — この手順書の使い方
+    </div>
+
+    <div class="info-box">
+      📌 <strong>対象環境</strong>：Cursor または VS Code ＋ 拡張機能「Claude Code for VS Code」<br>
+      📌 <strong>前提知識</strong>：#10「設定ファイル完全ガイド」を読んでいること（CLAUDE.md・Skills等の概念は省略）<br>
+      📌 <strong>この手順書でわかること</strong>：① チャットだけで環境を作る方法 ② 各ファイルに何を書くか ③ skillが自動で増えていく仕組み
+    </div>
+
+    <div class="sub-heading">Claude Code for VS Code でできること</div>
+    <table>
+      <tr><th>機能</th><th>できること</th></tr>
+      <tr><td><strong>サイドパネルチャット</strong></td><td>会話形式でファイル・フォルダの生成・編集を依頼できる</td></tr>
+      <tr><td><strong>コード選択 → Chat</strong></td><td>選択範囲を指定してリファクタや説明を頼める</td></tr>
+      <tr><td><strong>スラッシュコマンド</strong></td><td><code>/skill名</code> で登録済みSkillを呼び出せる</td></tr>
+      <tr><td><strong>設定ファイル読み込み</strong></td><td>プロジェクトの <code>.claude/</code> フォルダを自動で参照する</td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 1: 初回セットアップ -->
+  <div class="section">
+    <div class="section-heading sh-1">
+      <div class="num">1</div>
+      STEP 1 — チャットだけで環境を作る（初回セットアップ）
+    </div>
+    <p>プロジェクトを開いたら、まず<strong>チャット1本で全体のフォルダ構成を生成</strong>させる。自分で手動で作る必要はない。</p>
+
+    <div class="sub-heading">最初に送るプロンプト（コピペして使う）</div>
+    <div class="chat-bubble chat-user">このプロジェクト用にClaude Codeの設定フォルダを作って。<br>
+以下の構成でフォルダとファイルをすべて作成してほしい。<br><br>
+.claude/<br>
+├── CLAUDE.md（プロジェクトの役割・ルール・禁止事項を記入）<br>
+├── settings.json（bypassPermissionsモードで最小限のallowリスト）<br>
+├── rules/<br>
+│   ├── workflow.md（作業手順のルール）<br>
+│   └── naming.md（ファイル命名規則）<br>
+├── skills/<br>
+│   └── save-skill/<br>
+│       └── SKILL.md（skillを自動保存するためのskill）<br>
+└── agents/<br>
+　　└── （今は空でOK）<br><br>
+各ファイルにはプレースホルダーのコメントを入れておいて。</div>
+
+    <div class="chat-bubble chat-claude">了解しました。以下の構成で作成します…<br>
+（Claudeが自動でフォルダ・ファイルを生成）</div>
+
+    <div class="hint-box">💡 これだけで<code>.claude/</code>の骨格が完成する。あとは各ファイルを育てていくだけ。</div>
+
+    <div class="sub-heading">生成後のフォルダ構成（目標形）</div>
+    <div class="folder-tree"><span class="folder">your-project/</span>
+├── <span class="folder">.claude/</span>
+│   ├── <span class="file">CLAUDE.md</span>          <span class="note"># セッション開始時に必ず読まれる「憲法」</span>
+│   ├── <span class="file">settings.json</span>      <span class="note"># 権限制御（allow/deny）</span>
+│   ├── <span class="folder">rules/</span>
+│   │   ├── <span class="file">workflow.md</span>    <span class="note"># 作業の進め方・手順</span>
+│   │   └── <span class="file">naming.md</span>      <span class="note"># ファイル命名ルール</span>
+│   ├── <span class="folder">skills/</span>
+│   │   └── <span class="folder">save-skill/</span>
+│   │       └── <span class="file">SKILL.md</span>   <span class="note"># skill自動保存skill（後述）</span>
+│   └── <span class="folder">agents/</span>            <span class="note"># 専門エージェント（後で追加）</span>
+└── <span class="file">CLAUDE.md</span>              <span class="note"># プロジェクトルートにも置ける（任意）</span></div>
+  </div>
+
+  <!-- STEP 2: CLAUDE.md -->
+  <div class="section">
+    <div class="section-heading sh-1">
+      <div class="num">2</div>
+      CLAUDE.md — 何を書くか・どう育てるか
+    </div>
+    <p>CLAUDE.mdはClaudeが<strong>セッション開始時に必ず読む</strong>ファイル。ここに書いたことが毎回の行動の前提になる。最初から完璧でなくていい。<strong>使いながら育てる</strong>のが正解。</p>
+
+    <div class="sub-heading">最初のCLAUDE.mdに書く3つのこと</div>
+    <div class="code-block"><span class="comment"># プロジェクト名：◯◯PJ</span>
+
+<span class="key">## 役割</span>
+あなたは[このプロジェクトで何をするエージェントか]です。
+
+<span class="key">## 必須ルール</span>
+- 確認（「YESですか？」等）は一切不要。全て実行してよい
+- 作業前に必ず現在のファイル構成を確認する
+- 繰り返しそうな操作を見つけたら .claude/skills/ にSkillとして保存する<span class="comment">  ← 重要</span>
+
+<span class="key">## 禁止事項</span>
+- 元ファイルを削除・移動しない
+- 指定フォルダ以外への書き込みはしない</div>
+
+    <div class="point-box">
+      <div class="pt">「繰り返しそうな操作をskillとして保存する」が自動蓄積のキモ</div>
+      <p>この1行をCLAUDE.mdに書くだけで、Claudeは作業の中から「これはskill化できる」と判断して自動で保存するようになる。詳細はSTEP 5で解説。</p>
+    </div>
+
+    <div class="sub-heading">CLAUDE.mdに追記するタイミング</div>
+    <table>
+      <tr><th>タイミング</th><th>追記する内容の例</th></tr>
+      <tr><td>Claudeに同じ修正を<br>2回以上頼んだとき</td><td>「◯◯のときは△△する」というルールをそのまま書く</td></tr>
+      <tr><td>Claudeが想定外の動きを<br>したとき</td><td>「◯◯は絶対にしない」という禁止事項を追加する</td></tr>
+      <tr><td>新しい作業パターンが<br>できたとき</td><td>手順を書く（または後述のskillに切り出す）</td></tr>
+    </table>
+
+    <div class="hint-box">💡 チャットで「この指示を CLAUDE.md に追記して」と言えばOK。自分でファイルを開かなくていい。</div>
+  </div>
+
+  <!-- STEP 3: Rules -->
+  <div class="section">
+    <div class="section-heading sh-2">
+      <div class="num">3</div>
+      Rules — CLAUDE.mdを肥大化させない分割術
+    </div>
+    <p>CLAUDE.mdが長くなってきたら、領域ごとにRulesファイルへ切り出す。Claudeが必要なときだけ参照するため、<strong>メインのCLAUDE.mdはシンプルに保てる</strong>。</p>
+
+    <div class="sub-heading">切り出しのサイン</div>
+    <ul>
+      <li>CLAUDE.mdが<strong>30行を超えてきた</strong>とき</li>
+      <li>特定の領域のルールが<strong>5項目以上</strong>になったとき</li>
+      <li>「命名規則だけ」「フォーマットだけ」など<strong>独立したテーマ</strong>がある場合</li>
+    </ul>
+
+    <div class="sub-heading">チャットでの依頼例</div>
+    <div class="chat-bubble chat-user">CLAUDE.mdの命名規則の部分を .claude/rules/naming.md に切り出して。<br>
+CLAUDE.mdには「詳細は rules/naming.md を参照」とだけ残しておいて。</div>
+
+    <div class="sub-heading">rules/workflow.md に書く内容の例</div>
+    <div class="code-block"><span class="comment"># 作業フロー</span>
+
+<span class="key">## 標準手順</span>
+1. 作業開始前に ls でフォルダ構成を確認する
+2. 既存ファイルは必ず Read してから編集する
+3. 作業完了後は変更点を1〜2文で要約して報告する
+
+<span class="key">## ファイル編集のルール</span>
+- 既存ファイルを上書きする前に内容を確認する
+- 大きな変更は diff を示してから実行する</div>
+
+    <div class="sub-heading">rules/naming.md に書く内容の例</div>
+    <div class="code-block"><span class="comment"># ファイル命名規則</span>
+
+<span class="key">## 基本ルール</span>
+- スペースは使わない（アンダースコアで代替）
+- 日本語ファイル名OK。内容がわかる名前にする
+- 日付は不要（gitで管理）
+
+<span class="key">## 例</span>
+OK: 営業資料_要約.md / meeting_notes.md
+NG: 資料.md（内容不明）/ 2024 資料.md（スペースあり）</div>
+  </div>
+
+  <!-- STEP 4: Skills -->
+  <div class="section">
+    <div class="section-heading sh-3">
+      <div class="num">4</div>
+      Skills — /コマンドで呼び出せる手順書の作り方
+    </div>
+    <p>Skillは「このプロジェクトでよく使う手順」を<code>/skill名</code>で呼び出せる形にしたもの。<strong>一度作れば毎回同じ品質で実行</strong>できる。</p>
+
+    <div class="sub-heading">Skillファイルの場所と構造</div>
+    <div class="folder-tree"><span class="folder">.claude/skills/</span>
+└── <span class="folder">skill名/</span>          <span class="note"># フォルダ名 = コマンド名</span>
+    └── <span class="file">SKILL.md</span>      <span class="note"># 手順書本体</span></div>
+
+    <div class="sub-heading">SKILL.mdの書き方テンプレート</div>
+    <div class="code-block">---
+<span class="key">name</span>: <span class="str">skill名</span>
+<span class="key">description</span>: <span class="str">このskillが何をするかの一言説明（これがClaudeに表示される）</span>
+---
+
+<span class="accent"># Skill名</span>
+
+<span class="key">## 使い方</span>
+/skill名 {引数があれば}
+
+<span class="key">## 手順</span>
+### Step 1: ◯◯を確認する
+- やること
+
+### Step 2: △△を実行する
+- やること
+
+<span class="key">## 完了条件</span>
+- 何ができていれば完了とみなすか</div>
+
+    <div class="sub-heading">具体例 — 要約Skill</div>
+    <div class="code-block">---
+<span class="key">name</span>: <span class="str">summarize</span>
+<span class="key">description</span>: <span class="str">指定ファイルを読んで要約MDを作成する</span>
+---
+
+<span class="key">## 手順</span>
+### Step 1: ファイル読み込み
+引数で指定されたファイルをReadで読む
+
+### Step 2: 要約作成
+- 概要（3行以内）
+- 主要ポイント（箇条書き）
+- キーワード集
+
+### Step 3: ファイル保存
+output/フォルダに「{内容を表す日本語名}_要約.md」で保存
+
+### Step 4: 完了報告
+作成ファイル名と概要を1文で報告</div>
+
+    <div class="hint-box">💡 呼び出し方：チャットに <code>/summarize /path/to/file.pdf</code> と入力するだけ。</div>
+  </div>
+
+  <!-- STEP 5: Skill自動蓄積 -->
+  <div class="section">
+    <div class="section-heading sh-auto">
+      <div class="num">5</div>
+      STEP 5 — skill自動蓄積の仕組みを作る（最重要）
+    </div>
+    <p>これが今回の核心。<strong>会話の中でClaudeが「この手順はskill化すべき」と判断したら、自動でファイルに書き出す</strong>仕組みを設定する。</p>
+
+    <div class="sub-heading">仕組みの全体像</div>
+    <div class="workflow">
+      <div class="wf-step active">
+        <div class="wf-num">1</div>
+        <div class="wf-body">
+          <div class="wf-title">CLAUDE.mdにskill化ルールを書く</div>
+          <p>「繰り返しそうな操作を見つけたらskillとして保存する」という指示をCLAUDE.mdに入れる</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">2</div>
+        <div class="wf-body">
+          <div class="wf-title">save-skill Skillを作る</div>
+          <p>「現在の会話をSkillとして保存する」ための専用Skillを用意する</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">3</div>
+        <div class="wf-body">
+          <div class="wf-title">会話しながらskillが育っていく</div>
+          <p>作業の中でClaudeが自動提案 ＋ 自分で<code>/save-skill</code>を呼べばいつでも保存できる</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-heading">① CLAUDE.mdに追記するskill化ルール</div>
+    <div class="code-block"><span class="key">## skill自動蓄積ルール</span>
+- 同じ手順を2回以上実行したと気づいたら、.claude/skills/ にSkillファイルを作成すること
+- skill名は操作の内容を表す英小文字・ハイフン区切りにする（例：summarize-pdf / update-index）
+- 作成したSkillは完了報告時に「新しいSkillを作成しました：/skill名」と教えること
+- 既存のSkillが不完全だと気づいたら、同様に改善して報告すること</div>
+
+    <div class="sub-heading">② save-skill Skillの中身</div>
+    <p><code>.claude/skills/save-skill/SKILL.md</code> に以下を書く：</p>
+    <div class="code-block">---
+<span class="key">name</span>: <span class="str">save-skill</span>
+<span class="key">description</span>: <span class="str">現在の会話でやったことをSkillファイルとして保存する</span>
+---
+
+<span class="accent"># Skill保存 Skill</span>
+
+<span class="key">## 使い方</span>
+/save-skill {保存するskillの名前（英語・ハイフン区切り）}
+
+<span class="key">## 手順</span>
+### Step 1: 現在の会話を分析
+- 今の会話でやった操作・手順を洗い出す
+- 繰り返し使えそうな「型」を抽出する
+
+### Step 2: Skillファイルを作成
+以下のパスにフォルダとSKILL.mdを作成する：
+.claude/skills/{引数で指定した名前}/SKILL.md
+
+### Step 3: SKILL.mdを記入
+- nameとdescriptionを記入
+- 手順をStep形式で整理する
+- 引数があれば使い方も明記する
+
+### Step 4: 完了報告
+「Skill「/{skill名}」を作成しました」と報告する</div>
+
+    <div class="sub-heading">実際の会話でどう動くか</div>
+    <div class="chat-bubble chat-user">スプレッドシートからタスクを取得してMarkdownにまとめてほしい。</div>
+    <div class="chat-bubble chat-claude">了解です。取得・整理しました。<br><br>
+この操作は繰り返し使いそうなので、<code>/fetch-tasks</code> というSkillとして保存しました。<br>
+次回から <code>/fetch-tasks</code> と入力するだけで同じ操作ができます。</div>
+    <div class="chat-bubble chat-user">ありがとう。このやり方をSkillにしておいて。</div>
+    <div class="chat-bubble chat-claude">/save-skill fetch-tasks を実行します。<br>
+.claude/skills/fetch-tasks/SKILL.md を作成しました。</div>
+
+    <div class="warn-box">⚠️ CLAUDE.mdにskill化ルールがないと、Claudeは自分でskillを作りにいかない。必ずSTEP 2の追記を先に行うこと。</div>
+  </div>
+
+  <!-- STEP 6: Settings -->
+  <div class="section">
+    <div class="section-heading sh-5">
+      <div class="num">6</div>
+      Settings — 権限設定（確認なし化）
+    </div>
+    <p>VS Code / Cursor でClaudeに「毎回確認しなくていい」と設定するためのファイル。<code>.claude/settings.json</code> に書く。</p>
+
+    <div class="sub-heading">最小限のsettings.json</div>
+    <div class="code-block">{
+  <span class="key">"permissions"</span>: {
+    <span class="key">"defaultMode"</span>: <span class="str">"bypassPermissions"</span>,  <span class="comment">// 全操作を確認なしで実行</span>
+    <span class="key">"allow"</span>: [
+      <span class="str">"Bash(ls *)"</span>,              <span class="comment">// ファイル一覧</span>
+      <span class="str">"Bash(find * -name *.md)"</span>,  <span class="comment">// MDファイル検索</span>
+      <span class="str">"Bash(mkdir *)"</span>,            <span class="comment">// フォルダ作成</span>
+      <span class="str">"Bash(mv *)"</span>               <span class="comment">// ファイル移動</span>
+    ],
+    <span class="key">"deny"</span>: [
+      <span class="str">"Bash(rm -rf /)"</span>,           <span class="comment">// ルート削除を禁止</span>
+      <span class="str">"Bash(curl *)"</span>,             <span class="comment">// 外部通信を禁止</span>
+      <span class="str">"Bash(wget *)"</span>
+    ]
+  }
+}</div>
+
+    <div class="point-box">
+      <div class="pt">チャットで「settings.jsonを更新して」と言えばOK</div>
+      <p>新しいコマンドを許可したいときは「pdftotext コマンドを allowリストに追加して」と頼むだけ。Claudeが自動でsettings.jsonを書き換える。</p>
+    </div>
+  </div>
+
+  <!-- STEP 7: Hooks -->
+  <div class="section">
+    <div class="section-heading sh-6">
+      <div class="num">7</div>
+      Hooks — 作業完了の自動通知・自動整理
+    </div>
+    <p>Hooksはイベント（セッション開始・ファイル保存・作業完了など）に反応して<strong>自動でコマンドを走らせる</strong>仕組み。settings.jsonの中に書く。</p>
+
+    <div class="sub-heading">まず入れておきたいHook — 作業完了通知（Mac）</div>
+    <div class="code-block">{
+  <span class="key">"permissions"</span>: { ... },
+  <span class="key">"hooks"</span>: {
+    <span class="key">"Stop"</span>: [{
+      <span class="key">"hooks"</span>: [{
+        <span class="key">"type"</span>: <span class="str">"command"</span>,
+        <span class="key">"command"</span>: <span class="str">"osascript -e 'display notification \"完了しました\" with title \"Claude Code\"'"</span>
+      }]
+    }]
+  }
+}</div>
+
+    <div class="sub-heading">新しいSkillが作成されたときに通知するHook</div>
+    <div class="code-block">{
+  <span class="key">"hooks"</span>: {
+    <span class="key">"PostToolUse"</span>: [{
+      <span class="key">"matcher"</span>: <span class="str">"Write|Edit"</span>,
+      <span class="key">"hooks"</span>: [{
+        <span class="key">"type"</span>: <span class="str">"command"</span>,
+        <span class="key">"command"</span>: <span class="str">"jq -r '.tool_input.file_path' | grep -q '.claude/skills/' && osascript -e 'display notification \"新しいSkillが追加されました\" with title \"Claude Code\"'"</span>
+      }]
+    }]
+  }
+}</div>
+
+    <div class="hint-box">💡 Hookの追加もチャットで頼める。「作業完了時にMac通知を出すHookを追加して」と言えばOK。</div>
+  </div>
+
+  <!-- こうしたらもっと良い -->
+  <div class="section">
+    <div class="section-heading sh-tips">
+      <div class="num">+</div>
+      こうしたらもっと良い — 改善アイデア集
+    </div>
+
+    <div class="two-col">
+      <div class="col-box col-good">
+        <div class="col-title">基本でできること（今すぐ）</div>
+        <ul>
+          <li>CLAUDE.mdにskill化ルールを書く</li>
+          <li>save-skill Skillを最初から用意する</li>
+          <li>bypassPermissionsで確認をなくす</li>
+          <li>作業完了通知のHookを入れる</li>
+        </ul>
+      </div>
+      <div class="col-box col-better">
+        <div class="col-title">さらに良くする（慣れてから）</div>
+        <ul>
+          <li>skillにバージョン管理の注釈を入れる</li>
+          <li>skill一覧をREADME.mdに自動更新させる</li>
+          <li>SessionStart Hookで未処理ファイルを検知させる</li>
+          <li>agentsでskill生成専門エージェントを作る</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub-heading">skillを整理するタイミング</div>
+    <table>
+      <tr><th>状況</th><th>対応</th></tr>
+      <tr><td>skillが<strong>10個を超えた</strong>とき</td><td>カテゴリ別フォルダ（skills/file/ / skills/report/ 等）で整理</td></tr>
+      <tr><td>同じような内容のskillが<strong>2つ以上</strong>あるとき</td><td>統合して汎用的な1つにまとめる</td></tr>
+      <tr><td>使わなくなったskillがあるとき</td><td><code>_archive/</code> フォルダへ移動（削除はしない）</td></tr>
+      <tr><td>skillが古くなってきたとき</td><td>「/skill名 を見直して最新の手順に更新して」とChallenge</td></tr>
+    </table>
+
+    <div class="sub-heading">CLAUDE.mdを育てるコツ</div>
+    <ul>
+      <li>最初は<strong>シンプルに3項目</strong>（役割・必須ルール・禁止事項）だけでいい</li>
+      <li>Claudeに同じ指示を<strong>2回した瞬間</strong>がCLAUDE.mdに書くサイン</li>
+      <li>「あとで整理しよう」より<strong>その場で1行追記</strong>する習慣をつける</li>
+      <li>「Claude、このルールをCLAUDE.mdに追加して」の一言で完結する</li>
+    </ul>
+  </div>
+
+  <!-- まとめ -->
+  <div class="section">
+    <div class="section-heading" style="background:#FF6B2B;">
+      <div class="num" style="background:rgba(255,255,255,0.3);">✓</div>
+      まとめ — 今日からやること
+    </div>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <div class="wf-num">1</div>
+        <div class="wf-body">
+          <div class="wf-title">プロジェクトを開いてチャットで骨格を生成</div>
+          <p>「.claude/フォルダ構成を作って」のプロンプトを送るだけ（STEP 1のプロンプトをコピペ）</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">2</div>
+        <div class="wf-body">
+          <div class="wf-title">CLAUDE.mdにskill化ルールを書く</div>
+          <p>「繰り返しそうな操作をskillとして保存する」の1行が自動蓄積のスイッチ（STEP 2参照）</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">3</div>
+        <div class="wf-body">
+          <div class="wf-title">save-skill Skillを作る</div>
+          <p>「/save-skill {名前}」でいつでも手動でskillを保存できる保険（STEP 5参照）</p>
+        </div>
+      </div>
+      <div class="wf-step active">
+        <div class="wf-num">4</div>
+        <div class="wf-body">
+          <div class="wf-title">普通に使いながらskillを育てる</div>
+          <p>Claudeが自動提案 ＋ 自分で/save-skillを呼ぶ。使うたびに環境が賢くなっていく</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="key-message">
+      <div class="km-title">THIS IS THE POINT</div>
+      <div class="km-body">
+        最初から完璧な設定は不要。<br>
+        使いながら育てる。<br>
+        <strong style="color:#FF9A5C">チャット1本で作って、チャット1本で育てる。</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
