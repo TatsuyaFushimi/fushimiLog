@@ -624,6 +624,309 @@ output/フォルダに「{内容を表す日本語名}_要約.md」で保存
     </ul>
   </div>
 
+  <!-- 用途別設定チェックシート -->
+  <div class="section">
+    <div class="section-heading" style="background:#0F766E;">
+      <div class="num">8</div>
+      用途別 — 何をどう設定するか
+    </div>
+    <p>やりたいことによって<strong>書くべきCLAUDE.mdの内容・作るskill・許可するコマンド・仕込むHook</strong>が変わる。よく使う5パターンをまとめた。</p>
+
+    <div class="warn-box">⚠️ 下表はあくまで出発点。使いながら自分のプロジェクトに合わせて育てていくのが正しい使い方。</div>
+
+    <!-- 画像生成 -->
+    <div style="margin-bottom:28px;">
+      <div style="background:#7C3AED;color:#fff;border-radius:8px 8px 0 0;padding:10px 16px;font-size:14px;font-weight:800;">
+        🎨 画像生成・Blender・デザイン系
+      </div>
+      <table style="margin-bottom:0;border-radius:0 0 8px 8px;overflow:hidden;">
+        <tr><th style="width:28%">設定ファイル</th><th>書く・設定する内容</th></tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>
+            ・出力先フォルダの指定（<code>output/images/</code> 等）<br>
+            ・ファイル命名規則（<code>YYYYMMDD_説明.png</code> など）<br>
+            ・上書きNG／バックアップ先ルール
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td>
+            <code>/generate-batch</code>（一括生成スクリプト実行）<br>
+            <code>/resize-images</code>（ffmpeg/Pillowでリサイズ）<br>
+            <code>/convert-format</code>（PNG→WebP等の変換）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json allow</strong></td>
+          <td>
+            <code>Bash(python *)</code>、<code>Bash(ffmpeg *)</code>、<code>Bash(convert *)</code><br>
+            <code>Bash(blender --background *)</code>（Blenderのみ）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Hooks</strong></td>
+          <td>Stop → Mac通知「画像生成完了」<br>PostToolUse → output/に書き込み後、ファイル数を自動カウント</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ツール開発 -->
+    <div style="margin-bottom:28px;">
+      <div style="background:#2563EB;color:#fff;border-radius:8px 8px 0 0;padding:10px 16px;font-size:14px;font-weight:800;">
+        🛠️ ツール開発・Webアプリ・スクリプト開発
+      </div>
+      <table style="margin-bottom:0;border-radius:0 0 8px 8px;overflow:hidden;">
+        <tr><th style="width:28%">設定ファイル</th><th>書く・設定する内容</th></tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>
+            ・使用言語・フレームワーク（Python 3.11 / Next.js 14 等）<br>
+            ・テスト実行コマンド（<code>npm test</code> / <code>pytest</code>）<br>
+            ・コーディング規約（コメント言語、変数命名など）<br>
+            ・デプロイ禁止事項（本番envへの直接書き込みNG等）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td>
+            <code>/new-feature</code>（新機能の実装テンプレ）<br>
+            <code>/run-tests</code>（テスト実行＋結果サマリー）<br>
+            <code>/create-pr-description</code>（PRの説明文を生成）<br>
+            <code>/debug</code>（エラー内容を受け取り原因を特定）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json allow</strong></td>
+          <td>
+            <code>Bash(npm *)</code>、<code>Bash(git *)</code>、<code>Bash(python *)</code><br>
+            <code>Bash(pytest *)</code>、<code>Bash(node *)</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json deny</strong></td>
+          <td>
+            <code>Bash(rm -rf *)</code>（誤削除防止）<br>
+            <code>Bash(git push --force *)</code>（強制プッシュ禁止）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Hooks</strong></td>
+          <td>PostToolUse → ファイル編集時に自動でテスト実行<br>Stop → 「変更点・次のステップ」を1行で報告させる</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 動画編集補助 -->
+    <div style="margin-bottom:28px;">
+      <div style="background:#EA580C;color:#fff;border-radius:8px 8px 0 0;padding:10px 16px;font-size:14px;font-weight:800;">
+        🎬 動画・映像編集補助（AfterEffects・Premiere連携）
+      </div>
+      <table style="margin-bottom:0;border-radius:0 0 8px 8px;overflow:hidden;">
+        <tr><th style="width:28%">設定ファイル</th><th>書く・設定する内容</th></tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>
+            ・プロジェクトフォルダ構成（<code>footage/</code>・<code>exports/</code>・<code>scripts/</code>）<br>
+            ・使用スクリプト言語（ExtendScript / Python）<br>
+            ・AEのバージョン・レンダリング設定<br>
+            ・元素材を絶対に移動・削除しないルール
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td>
+            <code>/run-ae-script</code>（ExtendScriptをAEに送って実行）<br>
+            <code>/extract-audio</code>（ffmpegで音声抽出）<br>
+            <code>/detect-silence</code>（無音区間検出）<br>
+            <code>/batch-rename</code>（素材ファイルの一括リネーム）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json allow</strong></td>
+          <td>
+            <code>Bash(ffmpeg *)</code>、<code>Bash(python *)</code><br>
+            <code>Bash(osascript *)</code>（AE操作用AppleScript）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Hooks</strong></td>
+          <td>Stop → 「作成したスクリプト名と何をするか」を報告<br>SessionStart → footage/フォルダの未処理ファイル数を確認</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 資料作成 -->
+    <div style="margin-bottom:28px;">
+      <div style="background:#16A34A;color:#fff;border-radius:8px 8px 0 0;padding:10px 16px;font-size:14px;font-weight:800;">
+        📄 資料・スライド・ドキュメント作成
+      </div>
+      <table style="margin-bottom:0;border-radius:0 0 8px 8px;overflow:hidden;">
+        <tr><th style="width:28%">設定ファイル</th><th>書く・設定する内容</th></tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>
+            ・デザインシステム（使用カラー・フォント）<br>
+            ・ファイル番号の採番ルール（既存最大番号+1）<br>
+            ・index.htmlへの追記ルール（どのタブに追加するか）<br>
+            ・公開先URL・GitHubリポジトリ名
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td>
+            <code>/new-slide</code>（スライドHTMLの骨格を生成）<br>
+            <code>/new-doc</code>（A4文書HTMLの骨格を生成）<br>
+            <code>/update-index</code>（index.htmlに新カードを追加）<br>
+            <code>/deploy</code>（git add→commit→pushを一括実行）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json allow</strong></td>
+          <td>
+            <code>Bash(git *)</code>、<code>Bash(ls *)</code>、<code>Bash(cp *)</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Hooks</strong></td>
+          <td>Stop → 「作成ファイル名・追加先タブ・次のステップ」報告<br>PostToolUse → index.html更新時にリンク切れチェック</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- データ分析 -->
+    <div style="margin-bottom:4px;">
+      <div style="background:#374151;color:#fff;border-radius:8px 8px 0 0;padding:10px 16px;font-size:14px;font-weight:800;">
+        📊 データ分析・CSV処理・レポート自動化
+      </div>
+      <table style="margin-bottom:0;border-radius:0 0 8px 8px;overflow:hidden;">
+        <tr><th style="width:28%">設定ファイル</th><th>書く・設定する内容</th></tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>
+            ・生データは絶対に上書きしないルール（<code>raw/</code>フォルダは読み取り専用）<br>
+            ・出力先：<code>output/YYYYMMDD/</code> 形式<br>
+            ・使用ライブラリ（pandas / polars / matplotlib）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td>
+            <code>/analyze-csv</code>（CSVを読んで基本統計＋要約）<br>
+            <code>/generate-report</code>（Markdown形式でレポート出力）<br>
+            <code>/plot-chart</code>（指定列でグラフ生成）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json allow</strong></td>
+          <td>
+            <code>Bash(python *)</code>、<code>Bash(jupyter *)</code><br>
+            <code>Bash(ls raw/)</code>（rawへの読み取りのみ許可）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>settings.json deny</strong></td>
+          <td><code>Bash(rm raw/*)</code>（生データ削除を明示的に禁止）</td>
+        </tr>
+        <tr>
+          <td><strong>Hooks</strong></td>
+          <td>Stop → output/に生成されたファイル名を報告<br>SessionStart → raw/フォルダの未処理CSVファイルを一覧表示</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="hint-box" style="margin-top:18px;">
+      💡 複数の用途を兼ねるプロジェクトは、CLAUDE.mdに「このプロジェクトは◯◯と△△を扱う」と書いてから各テーブルの設定を合体させればOK。
+    </div>
+  </div>
+
+  <!-- skillフォルダの整理パターン -->
+  <div class="section">
+    <div class="section-heading" style="background:#B45309;">
+      <div class="num">9</div>
+      skillフォルダの整理パターン3種
+    </div>
+    <p>skillの数が増えてきたとき、どのように整理するかで<strong>Claudeが正しいskillを参照できるか</strong>が変わる。規模に合わせて選ぶ3パターン。</p>
+
+    <!-- パターン1 -->
+    <div class="sub-heading">パターン1 — シンプル型（skill 10個以下 ／ 始めたばかり）</div>
+    <p>全skillをフラットに並べる。Claudeが迷わず検索できる最もシンプルな構成。<strong>まずはこれから始める</strong>。</p>
+    <div class="folder-tree"><span class="folder">.claude/skills/</span>
+├── <span class="folder">save-skill/</span>
+│   └── <span class="file">SKILL.md</span>
+├── <span class="folder">summarize/</span>
+│   └── <span class="file">SKILL.md</span>
+├── <span class="folder">generate-report/</span>
+│   └── <span class="file">SKILL.md</span>
+└── <span class="folder">deploy/</span>
+    └── <span class="file">SKILL.md</span></div>
+    <div class="info-box">🔹 命名ルール：<code>動詞-名詞</code> の形にする（<code>summarize-pdf</code>、<code>update-index</code> 等）。何をするかが一目で分かれば良い。</div>
+
+    <!-- パターン2 -->
+    <div class="sub-heading">パターン2 — カテゴリ型（skill 10〜30個 ／ 1〜2ヶ月経ったら）</div>
+    <p>用途別にサブフォルダで区切る。「このあたりのskillを呼びたい」と指示しやすくなり、<strong>Claudeの参照精度が上がる</strong>。</p>
+    <div class="folder-tree"><span class="folder">.claude/skills/</span>
+├── <span class="folder">_meta/</span>             <span class="note"># skillを管理するskill群</span>
+│   ├── <span class="folder">save-skill/</span>
+│   └── <span class="folder">list-skills/</span>
+├── <span class="folder">file/</span>              <span class="note"># ファイル操作系</span>
+│   ├── <span class="folder">batch-rename/</span>
+│   └── <span class="folder">convert-format/</span>
+├── <span class="folder">report/</span>            <span class="note"># レポート・資料系</span>
+│   ├── <span class="folder">summarize/</span>
+│   ├── <span class="folder">generate-report/</span>
+│   └── <span class="folder">new-doc/</span>
+├── <span class="folder">media/</span>             <span class="note"># 画像・動画系</span>
+│   ├── <span class="folder">extract-audio/</span>
+│   └── <span class="folder">resize-images/</span>
+└── <span class="folder">deploy/</span>            <span class="note"># デプロイ系</span>
+    └── <span class="folder">push-to-github/</span></div>
+
+    <div class="point-box">
+      <div class="pt">CLAUDE.mdにカテゴリの説明を書くとより効果的</div>
+      <p><code>.claude/skills/report/</code> 配下には資料作成・要約系のskillが入っている、と一言書くだけでClaudeが適切なskillを探しやすくなる。</p>
+    </div>
+
+    <div class="chat-bubble chat-user">reportフォルダのskillを使って、このCSVを要約して。</div>
+    <div class="chat-claude" style="background:#F0FDF4;border-left:4px solid #16A34A;border-radius:12px;padding:14px 18px;font-size:13px;color:#166534;margin-bottom:10px;line-height:1.7;">
+      <div style="font-size:10px;font-weight:800;color:#16A34A;margin-bottom:6px;letter-spacing:0.1em;">🤖 Claude</div>
+      .claude/skills/report/ を参照して /summarize を実行します…
+    </div>
+
+    <!-- パターン3 -->
+    <div class="sub-heading">パターン3 — マルチプロジェクト型（複数PJで共通のskillを使い回したい）</div>
+    <p><strong>グローバルとプロジェクトの2層</strong>に分ける。汎用skillはグローバル（<code>~/.claude/skills/</code>）に、PJ固有skillはプロジェクトの<code>.claude/skills/</code>に置く。</p>
+    <div class="folder-tree"><span class="comment"># グローバル（全プロジェクトで使える汎用skill）</span>
+~/.claude/<span class="folder">skills/</span>
+├── <span class="folder">save-skill/</span>       <span class="note"># どのPJでも使う</span>
+├── <span class="folder">summarize/</span>        <span class="note"># 汎用要約</span>
+└── <span class="folder">deploy-github/</span>    <span class="note"># 汎用git push</span>
+
+<span class="comment"># プロジェクトA固有（そのPJにだけ存在）</span>
+projectA/.claude/<span class="folder">skills/</span>
+├── <span class="folder">render-ae/</span>        <span class="note"># AE専用</span>
+└── <span class="folder">update-slide-index/</span>  <span class="note"># このサイト専用</span></div>
+
+    <div class="hint-box">💡 グローバルに置いたskillはどのプロジェクトでも <code>/skill名</code> で呼び出せる。プロジェクト固有skillと同名の場合はプロジェクト側が優先される。</div>
+
+    <!-- どのパターンに移行するか -->
+    <div class="sub-heading">いつパターンを変えるか</div>
+    <table>
+      <tr><th>シグナル</th><th>対応</th></tr>
+      <tr><td>「あのskillどこだっけ」と探す頻度が増えた</td><td>パターン1 → パターン2（カテゴリ分け）へ移行</td></tr>
+      <tr><td>複数のプロジェクトで同じskillを再作成している</td><td>グローバルに昇格させてパターン3へ</td></tr>
+      <tr><td>似た名前のskillが増えてきた</td><td>統合 or サブフォルダで同カテゴリにまとめる</td></tr>
+      <tr><td>使わないskillが溜まってきた</td><td><code>_archive/</code> フォルダへ移動（削除はしない）</td></tr>
+    </table>
+
+    <div class="chat-bubble chat-user">skillが増えてきたからカテゴリ別に整理して。</div>
+    <div class="chat-claude" style="background:#F0FDF4;border-left:4px solid #16A34A;border-radius:12px;padding:14px 18px;font-size:13px;color:#166534;margin-bottom:10px;line-height:1.7;">
+      <div style="font-size:10px;font-weight:800;color:#16A34A;margin-bottom:6px;letter-spacing:0.1em;">🤖 Claude</div>
+      現在のskillを分類して file/ report/ media/ _meta/ に整理します。<br>
+      移動完了。CLAUDE.mdにカテゴリ説明も追記しました。
+    </div>
+  </div>
+
   <!-- まとめ -->
   <div class="section">
     <div class="section-heading" style="background:#FF6B2B;">
