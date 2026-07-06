@@ -243,6 +243,62 @@
     </table>
   </div>
 
+  <!-- 各ファイル・フォルダの役割一覧 -->
+  <div class="section">
+    <div class="section-heading sh-prep">
+      <div class="num">▶</div>
+      各ファイル・フォルダの役割と「なぜ必要か」
+    </div>
+    <p>設定ファイルを作る前に、<strong>何がどこに何のためにあるのか</strong>を把握しておく。これがわかると「どこに何を書けばいいか」が迷わなくなる。</p>
+
+    <div class="point-box">
+      <div class="pt">大前提 — Claudeはセッションが切れると記憶がリセットされる</div>
+      <p>Claude Codeはセッション（会話）をまたいで記憶を保持しない。「昨日教えたルール」は今日の会話には引き継がれない。設定ファイル群はその「毎回渡す引継ぎ書」として機能する。だから作る意味がある。</p>
+    </div>
+
+    <table>
+      <tr><th style="width:22%">ファイル / フォルダ</th><th style="width:20%">置き場所</th><th style="width:30%">役割</th><th>なぜ必要か</th></tr>
+      <tr>
+        <td><code>CLAUDE.md</code></td>
+        <td><code>.claude/</code> 直下<br>（またはルート）</td>
+        <td>Claudeへの「憲法」。セッション開始時に<strong>必ず自動で読まれる</strong></td>
+        <td>書いていないルールは毎回説明し直すことになる。ここに書けば一度で永続する</td>
+      </tr>
+      <tr>
+        <td><code>rules/*.md</code></td>
+        <td><code>.claude/rules/</code></td>
+        <td>CLAUDE.mdから切り出した詳細ルール集。テーマ別に分割</td>
+        <td>CLAUDE.mdが長大化すると後半が無視されやすい。重要なルールを独立ファイルに切り出すことで確実に参照させる</td>
+      </tr>
+      <tr>
+        <td><code>skills/*/SKILL.md</code></td>
+        <td><code>.claude/skills/スキル名/</code></td>
+        <td><code>/コマンド名</code>で呼び出せる<strong>再利用可能な手順書</strong></td>
+        <td>毎回「この手順で◯◯して」と説明し直すのは非効率。一度Skillにすれば一言で同じ品質の操作を再現できる</td>
+      </tr>
+      <tr>
+        <td><code>agents/*.md</code></td>
+        <td><code>.claude/agents/</code></td>
+        <td>特定タスク専用の専門エージェント定義</td>
+        <td>「複数ステップを自律的に実行する専門家」を作れる。画像一括処理・レポート生成など長い操作を1人のエージェントに委任できる</td>
+      </tr>
+      <tr>
+        <td><code>settings.json</code></td>
+        <td><code>.claude/</code> 直下</td>
+        <td>権限制御（allow/deny）＋ Hooksの定義</td>
+        <td>デフォルトはClaudeが操作のたびに確認を求めてくる。ここで許可リストを書くことで完全自動化しつつ危険な操作だけ禁止できる</td>
+      </tr>
+      <tr>
+        <td><code>hooks</code>（settings.json内）</td>
+        <td><code>settings.json</code>の中</td>
+        <td>「作業完了・ファイル保存・セッション開始」などのタイミングでコマンドを自動実行</td>
+        <td>Claudeが作業を終えると次の指示待ちになるだけ。Hookでその「合間」に通知・ファイル整理・検証を差し込める</td>
+      </tr>
+    </table>
+
+    <div class="hint-box">💡 最初に作るべき優先順位：<strong>① CLAUDE.md → ② settings.json（bypassPermissions）→ ③ save-skill Skill</strong>。Rulesとagentsは後から必要に応じて追加でOK。</div>
+  </div>
+
   <!-- STEP 1: 初回セットアップ -->
   <div class="section">
     <div class="section-heading sh-1">
@@ -295,6 +351,20 @@
     </div>
     <p>CLAUDE.mdはClaudeが<strong>セッション開始時に必ず読む</strong>ファイル。ここに書いたことが毎回の行動の前提になる。最初から完璧でなくていい。<strong>使いながら育てる</strong>のが正解。</p>
 
+    <div class="point-box">
+      <div class="pt">なぜCLAUDE.mdが必要か — 記憶リセット問題の解決策</div>
+      <p>Claude Codeはセッションをまたいで記憶を保持しない。「昨日、出力先フォルダは output/ にしてと言ったのに今日は違う場所に作られた」は全員が最初に経験する。CLAUDE.mdに書いた内容はセッション開始時に自動で読み込まれるため、毎回説明し直さなくて済む。<br><strong>書いたことだけが「常識」になる。書いていないことは毎回伝え直すことになる。</strong></p>
+    </div>
+
+    <div class="sub-heading">よくある失敗 → CLAUDE.mdで解決するチャット例</div>
+    <div class="chat-bubble chat-user">HTMLファイルに日本語のコメント入れてたけど、英語に直して。</div>
+    <div class="chat-bubble chat-claude">修正しました。style.html と index.html のコメントを英語に変更しました。</div>
+    <div class="chat-bubble chat-user">次からは最初から英語コメントで書いて。毎回言いたくない。CLAUDE.mdに追記しといて。</div>
+    <div class="chat-bubble chat-claude">了解です。CLAUDE.mdの「必須ルール」に以下を追記しました：<br>
+    「コメントは必ず英語で書く。変数名・関数名も英語。」<br>
+    次のセッションからは自動で守ります。</div>
+    <div class="warn-box">⚠️ チャットで「今後は◯◯して」と言っても、そのセッションが終わると忘れる。必ず「CLAUDE.mdに追記して」とセットで伝える習慣をつける。</div>
+
     <div class="sub-heading">最初のCLAUDE.mdに書く3つのこと</div>
     <div class="code-block"><span class="comment"># プロジェクト名：◯◯PJ</span>
 
@@ -334,6 +404,12 @@
     </div>
     <p>CLAUDE.mdが長くなってきたら、領域ごとにRulesファイルへ切り出す。Claudeが必要なときだけ参照するため、<strong>メインのCLAUDE.mdはシンプルに保てる</strong>。</p>
 
+    <div class="point-box">
+      <div class="pt">なぜRulesに分割するのか — CLAUDE.mdは短く保つほど効果が高い</div>
+      <p>Claudeはセッション開始時にCLAUDE.mdを全文読む。内容が100行を超えてくると後半のルールが参照されにくくなる（コンテキストの優先度が下がる）。<br>
+      Rulesファイルは「CLAUDE.mdからリンクされ、必要なときだけ読む辞書」として機能する。CLAUDE.mdには「詳細は rules/naming.md を参照」の一行だけ残せばいい。</p>
+    </div>
+
     <div class="sub-heading">切り出しのサイン</div>
     <ul>
       <li>CLAUDE.mdが<strong>30行を超えてきた</strong>とき</li>
@@ -344,6 +420,11 @@
     <div class="sub-heading">チャットでの依頼例</div>
     <div class="chat-bubble chat-user">CLAUDE.mdの命名規則の部分を .claude/rules/naming.md に切り出して。<br>
 CLAUDE.mdには「詳細は rules/naming.md を参照」とだけ残しておいて。</div>
+    <div class="chat-bubble chat-claude">.claude/rules/naming.md を作成し、命名規則のセクションを移動しました。<br>
+CLAUDE.mdには「命名規則：詳細は rules/naming.md を参照」と1行追記しました。</div>
+
+    <div class="chat-bubble chat-user">次のセッションでちゃんと rules/naming.md のルールを守ってくれる？</div>
+    <div class="chat-bubble chat-claude">はい。CLAUDE.mdに「rules/naming.md を参照」と書かれているため、セッション開始時に自動でそのファイルも読み込みます。次回から命名規則は自動的に守られます。</div>
 
     <div class="sub-heading">rules/workflow.md に書く内容の例</div>
     <div class="code-block"><span class="comment"># 作業フロー</span>
@@ -377,6 +458,24 @@ NG: 資料.md（内容不明）/ 2024 資料.md（スペースあり）</div>
       Skills — /コマンドで呼び出せる手順書の作り方
     </div>
     <p>Skillは「このプロジェクトでよく使う手順」を<code>/skill名</code>で呼び出せる形にしたもの。<strong>一度作れば毎回同じ品質で実行</strong>できる。</p>
+
+    <div class="point-box">
+      <div class="pt">なぜSkillが必要か — 「毎回説明する」をなくす</div>
+      <p>Skillがないと「このCSVを読んで、基本統計を出して、Markdownで output/ に保存して」と毎回フルで説明することになる。Skillに書いておけば <code>/analyze-csv</code> の一言で同じ操作が再現できる。<br>
+      また、チームで使う場合は「誰が頼んでも同じ手順で実行される」標準化にもなる。</p>
+    </div>
+
+    <div class="sub-heading">Skillを呼び出すチャット例</div>
+    <div class="chat-bubble chat-user">/summarize ./docs/meeting_notes.pdf</div>
+    <div class="chat-bubble chat-claude">summarize Skillを実行します。<br>
+meeting_notes.pdf を読み込みました。<br><br>
+<strong>概要</strong>：2026年Q2の売上レビュー会議。主な議題は3点。<br>
+<strong>主要ポイント</strong>：<br>
+・東日本エリアで前年比+18%<br>
+・新規顧客獲得コストが上昇傾向<br>
+・次Qのターゲットは既存顧客の深堀り<br><br>
+output/meeting_notes_要約.md に保存しました。</div>
+    <div class="hint-box">💡 Skillがなければ「PDFを読んで要約して〜」という長いプロンプトを毎回書く必要があった。<code>/summarize</code> の一言で完結する。</div>
 
     <div class="sub-heading">Skillファイルの場所と構造</div>
     <div class="folder-tree"><span class="folder">.claude/skills/</span>
@@ -517,6 +616,19 @@ output/フォルダに「{内容を表す日本語名}_要約.md」で保存
     </div>
     <p>VS Code / Cursor でClaudeに「毎回確認しなくていい」と設定するためのファイル。<code>.claude/settings.json</code> に書く。</p>
 
+    <div class="point-box">
+      <div class="pt">なぜSettings（権限設定）が必要か</div>
+      <p>設定なしだと、Claudeはコマンドを実行するたびに「このコマンドを実行してもいいですか？(Y/N)」と確認を求めてくる。作業のたびに承認が必要で、自動化の意味がなくなる。<br>
+      <code>bypassPermissions</code> で確認を省略し、<code>allow</code>で「許可するコマンド」、<code>deny</code>で「絶対にやらせないコマンド」を明示することで、<strong>快適さと安全性を両立</strong>できる。</p>
+    </div>
+
+    <div class="sub-heading">許可・禁止をチャットで追加する例</div>
+    <div class="chat-bubble chat-user">pdftotext コマンドを使いたいから許可して。</div>
+    <div class="chat-bubble chat-claude">settings.jsonのallowリストに <code>"Bash(pdftotext *)"</code> を追加しました。次回から確認なしで実行されます。</div>
+    <div class="chat-bubble chat-user">git push は絶対に自分でやるから、Claudeにはやらせないで。</div>
+    <div class="chat-bubble chat-claude">denyリストに <code>"Bash(git push *)"</code> を追加しました。この操作は今後ブロックされます。</div>
+    <div class="info-box">📌 <strong>allowとdenyの違い</strong>：<code>allow</code> は「このコマンドは確認なしで実行する」。<code>deny</code> は「絶対に実行させない（指示されても断る）」。denyはallowより優先される。</div>
+
     <div class="sub-heading">最小限のsettings.json</div>
     <div class="code-block">{
   <span class="key">"permissions"</span>: {
@@ -548,6 +660,28 @@ output/フォルダに「{内容を表す日本語名}_要約.md」で保存
       Hooks — 作業完了の自動通知・自動整理
     </div>
     <p>Hooksはイベント（セッション開始・ファイル保存・作業完了など）に反応して<strong>自動でコマンドを走らせる</strong>仕組み。settings.jsonの中に書く。</p>
+
+    <div class="point-box">
+      <div class="pt">なぜHooksが重要か — Claudeが作業を終えたその瞬間を使う</div>
+      <p>Claudeは指示を実行し終えると、次の指示が来るまで待機するだけ。「作業完了→通知」「セッション開始→未処理ファイル確認」「ファイル保存→自動検証」など、<strong>そのタイミングに処理を差し込むのがHook</strong>。Hookがないとこれらはすべて手動確認になる。</p>
+    </div>
+
+    <div class="sub-heading">使えるイベントの種類</div>
+    <table>
+      <tr><th>イベント名</th><th>発火タイミング</th><th>使いどころ</th></tr>
+      <tr><td><code>Stop</code></td><td>Claudeが1回の回答を終えたとき</td><td>作業完了通知、ログ記録</td></tr>
+      <tr><td><code>SessionStart</code></td><td>新しいチャットセッション開始時</td><td>未処理ファイル確認、前回の続きを表示</td></tr>
+      <tr><td><code>PreToolUse</code></td><td>Claudeがツールを使う直前</td><td>実行前のバリデーション、ログ</td></tr>
+      <tr><td><code>PostToolUse</code></td><td>Claudeがツールを使った直後</td><td>ファイル変更の検知、自動バックアップ</td></tr>
+    </table>
+
+    <div class="sub-heading">Hookをチャットで追加する例</div>
+    <div class="chat-bubble chat-user">作業が終わったらMacに通知を出してほしい。「Claudeが完了しました」って。</div>
+    <div class="chat-bubble chat-claude">settings.jsonに Stop イベントのHookを追加しました。<br>
+作業完了時に通知が届くようになります。</div>
+    <div class="chat-bubble chat-user">セッション開始時に input/ フォルダの中身を一覧表示してほしい。何が溜まってるか確認したい。</div>
+    <div class="chat-bubble chat-claude">SessionStart Hookを追加しました。<br>
+次のセッション開始時から <code>ls -la input/</code> の結果が自動表示されます。</div>
 
     <div class="sub-heading">まず入れておきたいHook — 作業完了通知（Mac）</div>
     <div class="code-block">{
