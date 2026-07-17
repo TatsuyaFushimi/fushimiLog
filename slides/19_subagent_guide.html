@@ -1,0 +1,617 @@
+<!doctype html><html><head>
+<meta charset=utf8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Claude Code サブエージェント設定ガイド</title>
+<style>
+:root {
+  --bg: #FFFFFF;
+  --surface: #F8FAFC;
+  --surface2: #F1F5F9;
+  --text: #1E293B;
+  --muted: #64748B;
+  --accent: #6366F1;
+  --accent-light: #EEF2FF;
+  --border: #E2E8F0;
+  --code-bg: #1E293B;
+  --code-text: #E2E8F0;
+  --code-border: transparent;
+  --sidebar-bg: #1E293B;
+  --sidebar-text: #94A3B8;
+  --sidebar-active: #6366F1;
+  --step-size: 28px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D1117; --surface: #161B22; --surface2: #1C2128;
+    --text: #E2E8F0; --muted: #94A3B8;
+    --accent-light: #1E1B4B; --border: #21262D;
+    --code-bg: #04070D; --code-text: #E2E8F0; --code-border: rgba(255,255,255,0.1);
+  }
+}
+:root[data-theme="light"] { --bg:#FFFFFF;--surface:#F8FAFC;--surface2:#F1F5F9;--text:#1E293B;--muted:#64748B;--accent-light:#EEF2FF;--border:#E2E8F0;--code-bg:#1E293B;--code-text:#E2E8F0;--code-border:transparent; }
+:root[data-theme="dark"] { --bg:#0D1117;--surface:#161B22;--surface2:#1C2128;--text:#E2E8F0;--muted:#94A3B8;--accent-light:#1E1B4B;--border:#21262D;--code-bg:#04070D;--code-text:#E2E8F0;--code-border:rgba(255,255,255,0.1); }
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 14px; line-height: 1.7; }
+
+.back-nav {
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  background: #FF6B2B; color: #fff; text-decoration: none;
+  padding: 10px 18px; border-radius: 24px; font-size: 13px; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(255,107,43,0.35);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.back-nav:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,43,0.45); }
+
+/* Sidebar */
+.sidebar { width: 230px; flex-shrink: 0; background: var(--sidebar-bg); height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; overflow-y: auto; transition: width 0.2s ease, opacity 0.2s ease; }
+.sidebar.collapsed { width: 0; opacity: 0; overflow: hidden; }
+.sidebar-toggle { position: fixed; top: 14px; left: 14px; z-index: 100; width: 30px; height: 30px; border-radius: 6px; background: #2D3748; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 14px; transition: background 0.1s; }
+.sidebar-toggle:hover { background: #374151; color: #fff; }
+.sidebar-logo { padding: 52px 20px 16px; border-bottom: 1px solid #2D3748; }
+.sidebar-logo .title { font-size: 13px; font-weight: 700; color: #FFFFFF; line-height: 1.4; }
+.sidebar-logo .sub { font-size: 11px; color: #64748B; margin-top: 3px; }
+.sidebar-section { padding: 16px 0 6px; }
+.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #475569; padding: 0 20px 6px; }
+.sidebar-link { display: flex; align-items: center; gap: 8px; padding: 7px 20px; color: var(--sidebar-text); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all 0.1s; }
+.sidebar-link:hover { background: #2D3748; color: #FFFFFF; border-left-color: var(--accent); }
+.sidebar-link .num { font-size: 10px; font-weight: 700; color: var(--accent); width: 16px; flex-shrink: 0; }
+
+/* Main */
+.main { flex: 1; min-width: 0; padding: 48px 56px 100px; max-width: 860px; }
+
+/* Hero */
+.hero { margin-bottom: 52px; }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 14px; }
+.hero-desc { font-size: 15px; color: var(--muted); max-width: 56ch; line-height: 1.7; }
+
+/* Why section */
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 0; }
+.why-card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.why-card .icon { font-size: 20px; margin-bottom: 8px; }
+.why-card strong { display: block; font-size: 13px; margin-bottom: 4px; }
+.why-card span { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* Section */
+.section { margin-bottom: 56px; }
+.section-divider { height: 1px; background: var(--border); margin: 48px 0; }
+
+/* Step header */
+.step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.step-num { display: flex; align-items: center; justify-content: center; width: var(--step-size); height: var(--step-size); border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.step-header h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+.step-desc { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; max-width: 60ch; }
+
+/* Callout */
+.callout { border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 13px; line-height: 1.6; }
+.callout-tip { background: var(--accent-light); border-left: 3px solid var(--accent); color: var(--text); }
+.callout-warn { background: #FFFBEB; border-left: 3px solid #F59E0B; }
+@media (prefers-color-scheme: dark) { .callout-warn { background: #451A03; } }
+:root[data-theme="dark"] .callout-warn { background: #451A03; }
+
+/* Code block */
+.code-block { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 14px 0; border: 1px solid var(--code-border); }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.code-header .fname { font-size: 11px; font-weight: 600; color: #94A3B8; font-family: ui-monospace,'SF Mono',monospace; }
+.code-header .lang { font-size: 10px; color: #475569; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 4px; }
+.code-block pre { padding: 16px; overflow-x: auto; }
+.code-block code { font-family: ui-monospace,'SF Mono',monospace; font-size: 12px; color: var(--code-text); line-height: 1.65; }
+.cm { color: #64748B; }
+.ck { color: #818CF8; }
+.cs { color: #34D399; }
+.cv { color: #FCA5A5; }
+.ch { color: #FCD34D; }
+
+/* Agent cards */
+.agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+.agent-card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.agent-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.agent-card-header .emoji { font-size: 18px; }
+.agent-card-header .name { font-size: 13px; font-weight: 700; }
+.agent-card-header .role { font-size: 11px; color: var(--muted); margin-left: auto; }
+.agent-card p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Member table */
+.member-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 16px 0; }
+.member-table th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--surface); border-bottom: 2px solid var(--border); }
+.member-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.member-table tr:last-child td { border-bottom: none; }
+.member-table .tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+
+/* Step list */
+.step-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.step-list li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.step-list li .n { font-size: 11px; font-weight: 800; color: var(--accent); min-width: 18px; margin-top: 1px; }
+
+h3 { font-size: 15px; font-weight: 700; margin: 24px 0 10px; letter-spacing: -0.01em; }
+p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+strong { color: var(--text); }
+
+/* ===== Chat script ===== */
+.chat-script { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.send-block { margin-bottom: 16px; }
+.send-block-label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.badge-you { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--accent); color: #fff; padding: 2px 9px; border-radius: 10px; }
+.badge-must { font-size: 10px; font-weight: 700; background: #EF4444; color: #fff; padding: 2px 8px; border-radius: 10px; }
+.badge-opt { font-size: 10px; font-weight: 700; background: var(--surface2); color: var(--muted); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+.send-msg { background: var(--accent-light); border: 1.5px solid var(--accent); border-radius: 12px; border-top-left-radius: 4px; padding: 14px 16px; font-size: 13px; line-height: 1.75; color: var(--text); white-space: pre-wrap; font-family: system-ui, -apple-system, sans-serif; }
+.reply-block { margin-bottom: 20px; padding-left: 16px; border-left: 2px solid var(--border); }
+.reply-block-label { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.reply-msg { font-size: 13px; color: var(--muted); line-height: 1.7; font-style: italic; }
+.repeat-hint { background: var(--surface); border: 1px dashed var(--accent); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--muted); margin: 10px 0 18px; display: flex; align-items: flex-start; gap: 8px; }
+.repeat-hint .ri { font-size: 16px; flex-shrink: 0; }
+.step-connector { display: flex; align-items: center; gap: 10px; margin: 4px 0 20px 0; color: var(--muted); font-size: 11px; }
+.step-connector::before, .step-connector::after { content:''; flex: 1; height: 1px; background: var(--border); }
+
+/* Prep checklist */
+.prep-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin: 16px 0; }
+.prep-card h4 { font-size: 12px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.prep-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.prep-row:last-child { margin-bottom: 0; }
+.prep-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 7px; flex-shrink: 0; }
+.prep-content strong { font-size: 13px; display: block; color: var(--text); }
+.prep-content span { font-size: 12px; color: var(--muted); }
+
+/* Done state */
+.done-box { background: #DCFCE7; border: 1.5px solid #22C55E; border-radius: 12px; padding: 18px 20px; margin: 16px 0; text-align: center; }
+@media (prefers-color-scheme: dark) { .done-box { background: #14532D22; border-color: #22C55E88; } }
+:root[data-theme="dark"] .done-box { background: #14532D22; border-color: #22C55E88; }
+.done-box .done-icon { font-size: 28px; margin-bottom: 8px; }
+.done-box .done-title { font-size: 15px; font-weight: 700; color: #15803D; margin-bottom: 4px; }
+.done-box .done-desc { font-size: 12px; color: #166534; }
+@media (prefers-color-scheme: dark) { .done-box .done-title { color: #4ADE80; } .done-box .done-desc { color: #86EFAC; } }
+:root[data-theme="dark"] .done-box .done-title { color: #4ADE80; }
+:root[data-theme="dark"] .done-box .done-desc { color: #86EFAC; }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-nav">← 一覧へ戻る</a>
+
+<button class="sidebar-toggle" id="sidebarToggle" title="サイドバーを開閉">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="title">Claude Code<br>サブエージェント設定ガイド</div>
+    <div class="sub">PJ開始直後にやること</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">はじめに</div>
+    <a class="sidebar-link" href="#why"><span class="num">—</span>なぜ必要か</a>
+    <a class="sidebar-link" href="#overview"><span class="num">—</span>伏見さんの実例</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">セットアップ</div>
+    <a class="sidebar-link" href="#step1"><span class="num">1</span>チームを設計する</a>
+    <a class="sidebar-link" href="#step2"><span class="num">2</span>チャットで一緒に作る</a>
+    <a class="sidebar-link" href="#step3"><span class="num">3</span>動作確認</a>
+    <a class="sidebar-link" href="#step4"><span class="num">4</span>キャラクターを育てる</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">リファレンス</div>
+    <a class="sidebar-link" href="#templates"><span class="num">—</span>テンプレート集</a>
+    <a class="sidebar-link" href="#tips"><span class="num">—</span>Tips</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">Claude Code 活用ガイド ／ AI関連 #19</div>
+    <h1>サブエージェントで<br>AI精度を劇的に上げる</h1>
+    <p class="hero-desc">役割を分担した専門AIチームを作ることで、コーディングミスの削減・提案精度の向上・作業の可視化ができる。このガイドはPJを始めたその日に設定することを強く推奨する。</p>
+  </div>
+
+  <!-- Why -->
+  <div id="why" class="section">
+    <h3>なぜ最初に設定すべきか</h3>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="icon">🎯</div>
+        <strong>精度が上がる</strong>
+        <span>実装・チェック・調査を別々のAIが担当するため、見落としが激減する</span>
+      </div>
+      <div class="why-card">
+        <div class="icon">👁️</div>
+        <strong>作業が見える</strong>
+        <span>誰が何をしているかカラーコードで一目でわかる。ブラックボックスにならない</span>
+      </div>
+      <div class="why-card">
+        <div class="icon">📂</div>
+        <strong>知識が蓄積する</strong>
+        <span>作業のたびに知見が自動でドキュメントに反映される。属人化しない</span>
+      </div>
+    </div>
+    <div class="callout callout-tip" style="margin-top:16px;">
+      <strong>PJ作成後すぐに設定しよう。</strong> 途中から入れると、過去の知見が蓄積されない・既存ルールとの整合性調整が必要になる。最初の5分で設定するのが一番コスパが良い。
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Overview -->
+  <div id="overview" class="section">
+    <h3>伏見さんの実例チーム</h3>
+    <p>これはあくまで一例。<strong>あなたのチーム構成は自分で考えることが大切。</strong> まずこの実例を参考にして、自分に合ったメンバーをイメージしてから STEP 1 へ進もう。</p>
+
+    <div class="callout callout-tip" style="margin-bottom:20px;">
+      💡 <strong>チームを考えるヒント：</strong> 自分がよくやらかすミスは何か？調査が足りない？実装が雑？レビューを飛ばす？その弱点を補う役割を作るのがコツ。
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">伏見チーム 6名体制</div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="padding:8px 16px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;font-weight:700;">秘書丸（メインAI）</div>
+        <div style="color:var(--muted);font-size:12px;">← 伏見さん（大将）の要望を受け取り、メンバーに振り分ける司令塔</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div style="padding:12px 14px;border-radius:8px;background:#FEF9C3;border:1.5px solid #EAB308;color:#713F12;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:#713F12;">🟡 ドットさん</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:#854D0E;">.claude/ 管理人</div>
+          <div style="font-size:11px;line-height:1.5;color:#92400E;">作業前に.claude/を調査・作業後に記録。覚悟の決まったムキムキおじさん</div>
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#DBEAFE;border:1.5px solid #3B82F6;color:#1E3A8A;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:#1E3A8A;">🔵 長さん</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:#1E40AF;">調査・提案</div>
+          <div style="font-size:11px;line-height:1.5;color:#1E3A8A;">複数案を比較して提示。チーム最年長のおじいちゃん博士</div>
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#FFEDD5;border:1.5px solid #F97316;color:#7C2D12;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:#7C2D12;">🟠 コーディー</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:#9A3412;">実装</div>
+          <div style="font-size:11px;line-height:1.5;color:#7C2D12;">バグゼロの天才SE。眼鏡の青年。ぼそぼそ喋るが仕事は死ぬ気</div>
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#DCFCE7;border:1.5px solid #22C55E;color:#14532D;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:#14532D;">💚 テストゥン</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:#166534;">壊しテスト</div>
+          <div style="font-size:11px;line-height:1.5;color:#14532D;">でっかいハンマーを持つ小柄な少女。壊すことが生きがい</div>
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#FCE7F3;border:1.5px solid #EC4899;color:#831843;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:#831843;">🩷 レビュアン</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:#9D174D;">最終GO/NG</div>
+          <div style="font-size:11px;line-height:1.5;color:#831843;">完璧主義の姐さん。GOを出す瞬間が一番好き。部屋は汚い</div>
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#F1F5F9;border:1.5px solid #CBD5E1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+          <div style="font-size:20px;color:#94A3B8;">＋</div>
+          <div style="font-size:11px;color:#64748B;text-align:center;">あなたのチームは<br>あなたが決める</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:24px;">作業フロー</h3>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:600;">
+      <span style="padding:6px 12px;background:#FEF9C3;border:1.5px solid #EAB308;border-radius:20px;color:#854D0E;">🟡 事前調査</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="padding:6px 12px;background:#DBEAFE;border:1.5px solid #3B82F6;border-radius:20px;color:#1E40AF;">🔵 必要なら</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="padding:6px 12px;background:#FFEDD5;border:1.5px solid #F97316;border-radius:20px;color:#9A3412;">🟠 実装</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="padding:6px 12px;background:#DCFCE7;border:1.5px solid #22C55E;border-radius:20px;color:#166534;">💚 テスト</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="padding:6px 12px;background:#FCE7F3;border:1.5px solid #EC4899;border-radius:20px;color:#9D174D;">🩷 最終判定</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="padding:6px 12px;background:#FEF9C3;border:1.5px solid #EAB308;border-radius:20px;color:#854D0E;">🟡 事後記録</span>
+    </div>
+
+    <div class="callout callout-warn" style="margin-top:20px;">
+      <strong>このチーム構成は伏見さんの例。</strong> あなたに合ったメンバー・役割・キャラクターを自由に作ってOK。人数も役割も自分次第。まずは「自分がどんなチームと働きたいか」を考えてから STEP 1 へ。
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- STEP 1 -->
+  <div id="step1" class="section">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <h2>チームを設計する（チャット前の準備）</h2>
+    </div>
+    <p class="step-desc">Claude Code を開く前に、作りたいチームを頭の中で整理しておこう。メモ帳や紙に書いておくだけでOK。チャット中に聞かれたことに答えるだけで全部作ってくれる。</p>
+
+    <div class="prep-card">
+      <h4>🗒️ チャット前に決めておくこと</h4>
+      <div class="prep-row">
+        <div class="prep-dot"></div>
+        <div class="prep-content">
+          <strong>秘書役（メインAI）の名前と役割</strong>
+          <span>例：「秘書丸」 — 要望を受けてメンバーに振り分ける司令塔</span>
+        </div>
+      </div>
+      <div class="prep-row">
+        <div class="prep-dot"></div>
+        <div class="prep-content">
+          <strong>各メンバーの名前・役割・色</strong>
+          <span>例：「コーディー / 実装担当 / 🟠」「レビュアン / 最終チェック / 🩷」</span>
+        </div>
+      </div>
+      <div class="prep-row">
+        <div class="prep-dot"></div>
+        <div class="prep-content">
+          <strong>やらせたいルール（あれば）</strong>
+          <span>例：「git pushは私が言うまでしない」「作業前に必ず確認する」など</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>最小構成の参考（迷ったらここから）</h3>
+    <div class="agent-grid">
+      <div class="agent-card">
+        <div class="agent-card-header"><span class="emoji">📂</span><span class="name">.claude/ 管理役</span><span class="role">強く推奨</span></div>
+        <p>作業前に既存のルール・スキルを確認し、作業後に知見を記録する。これがいると知識がどんどん蓄積される。</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-card-header"><span class="emoji">💻</span><span class="name">実装役</span><span class="role">強く推奨</span></div>
+        <p>コーディングをするなら必須。バグゼロ・指示範囲を守ることに特化させると品質が上がる。</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-card-header"><span class="emoji">✅</span><span class="name">最終チェック役</span><span class="role">推奨</span></div>
+        <p>ユーザーへ返す前のGO/NG判定。これがいるだけで出力の品質が安定する。</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-card-header"><span class="emoji">🔎</span><span class="name">調査・提案役</span><span class="role">任意</span></div>
+        <p>技術選定や複数案の比較が必要なとき。なくても動くが、迷う場面が多いなら入れると良い。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="section">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <h2>チャットで一緒に作る</h2>
+    </div>
+    <p class="step-desc">Claude Code を開いて、以下の順番でメッセージを送るだけ。<strong>ファイルを手動で作る必要は一切ない。</strong>全部 Claude が作ってくれる。</p>
+
+    <div class="callout callout-tip">
+      <strong>会話を進めるペースは自由。</strong> 一度に全員分送っても、1人ずつ確認しながら進めても OK。わからないことは「これってどういう意味？」と聞けばすぐ教えてくれる。
+    </div>
+
+    <div class="chat-script">
+
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-must">必ず送る ①</span>
+        </div>
+        <div class="send-msg">サブエージェントチームを一緒に作りたい。私の専属AIチームを設定してほしい。</div>
+      </div>
+
+      <div class="reply-block">
+        <div class="reply-block-label">Claude の返し（例）</div>
+        <div class="reply-msg">「了解です！まず秘書役（メインAI）から始めましょう。秘書役の名前と、どんな役割にするか教えてください」</div>
+      </div>
+
+      <div class="step-connector">次に秘書役を伝える</div>
+
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-must">必ず送る ②</span>
+        </div>
+        <div class="send-msg">秘書役の名前は「〇〇」。役割はユーザーの要望を受けてメンバーに振り分ける司令塔。キャラクターは〔どんな人物か〕。</div>
+      </div>
+
+      <div class="reply-block">
+        <div class="reply-block-label">Claude の返し（例）</div>
+        <div class="reply-msg">「〇〇を設定しました！次にサブエージェントを作りましょう。一人ずつ教えてください。名前・役割・色（絵文字）・キャラクターをざっくり教えてもらえれば作ります」</div>
+      </div>
+
+      <div class="step-connector">メンバーを1人ずつ伝える</div>
+
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-must">必ず送る ③（全員分）</span>
+        </div>
+        <div class="send-msg">「△△」という「〔役割〕」担当を作って。〔絵文字〕色。キャラクターは〔性格・外見など〕。</div>
+      </div>
+
+      <div class="reply-block">
+        <div class="reply-block-label">Claude の返し（例）</div>
+        <div class="reply-msg">「△△を作りました！他にもメンバーはいますか？」</div>
+      </div>
+
+      <div class="repeat-hint">
+        <span class="ri">🔁</span>
+        <span>メンバーの人数分これを繰り返す。全員終わったら「<strong>これで全員です</strong>」と送る。</span>
+      </div>
+
+      <div class="step-connector">次にルールを伝える</div>
+
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-must">必ず送る ④</span>
+        </div>
+        <div class="send-msg">こんなルールを設定して：
+・実装前に必ず私に確認する
+・git push は私が「push して」と言うまでしない
+・作業開始時に、誰が何をするか宣言する
+・〔他に守らせたいことがあれば追記〕</div>
+      </div>
+
+      <div class="reply-block">
+        <div class="reply-block-label">Claude の返し（例）</div>
+        <div class="reply-msg">「workflow.md にルールを追加しました。CLAUDE.md（プロジェクトの憲法）も作りましょうか？」</div>
+      </div>
+
+      <div class="step-connector">最後にプロジェクト概要を伝える</div>
+
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-opt">推奨 ⑤</span>
+        </div>
+        <div class="send-msg">CLAUDE.md も作って。プロジェクトの概要は「〔何を作るか・何のためか〕」。チームメンバーとルールはさっき決めた内容でよろしく。</div>
+      </div>
+
+      <div class="reply-block">
+        <div class="reply-block-label">Claude の返し（例）</div>
+        <div class="reply-msg">「CLAUDE.md を作りました！エージェントファイル・ルールファイル・CLAUDE.md の設定が完了です。テストしてみましょうか？」</div>
+      </div>
+
+    </div>
+
+    <div class="callout callout-tip" style="margin-top:8px;">
+      <strong>途中で詰まったら：</strong> 「もう一度説明して」「これってどういうこと？」と気軽に聞いてOK。Claude が案内してくれる。
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- STEP 3 -->
+  <div id="step3" class="section">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <h2>動作確認</h2>
+    </div>
+    <p class="step-desc">設定が完了したら、一言送ってみよう。全員がキャラクターに沿って返事をしてきたら成功。</p>
+
+    <div class="chat-script">
+      <div class="send-block">
+        <div class="send-block-label">
+          <span class="badge-you">あなた</span>
+          <span class="badge-must">これを送る</span>
+        </div>
+        <div class="send-msg">メンバーを紹介してください。</div>
+      </div>
+    </div>
+
+    <div class="done-box" style="margin-top:16px;">
+      <div class="done-icon">🎉</div>
+      <div class="done-title">各メンバーが自己紹介してきたら完成！</div>
+      <div class="done-desc">全員の名前・役割・キャラクターが正しく紹介されたら、チームの設定は完了です。</div>
+    </div>
+
+    <div class="callout callout-warn" style="margin-top:16px;">
+      <strong>ボーナス：挨拶ルールも追加してみよう。</strong> 「workflow.md に、私が "おはよう" や "ただいま" と言ったときに全員が挨拶するルールを追加して」と送ると、毎日の挨拶もできるようになる。
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- STEP 4 -->
+  <div id="step4" class="section">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <h2>キャラクターを育てる（任意・継続的に）</h2>
+    </div>
+    <p class="step-desc">キャラクターを設定すると、挨拶・作業宣言・フィードバックに個性が出て、AIとの作業が楽しくなる。長く使うほど育っていく感覚がある。</p>
+
+    <h3>キャラクター設定の考え方</h3>
+    <table class="member-table">
+      <thead><tr><th>決めること</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td><strong>外見・年齢・性別</strong></td><td>ムキムキおじさん、眼鏡の青年、小柄な少女、姐さん など</td></tr>
+        <tr><td><strong>口癖・喋り方</strong></td><td>ぼそぼそ、ウズウズ、熱血、自分の言葉を添削する など</td></tr>
+        <tr><td><strong>仕事への姿勢</strong></td><td>死ぬ気でやる、壊すことが生きがい、GO出す瞬間が好き など</td></tr>
+        <tr><td><strong>ギャップ・弱点</strong></td><td>几帳面に見えるが部屋が汚い、知識あるが主張しない など</td></tr>
+        <tr><td><strong>カラー</strong></td><td>🟡🔵🟠💚🩷 など絵文字で識別</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-tip">
+      <strong>FBを返してキャラを育てよう。</strong> 「もっとこういう喋り方にして」とフィードバックするたびにキャラが洗練されていく。最初は荒削りでOK。使い続けながら理想のチームに育てていこう。
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Templates -->
+  <div id="templates" class="section">
+    <div class="step-header">
+      <div class="step-num" style="background:var(--muted);">📋</div>
+      <h2>テンプレート集</h2>
+    </div>
+
+    <h3>エージェントファイル（最小構成）</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="fname">~/.claude/agents/your-agent.md</span><span class="lang">markdown</span></div>
+      <pre><code><span class="cm">---</span>
+<span class="ck">name</span><span class="cm">:</span> <span class="cs">your-agent-name</span>
+<span class="ck">description</span><span class="cm">:</span> <span class="cs">Use when [この人を呼ぶタイミングを英語で].</span>
+<span class="cm">---</span>
+
+あなたは[名前]、[役割]担当。
+
+<span class="ch">## カラー識別</span>
+すべての回答の冒頭に必ず `[絵文字] [名前]：` を付ける。
+
+<span class="ch">## キャラクター</span>
+[性格・口調・外見・口癖など]
+
+<span class="ch">## 役割</span>
+- [やること1]
+- [やること2]
+
+<span class="ch">## ルール</span>
+- [守ること]
+- [禁止事項]
+
+<span class="ch">## 出力形式</span>
+[どういう形式で結果を返すか]</code></pre>
+    </div>
+
+    <h3>CLAUDE.md（最小構成）</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="fname">.claude/CLAUDE.md</span><span class="lang">markdown</span></div>
+      <pre><code><span class="ch"># プロジェクト名</span>
+
+<span class="ch">## このプロジェクトでの役割</span>
+[秘書役AIが何をするかを書く]
+
+<span class="ch">## チームメンバー一覧</span>
+| メンバー | 色 | 役割 | キャラクター |
+|---|---|---|---|
+| [秘書役名] | なし | 司令塔 | [説明] |
+| [名前] | [絵文字] | [役割] | [説明] |
+
+<span class="ch">## カラー識別</span>
+[秘書役]はすべての回答に `[名前]：` を付ける。
+サブエージェントは各自の絵文字+名前を付ける。
+
+<span class="ch">## 禁止事項</span>
+- 確認なしで実装・ファイル編集を開始すること
+- 指示なしでの git push
+- 指示されていないリファクタリング・機能追加
+
+<span class="ch">## デプロイ・実装手順</span>
+→ `.claude/rules/workflow.md` に詳細あり。</code></pre>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Tips -->
+  <div id="tips" class="section">
+    <div class="step-header">
+      <div class="step-num" style="background:var(--muted);">💡</div>
+      <h2>Tips</h2>
+    </div>
+    <ul class="step-list">
+      <li><span class="n">✓</span><div><strong>グローバル（~/.claude/agents/）に入れると全PJで使える</strong><br><span style="color:var(--muted);font-size:12px;">コーディー・レビュアンなど汎用的なエージェントはグローバルに。PJ固有のものは.claude/agents/に</span></div></li>
+      <li><span class="n">✓</span><div><strong>rules/に書いたことは常に有効</strong><br><span style="color:var(--muted);font-size:12px;">「絶対に忘れてはいけないこと」はrules/へ。skillsは呼ばれたときだけ発動</span></div></li>
+      <li><span class="n">✓</span><div><strong>knowhow.mdにハマりポイントを蓄積する</strong><br><span style="color:var(--muted);font-size:12px;">.claude/管理役に事後記録させると、同じ失敗を繰り返さなくなる</span></div></li>
+      <li><span class="n">✓</span><div><strong>キャラはFBで育てる</strong><br><span style="color:var(--muted);font-size:12px;">「もっとぼそぼそ喋って」「おじいちゃんらしく」などFBするとキャラが洗練される</span></div></li>
+      <li><span class="n">✓</span><div><strong>挨拶ルールを入れると毎日が楽しくなる</strong><br><span style="color:var(--muted);font-size:12px;">「おはよう」と言うとメンバー全員から挨拶が来る。モチベーションが上がる</span></div></li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const toggle = document.getElementById('sidebarToggle');
+const sidebar = document.getElementById('sidebar');
+toggle.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+  toggle.textContent = sidebar.classList.contains('collapsed') ? '☰' : '✕';
+});
+</script>
+
+</body></html>
