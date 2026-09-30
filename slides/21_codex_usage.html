@@ -248,13 +248,13 @@
   /* ══════════ SLIDE 6: ClaudeCodeにCodexを使わせる ══════════ */
   #s6 .pad { position: relative; z-index: 2; }
   #s6 .s6-bgimg {
-    position: absolute; top: 0; right: 0;
-    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover; z-index: 0;
   }
   #s6 .s6-bgimg-overlay {
-    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    position: absolute; inset: 0;
     z-index: 1; pointer-events: none;
-    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 48%, rgba(250,250,248,0.92) 60%, rgba(250,250,248,0.55) 78%, rgba(250,250,248,0.22) 100%);
   }
   #s6 h2 { font-size: 25px; margin-bottom: 20px; }
   #s6 p.lead { font-size: 14px; margin-bottom: 26px; max-width: 460px; }
@@ -308,24 +308,27 @@
     position: relative; z-index: 2;
   }
   #s8 .s8-bgimg {
-    position: absolute; top: 0; right: 0;
-    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover; z-index: 0;
   }
   #s8 .s8-bgimg-overlay {
-    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    position: absolute; inset: 0;
     z-index: 1; pointer-events: none;
-    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 48%, rgba(250,250,248,0.92) 60%, rgba(250,250,248,0.55) 78%, rgba(250,250,248,0.22) 100%);
   }
   #s8 h2 { font-size: 26px; margin-bottom: 14px; }
   #s8 .s8-hint { margin-top: 18px; font-size: 13px; color: var(--ink-faint); font-weight: 500; }
 
   /* ══════════ SLIDE 9: 仕事の分担表 ══════════ */
-  #s9 .pad { position: relative; }
-  #s9 .s9-thumb {
-    position: absolute; top: 20px; right: 110px;
-    width: 108px; height: 72px; object-fit: cover;
-    border-radius: 10px; box-shadow: 0 2px 10px rgba(43,43,43,0.18);
-    z-index: 3;
+  #s9 .pad { position: relative; z-index: 2; }
+  #s9 .s9-bgimg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s9 .s9-bgimg-overlay {
+    position: absolute; inset: 0;
+    z-index: 1; pointer-events: none;
+    background: rgba(250,250,248,0.94);
   }
   #s9 h2 { font-size: 20px; margin-bottom: 20px; max-width: 660px; }
   #s9 .s9-cols2 { display: flex; gap: 22px; flex: 1; min-height: 0; }
@@ -355,15 +358,18 @@
   }
 
   /* ══════════ 表共通（SLIDE 10 / 11） ══════════ */
-  #s10 .pad, #s11 .pad { position: relative; }
-  #s10 .s10-thumb, #s11 .s11-thumb {
-    position: absolute; top: 20px; right: 110px;
-    width: 108px; height: 72px; object-fit: cover;
-    border-radius: 10px; box-shadow: 0 2px 10px rgba(43,43,43,0.18);
-    z-index: 3;
+  #s10 .pad, #s11 .pad { position: relative; z-index: 2; }
+  #s10 .s10-bgimg, #s11 .s11-bgimg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s10 .s10-bgimg-overlay, #s11 .s11-bgimg-overlay {
+    position: absolute; inset: 0;
+    z-index: 1; pointer-events: none;
+    background: rgba(250,250,248,0.94);
   }
   .tbl-title { font-size: 19px; margin-bottom: 10px; max-width: 660px; }
-  .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; background: rgba(255,255,255,0.9); }
   .tbl th {
     background: var(--indigo-soft); color: var(--indigo);
     font-family: 'Zen Kaku Gothic New', sans-serif;
@@ -436,13 +442,13 @@
     position: relative; z-index: 2;
   }
   #s13 .s13-bgimg {
-    position: absolute; top: 0; right: 0;
-    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover; z-index: 0;
   }
   #s13 .s13-bgimg-overlay {
-    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    position: absolute; inset: 0;
     z-index: 1; pointer-events: none;
-    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 48%, rgba(250,250,248,0.92) 60%, rgba(250,250,248,0.55) 78%, rgba(250,250,248,0.22) 100%);
   }
   #s13 h1 { font-size: 26px; line-height: 1.85; margin-bottom: 18px; }
   #s13 .s13-sub { font-size: 15px; color: var(--indigo); font-weight: 700; }
@@ -562,8 +568,9 @@
 
   <!-- SLIDE 9: 仕事の分担表 -->
   <div class="slide" id="s9">
+    <img class="s9-bgimg" src="images/21_codex_usage/s9_bunnhan.png" alt="">
+    <div class="s9-bgimg-overlay"></div>
     <div class="pad">
-      <img class="s9-thumb" src="images/21_codex_usage/s9_bunnhan.png" alt="">
       <div class="eyebrow">俺のClaudeの仕事とCodexの仕事</div>
       <h2>Claudeが自分でやる仕事／デックス経由でCodexに任せる仕事</h2>
       <div class="s9-cols2">
@@ -602,8 +609,9 @@
 
   <!-- SLIDE 10: Claude Codeの得意分野とCodex CLIの得意分野 -->
   <div class="slide" id="s10">
+    <img class="s10-bgimg" src="images/21_codex_usage/s10_tokui_bunya.png" alt="">
+    <div class="s10-bgimg-overlay"></div>
     <div class="pad">
-      <img class="s10-thumb" src="images/21_codex_usage/s10_tokui_bunya.png" alt="">
       <div class="eyebrow">比較①</div>
       <h2 class="tbl-title">Claude Codeの得意分野とCodex CLIの得意分野</h2>
       <table class="tbl">
@@ -624,8 +632,9 @@
 
   <!-- SLIDE 11: アプリ／直接呼び出しでないとできない機能 -->
   <div class="slide" id="s11">
+    <img class="s11-bgimg" src="images/21_codex_usage/s11_gpt_app_only.png" alt="">
+    <div class="s11-bgimg-overlay"></div>
     <div class="pad">
-      <img class="s11-thumb" src="images/21_codex_usage/s11_gpt_app_only.png" alt="">
       <div class="eyebrow">比較②</div>
       <h2 class="tbl-title">ChatGPTアプリ／Codex直接呼び出しでないとできない機能</h2>
       <table class="tbl">
