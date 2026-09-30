@@ -143,6 +143,12 @@
 
   /* ══════════ SLIDE 2: イントロ・自己紹介 ══════════ */
   #s2 h2 { font-size: 26px; margin-bottom: 30px; }
+  #s2 .s2-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+  #s2 .s2-onepoint {
+    width: 84px; height: 84px; object-fit: cover; flex-shrink: 0;
+    border-radius: 16px; margin-top: 4px;
+    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  }
   #s2 .s2-list { display: flex; flex-direction: column; gap: 14px; }
   #s2 .s2-item {
     display: flex; align-items: center; gap: 14px;
@@ -160,6 +166,12 @@
 
   /* ══════════ SLIDE 3: ClaudeCodeが忘れられない ══════════ */
   #s3 h2 { font-size: 27px; margin-bottom: 22px; }
+  #s3 .s3-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+  #s3 .s3-onepoint {
+    width: 152px; height: 86px; object-fit: cover; flex-shrink: 0;
+    border-radius: 12px; margin-top: 2px;
+    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  }
   #s3 p.lead { font-size: 14.5px; margin-bottom: auto; }
   #s3 .s3-quote {
     margin-top: 22px;
@@ -194,6 +206,12 @@
     margin-bottom: 24px;
   }
   #s5 h1 { font-size: 40px; line-height: 1.6; }
+  #s5 .s5-onepoint {
+    position: absolute; bottom: 44px; right: 64px;
+    width: 122px; height: 81px; object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  }
 
   /* ══════════ SLIDE 6: ClaudeCodeにCodexを使わせる ══════════ */
   #s6 h2 { font-size: 25px; margin-bottom: 20px; }
@@ -338,8 +356,13 @@
   <!-- SLIDE 2: イントロ・自己紹介 -->
   <div class="slide" id="s2">
     <div class="pad">
-      <div class="eyebrow">INTRO</div>
-      <h2>皆さん、Codex使っていますか？</h2>
+      <div class="s2-head">
+        <div>
+          <div class="eyebrow">INTRO</div>
+          <h2>皆さん、Codex使っていますか？</h2>
+        </div>
+        <img class="s2-onepoint" src="images/21_codex_usage/s2_intro.png" alt="">
+      </div>
       <div class="s2-list">
         <div class="s2-item" data-step="1"><span class="si-num">1</span><p>プライベート先行で使い始めて、<b>だいたい2ヶ月くらい</b></p></div>
         <div class="s2-item" data-step="2"><span class="si-num">2</span><p>仕事で使うようになったのは、<b>ここ3週間くらい</b></p></div>
@@ -350,8 +373,13 @@
   <!-- SLIDE 3: ClaudeCodeが忘れられない -->
   <div class="slide" id="s3">
     <div class="pad">
-      <div class="eyebrow">正直な告白</div>
-      <h2>ClaudeCodeが忘れられない🥹</h2>
+      <div class="s3-head">
+        <div>
+          <div class="eyebrow">正直な告白</div>
+          <h2>ClaudeCodeが忘れられない🥹</h2>
+        </div>
+        <img class="s3-onepoint" src="images/21_codex_usage/s3_claudecode_love.png" alt="">
+      </div>
       <p class="lead">プライベートも会社も、ずっとClaudeCodeを使ってきた。<br>移行するのがなんだか寂しくて、「面倒くさいから」を言い訳にして、<br>Codexに手を出さずにいた。</p>
       <div class="s3-quote" data-step="1">
         <span class="qmark">“</span>
@@ -375,6 +403,7 @@
     <div class="center">
       <p class="s5-murmur">めんどいことはどうするんだっけか…</p>
       <h1 data-step="1">だったら、<span class="accent-o">AIにやらせよ</span></h1>
+      <img class="s5-onepoint" src="images/21_codex_usage/s5_ai_ni_yaraseyo.png" alt="">
     </div>
   </div>
 
