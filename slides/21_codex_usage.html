@@ -142,14 +142,19 @@
   }
 
   /* ══════════ SLIDE 2: イントロ・自己紹介 ══════════ */
+  #s2 .pad { position: relative; z-index: 2; }
   #s2 h2 { font-size: 26px; margin-bottom: 30px; }
   #s2 .s2-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-  #s2 .s2-onepoint {
-    width: 84px; height: 84px; object-fit: cover; flex-shrink: 0;
-    border-radius: 16px; margin-top: 4px;
-    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  #s2 .s2-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
   }
-  #s2 .s2-list { display: flex; flex-direction: column; gap: 14px; }
+  #s2 .s2-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
+  #s2 .s2-list { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }
   #s2 .s2-item {
     display: flex; align-items: center; gap: 14px;
     background: #fff; border: 1px solid var(--line); border-radius: 10px;
@@ -165,16 +170,22 @@
   #s2 .s2-item p b { color: var(--indigo); font-weight: 700; }
 
   /* ══════════ SLIDE 3: ClaudeCodeが忘れられない ══════════ */
+  #s3 .pad { position: relative; z-index: 2; }
   #s3 h2 { font-size: 27px; margin-bottom: 22px; }
   #s3 .s3-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-  #s3 .s3-onepoint {
-    width: 152px; height: 86px; object-fit: cover; flex-shrink: 0;
-    border-radius: 12px; margin-top: 2px;
-    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  #s3 .s3-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
   }
-  #s3 p.lead { font-size: 14.5px; margin-bottom: auto; }
+  #s3 .s3-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
+  #s3 p.lead { font-size: 14.5px; margin-bottom: auto; max-width: 460px; }
   #s3 .s3-quote {
     margin-top: 22px;
+    max-width: 460px;
     background: #fff;
     border-left: 4px solid var(--indigo);
     border-radius: 4px;
@@ -192,7 +203,20 @@
   }
 
   /* ══════════ SLIDE 4: 最近のCodexさんすごい ══════════ */
-  #s4 .center { padding: 0 90px; }
+  #s4 .center {
+    align-items: flex-start; text-align: left;
+    padding: 0 420px 0 80px;
+    position: relative; z-index: 2;
+  }
+  #s4 .s4-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s4 .s4-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s4 h2 { font-size: 27px; line-height: 1.55; margin-bottom: 20px; }
   #s4 p.lead { font-size: 14.5px; }
   #s4 .s4-weak {
@@ -201,23 +225,42 @@
   }
 
   /* ══════════ SLIDE 5: だったら、AIにやらせよ ══════════ */
+  #s5 .center {
+    align-items: flex-start; text-align: left;
+    padding: 0 420px 0 80px;
+    position: relative; z-index: 2;
+  }
   #s5 .s5-murmur {
     font-size: 15px; color: var(--ink-faint); font-weight: 500;
     margin-bottom: 24px;
   }
   #s5 h1 { font-size: 40px; line-height: 1.6; }
-  #s5 .s5-onepoint {
-    position: absolute; bottom: 44px; right: 64px;
-    width: 122px; height: 81px; object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(43,43,43,0.14);
+  #s5 .s5-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s5 .s5-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
   }
 
   /* ══════════ SLIDE 6: ClaudeCodeにCodexを使わせる ══════════ */
+  #s6 .pad { position: relative; z-index: 2; }
+  #s6 .s6-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s6 .s6-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s6 h2 { font-size: 25px; margin-bottom: 20px; }
-  #s6 p.lead { font-size: 14px; margin-bottom: 26px; }
+  #s6 p.lead { font-size: 14px; margin-bottom: 26px; max-width: 460px; }
   #s6 .s6-bubble {
     margin-top: auto;
+    max-width: 460px;
     background: #fff;
     border-radius: 14px;
     padding: 22px 26px;
@@ -240,17 +283,51 @@
   #s6 .s6-line.reply p { color: var(--orange); }
 
   /* ══════════ SLIDE 7: 結論 ══════════ */
-  #s7 .center { padding: 0 60px; }
+  #s7 .center {
+    align-items: flex-start; text-align: left;
+    padding: 0 420px 0 80px;
+    position: relative; z-index: 2;
+  }
+  #s7 .s7-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s7 .s7-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s7 h1 { font-size: 30px; line-height: 1.9; }
   #s7 h1 .neg { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: #C3C1B5; }
   #s7 h1 .pos { color: var(--indigo); }
 
   /* ══════════ SLIDE 8: 橋渡し（長々とすみません） ══════════ */
+  #s8 .center {
+    align-items: flex-start; text-align: left;
+    padding: 0 420px 0 80px;
+    position: relative; z-index: 2;
+  }
+  #s8 .s8-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s8 .s8-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s8 h2 { font-size: 26px; margin-bottom: 14px; }
   #s8 .s8-hint { margin-top: 18px; font-size: 13px; color: var(--ink-faint); font-weight: 500; }
 
   /* ══════════ SLIDE 9: 仕事の分担表 ══════════ */
-  #s9 h2 { font-size: 20px; margin-bottom: 20px; }
+  #s9 .pad { position: relative; }
+  #s9 .s9-thumb {
+    position: absolute; top: 20px; right: 110px;
+    width: 108px; height: 72px; object-fit: cover;
+    border-radius: 10px; box-shadow: 0 2px 10px rgba(43,43,43,0.18);
+    z-index: 3;
+  }
+  #s9 h2 { font-size: 20px; margin-bottom: 20px; max-width: 660px; }
   #s9 .s9-cols2 { display: flex; gap: 22px; flex: 1; min-height: 0; }
   #s9 .s9-col2 { flex: 1; display: flex; flex-direction: column; }
   #s9 .s9-col2-title {
@@ -278,7 +355,14 @@
   }
 
   /* ══════════ 表共通（SLIDE 10 / 11） ══════════ */
-  .tbl-title { font-size: 19px; margin-bottom: 10px; }
+  #s10 .pad, #s11 .pad { position: relative; }
+  #s10 .s10-thumb, #s11 .s11-thumb {
+    position: absolute; top: 20px; right: 110px;
+    width: 108px; height: 72px; object-fit: cover;
+    border-radius: 10px; box-shadow: 0 2px 10px rgba(43,43,43,0.18);
+    z-index: 3;
+  }
+  .tbl-title { font-size: 19px; margin-bottom: 10px; max-width: 660px; }
   .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .tbl th {
     background: var(--indigo-soft); color: var(--indigo);
@@ -310,9 +394,19 @@
   #s9 .eyebrow, #s10 .eyebrow, #s11 .eyebrow { margin-bottom: 8px; }
 
   /* ══════════ SLIDE 12: おまけ デックス配布 ══════════ */
+  #s12 .pad { position: relative; z-index: 2; }
+  #s12 .s12-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s12 .s12-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s12 h2 { font-size: 22px; margin-bottom: 6px; }
-  #s12 .s12-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; line-height: 1.8; font-weight: 500; max-width: 700px; }
-  #s12 .s12-steps { display: flex; flex-direction: column; gap: 18px; flex: 1; justify-content: center; }
+  #s12 .s12-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; line-height: 1.8; font-weight: 500; max-width: 460px; }
+  #s12 .s12-steps { display: flex; flex-direction: column; gap: 18px; flex: 1; justify-content: center; max-width: 460px; }
   #s12 .s12-step {
     display: flex; align-items: flex-start; gap: 16px;
     background: #fff; border: 1px solid var(--line); border-radius: 10px;
@@ -336,7 +430,20 @@
   }
 
   /* ══════════ SLIDE 13: 締め ══════════ */
-  #s13 .center { padding: 0 70px; }
+  #s13 .center {
+    align-items: flex-start; text-align: left;
+    padding: 0 420px 0 80px;
+    position: relative; z-index: 2;
+  }
+  #s13 .s13-bgimg {
+    position: absolute; top: 0; right: 0;
+    width: 420px; height: 100%; object-fit: cover; z-index: 0;
+  }
+  #s13 .s13-bgimg-overlay {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 420px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #FAFAF8 0%, #FAFAF8 12%, rgba(250,250,248,0.55) 42%, rgba(250,250,248,0) 78%);
+  }
   #s13 h1 { font-size: 26px; line-height: 1.85; margin-bottom: 18px; }
   #s13 .s13-sub { font-size: 15px; color: var(--indigo); font-weight: 700; }
 </style>
@@ -355,13 +462,14 @@
 
   <!-- SLIDE 2: イントロ・自己紹介 -->
   <div class="slide" id="s2">
+    <img class="s2-bgimg" src="images/21_codex_usage/s2_intro.png" alt="">
+    <div class="s2-bgimg-overlay"></div>
     <div class="pad">
       <div class="s2-head">
         <div>
           <div class="eyebrow">INTRO</div>
           <h2>皆さん、Codex使っていますか？</h2>
         </div>
-        <img class="s2-onepoint" src="images/21_codex_usage/s2_intro.png" alt="">
       </div>
       <div class="s2-list">
         <div class="s2-item" data-step="1"><span class="si-num">1</span><p>プライベート先行で使い始めて、<b>だいたい2ヶ月くらい</b></p></div>
@@ -372,13 +480,14 @@
 
   <!-- SLIDE 3: ClaudeCodeが忘れられない -->
   <div class="slide" id="s3">
+    <img class="s3-bgimg" src="images/21_codex_usage/s3_claudecode_love.png" alt="">
+    <div class="s3-bgimg-overlay"></div>
     <div class="pad">
       <div class="s3-head">
         <div>
           <div class="eyebrow">正直な告白</div>
           <h2>ClaudeCodeが忘れられない🥹</h2>
         </div>
-        <img class="s3-onepoint" src="images/21_codex_usage/s3_claudecode_love.png" alt="">
       </div>
       <p class="lead">プライベートも会社も、ずっとClaudeCodeを使ってきた。<br>移行するのがなんだか寂しくて、「面倒くさいから」を言い訳にして、<br>Codexに手を出さずにいた。</p>
       <div class="s3-quote" data-step="1">
@@ -390,6 +499,8 @@
 
   <!-- SLIDE 4: 最近のCodexさんすごい -->
   <div class="slide" id="s4">
+    <img class="s4-bgimg" src="images/21_codex_usage/s4_codex_sugoi.png" alt="">
+    <div class="s4-bgimg-overlay"></div>
     <div class="center">
       <div class="eyebrow">とはいえ最近は…</div>
       <h2>最近のCodexさん、<br>すごくない！？！？</h2>
@@ -400,15 +511,18 @@
 
   <!-- SLIDE 5: だったら、AIにやらせよ -->
   <div class="slide" id="s5">
+    <img class="s5-bgimg" src="images/21_codex_usage/s5_ai_ni_yaraseyo.png" alt="">
+    <div class="s5-bgimg-overlay"></div>
     <div class="center">
       <p class="s5-murmur">めんどいことはどうするんだっけか…</p>
       <h1 data-step="1">だったら、<span class="accent-o">AIにやらせよ</span></h1>
-      <img class="s5-onepoint" src="images/21_codex_usage/s5_ai_ni_yaraseyo.png" alt="">
     </div>
   </div>
 
   <!-- SLIDE 6: ClaudeCodeにCodexを使わせる -->
   <div class="slide" id="s6">
+    <img class="s6-bgimg" src="images/21_codex_usage/s6_claudecode_uses_codex.png" alt="">
+    <div class="s6-bgimg-overlay"></div>
     <div class="pad">
       <div class="eyebrow">思いついたこと</div>
       <h2>ClaudeCodeにCodexを使わせる</h2>
@@ -428,6 +542,8 @@
 
   <!-- SLIDE 7: 結論 -->
   <div class="slide" id="s7">
+    <img class="s7-bgimg" src="images/21_codex_usage/s7_ketsuron.png" alt="">
+    <div class="s7-bgimg-overlay"></div>
     <div class="center">
       <h1><span class="neg">"僕は"Codex使えないです！</span><br><span data-step="1">でも</span><br><span class="pos" data-step="2">ClaudeがCodexを使えます！</span></h1>
     </div>
@@ -435,6 +551,8 @@
 
   <!-- SLIDE 8: 橋渡し（長々とすみません） -->
   <div class="slide" id="s8">
+    <img class="s8-bgimg" src="images/21_codex_usage/s8_hashiwatashi.png" alt="">
+    <div class="s8-bgimg-overlay"></div>
     <div class="center">
       <h2>長々とすみません！</h2>
       <p class="lead">使い方を共有します！</p>
@@ -445,6 +563,7 @@
   <!-- SLIDE 9: 仕事の分担表 -->
   <div class="slide" id="s9">
     <div class="pad">
+      <img class="s9-thumb" src="images/21_codex_usage/s9_bunnhan.png" alt="">
       <div class="eyebrow">俺のClaudeの仕事とCodexの仕事</div>
       <h2>Claudeが自分でやる仕事／デックス経由でCodexに任せる仕事</h2>
       <div class="s9-cols2">
@@ -484,6 +603,7 @@
   <!-- SLIDE 10: Claude Codeの得意分野とCodex CLIの得意分野 -->
   <div class="slide" id="s10">
     <div class="pad">
+      <img class="s10-thumb" src="images/21_codex_usage/s10_tokui_bunya.png" alt="">
       <div class="eyebrow">比較①</div>
       <h2 class="tbl-title">Claude Codeの得意分野とCodex CLIの得意分野</h2>
       <table class="tbl">
@@ -505,6 +625,7 @@
   <!-- SLIDE 11: アプリ／直接呼び出しでないとできない機能 -->
   <div class="slide" id="s11">
     <div class="pad">
+      <img class="s11-thumb" src="images/21_codex_usage/s11_gpt_app_only.png" alt="">
       <div class="eyebrow">比較②</div>
       <h2 class="tbl-title">ChatGPTアプリ／Codex直接呼び出しでないとできない機能</h2>
       <table class="tbl">
@@ -525,6 +646,8 @@
 
   <!-- SLIDE 12: おまけ デックス配布 -->
   <div class="slide" id="s12">
+    <img class="s12-bgimg" src="images/21_codex_usage/s12_dekkusu_haifu.png" alt="">
+    <div class="s12-bgimg-overlay"></div>
     <div class="pad">
       <div class="eyebrow">おまけ</div>
       <h2>AIエージェント「デックス」を配ります</h2>
@@ -551,6 +674,8 @@
 
   <!-- SLIDE 13: 締め -->
   <div class="slide" id="s13">
+    <img class="s13-bgimg" src="images/21_codex_usage/s13_matome.png" alt="">
+    <div class="s13-bgimg-overlay"></div>
     <div class="center">
       <h1>僕はCodex使えない。<br>でも、ClaudeがCodexを使ってくれる。</h1>
       <div class="s13-sub" data-step="1">得意なことは、得意な人（AI）にやらせる。</div>
