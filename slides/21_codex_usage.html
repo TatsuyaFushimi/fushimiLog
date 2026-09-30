@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伏見のCodexの使用方法</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  :root {
+    --bg: #FAFAF8;
+    --panel: #F2F1EA;
+    --ink: #2B2B2B;
+    --ink-soft: #74746C;
+    --ink-faint: #A6A59B;
+    --indigo: #3B4A9E;
+    --indigo-soft: #E8EAF6;
+    --indigo-line: #C6CCEA;
+    --orange: #F97316;
+    --orange-soft: #FFEEE0;
+    --line: #E2E0D6;
+    --green: #1E8A4C;
+    --green-soft: #DCF5E6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 960px; height: 540px;
+    overflow: hidden;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .deck { width: 100%; height: 100%; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .slide.active { display: flex; }
+
+  /* ── ページ番号 ── */
+  .pageno {
+    position: absolute; top: 24px; right: 32px;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    z-index: 2;
+  }
+  .pageno b { color: var(--ink-soft); }
+
+  /* ── ナビゲーション ── */
+  .nav {
+    position: fixed; bottom: 16px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #D8D6C9;
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--indigo); transform: scale(1.5); }
+  .nav-arrow {
+    color: #C3C1B5; font-size: 14px;
+    cursor: pointer; padding: 4px 8px;
+    transition: color 0.2s;
+    background: none; border: none;
+    font-family: inherit;
+  }
+  .nav-arrow:hover { color: var(--indigo); }
+
+  /* ── 共通テキストパーツ ── */
+  .eyebrow {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--indigo);
+    margin-bottom: 14px;
+  }
+  .accent { color: var(--indigo); }
+  .accent-o { color: var(--orange); }
+
+  h1, h2, h3 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 900;
+    color: var(--ink);
+  }
+
+  .lead {
+    font-size: 15px; color: var(--ink-soft); line-height: 1.9;
+    font-weight: 500;
+  }
+
+  /* ── レイアウト共通 ── */
+  .center {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0 70px;
+  }
+  .pad {
+    flex: 1;
+    padding: 50px 64px 40px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── 段階表示（クリック／矢印キーで1個ずつ出す演出） ── */
+  [data-step] {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  [data-step].shown { opacity: 1; pointer-events: auto; }
+
+  /* ══════════ SLIDE 1: タイトル ══════════ */
+  #s1 .center { padding: 0 80px; }
+  #s1 .s1-tag {
+    display: inline-block;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.24em;
+    color: var(--indigo);
+    border: 1px solid var(--indigo-line);
+    background: var(--indigo-soft);
+    padding: 6px 18px; border-radius: 30px;
+    margin-bottom: 28px;
+  }
+  #s1 h1 {
+    font-size: 42px; line-height: 1.55;
+  }
+  #s1 h1 .hl { color: var(--indigo); }
+  #s1 .s1-rule {
+    width: 40px; height: 3px; background: var(--indigo);
+    margin: 28px auto 0; border-radius: 2px;
+  }
+
+  /* ══════════ SLIDE 2: イントロ・自己紹介 ══════════ */
+  #s2 h2 { font-size: 26px; margin-bottom: 30px; }
+  #s2 .s2-list { display: flex; flex-direction: column; gap: 14px; }
+  #s2 .s2-item {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 22px;
+  }
+  #s2 .s2-item .si-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--indigo-soft);
+    color: var(--indigo); font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #s2 .s2-item p { font-size: 15px; color: var(--ink); line-height: 1.7; font-weight: 500; }
+  #s2 .s2-item p b { color: var(--indigo); font-weight: 700; }
+
+  /* ══════════ SLIDE 3: ClaudeCodeが忘れられない ══════════ */
+  #s3 h2 { font-size: 27px; margin-bottom: 22px; }
+  #s3 p.lead { font-size: 14.5px; margin-bottom: auto; }
+  #s3 .s3-quote {
+    margin-top: 22px;
+    background: #fff;
+    border-left: 4px solid var(--indigo);
+    border-radius: 4px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 18px rgba(43,43,43,0.05);
+  }
+  #s3 .s3-quote .qmark {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 32px; color: var(--indigo-line); font-weight: 900;
+    line-height: 0.5; margin-bottom: 6px; display: block;
+  }
+  #s3 .s3-quote p {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 17px; font-weight: 700; line-height: 1.65; color: var(--ink);
+  }
+
+  /* ══════════ SLIDE 4: 最近のCodexさんすごい ══════════ */
+  #s4 .center { padding: 0 90px; }
+  #s4 h2 { font-size: 27px; line-height: 1.55; margin-bottom: 20px; }
+  #s4 p.lead { font-size: 14.5px; }
+  #s4 .s4-weak {
+    margin-top: 26px; font-size: 13px; color: var(--ink-faint);
+    font-weight: 500; font-style: italic; line-height: 1.8;
+  }
+
+  /* ══════════ SLIDE 5: だったら、AIにやらせよ ══════════ */
+  #s5 .s5-murmur {
+    font-size: 15px; color: var(--ink-faint); font-weight: 500;
+    margin-bottom: 24px;
+  }
+  #s5 h1 { font-size: 40px; line-height: 1.6; }
+
+  /* ══════════ SLIDE 6: ClaudeCodeにCodexを使わせる ══════════ */
+  #s6 h2 { font-size: 25px; margin-bottom: 20px; }
+  #s6 p.lead { font-size: 14px; margin-bottom: 26px; }
+  #s6 .s6-bubble {
+    margin-top: auto;
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 26px;
+    box-shadow: 0 2px 18px rgba(43,43,43,0.06);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  #s6 .s6-line { display: flex; align-items: flex-start; gap: 12px; }
+  #s6 .s6-line .sl-tag {
+    flex-shrink: 0;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 11px; font-weight: 900;
+    background: var(--indigo-soft); color: var(--indigo);
+    border-radius: 20px; padding: 4px 12px; margin-top: 2px;
+  }
+  #s6 .s6-line.reply .sl-tag { background: var(--orange-soft); color: var(--orange); }
+  #s6 .s6-line p {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.6;
+  }
+  #s6 .s6-line.reply p { color: var(--orange); }
+
+  /* ══════════ SLIDE 7: 結論 ══════════ */
+  #s7 .center { padding: 0 60px; }
+  #s7 h1 { font-size: 30px; line-height: 1.9; }
+  #s7 h1 .neg { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: #C3C1B5; }
+  #s7 h1 .pos { color: var(--indigo); }
+
+  /* ══════════ SLIDE 8: 橋渡し（長々とすみません） ══════════ */
+  #s8 h2 { font-size: 26px; margin-bottom: 14px; }
+  #s8 .s8-hint { margin-top: 18px; font-size: 13px; color: var(--ink-faint); font-weight: 500; }
+
+  /* ══════════ SLIDE 9: 仕事の分担表 ══════════ */
+  #s9 h2 { font-size: 20px; margin-bottom: 20px; }
+  #s9 .s9-cols2 { display: flex; gap: 22px; flex: 1; min-height: 0; }
+  #s9 .s9-col2 { flex: 1; display: flex; flex-direction: column; }
+  #s9 .s9-col2-title {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12.5px; font-weight: 900; color: #fff;
+    padding: 10px 16px; border-radius: 10px 10px 0 0;
+  }
+  #s9 .s9-col2.claude .s9-col2-title { background: var(--indigo); }
+  #s9 .s9-col2.codex .s9-col2-title { background: var(--orange); }
+  #s9 .s9-col2-list {
+    background: #fff; border: 1px solid var(--line); border-top: none;
+    border-radius: 0 0 10px 10px; flex: 1;
+    padding: 14px 18px; display: flex; flex-direction: column; gap: 7px;
+  }
+  #s9 .s9-col2-list li {
+    font-size: 12px; color: var(--ink); line-height: 1.5;
+    list-style: none; padding-left: 14px; position: relative; font-weight: 500;
+  }
+  #s9 .s9-col2-list li::before {
+    content: '・'; position: absolute; left: 0; color: var(--ink-faint);
+  }
+  #s9 .s9-note {
+    margin-top: 14px; font-size: 11.5px; color: var(--ink-soft);
+    font-weight: 500; line-height: 1.6;
+  }
+
+  /* ══════════ 表共通（SLIDE 10 / 11） ══════════ */
+  .tbl-title { font-size: 19px; margin-bottom: 10px; }
+  .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .tbl th {
+    background: var(--indigo-soft); color: var(--indigo);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; font-weight: 700;
+    text-align: left; padding: 7px 12px;
+    border-bottom: 2px solid var(--indigo-line);
+  }
+  .tbl td {
+    padding: 8px 12px; border-bottom: 1px solid var(--line);
+    vertical-align: top; font-size: 12.5px; color: var(--ink);
+    font-weight: 500; line-height: 1.42; word-break: break-word;
+  }
+  .tbl tr:nth-child(even) td { background: rgba(43,43,43,0.03); }
+  .conf {
+    display: inline-block; font-size: 10.5px; font-weight: 700;
+    padding: 3px 10px; border-radius: 12px; line-height: 1.4;
+  }
+  .conf-ok { background: var(--green-soft); color: var(--green); }
+  .conf-unclear { background: var(--orange-soft); color: var(--orange); }
+  .tbl-note {
+    margin-top: 8px; font-size: 11.5px; color: var(--ink-soft);
+    font-weight: 500; line-height: 1.5;
+  }
+  .tbl-note b { color: var(--ink); font-weight: 700; }
+  .avail { font-weight: 700; font-size: 11.5px; }
+  .avail-yes { color: var(--green); }
+  .avail-no { color: var(--ink-faint); }
+  #s9 .eyebrow, #s10 .eyebrow, #s11 .eyebrow { margin-bottom: 8px; }
+
+  /* ══════════ SLIDE 12: おまけ デックス配布 ══════════ */
+  #s12 h2 { font-size: 22px; margin-bottom: 6px; }
+  #s12 .s12-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; line-height: 1.8; font-weight: 500; max-width: 700px; }
+  #s12 .s12-steps { display: flex; flex-direction: column; gap: 18px; flex: 1; justify-content: center; }
+  #s12 .s12-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 20px;
+  }
+  #s12 .s12-step .ss-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--indigo);
+    color: #fff; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 13px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #s12 .s12-step .ss-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  #s12 .s12-step .ss-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.7; font-weight: 500; }
+  #s12 .s12-step .ss-desc code {
+    background: var(--indigo-soft); color: var(--indigo); font-weight: 700;
+    padding: 2px 7px; border-radius: 5px; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 12px;
+  }
+  #s12 .s12-step .ss-link {
+    display: inline-block; margin-top: 8px;
+    background: var(--orange-soft); color: var(--orange);
+    font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px;
+  }
+
+  /* ══════════ SLIDE 13: 締め ══════════ */
+  #s13 .center { padding: 0 70px; }
+  #s13 h1 { font-size: 26px; line-height: 1.85; margin-bottom: 18px; }
+  #s13 .s13-sub { font-size: 15px; color: var(--indigo); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: タイトル -->
+  <div class="slide active" id="s1">
+    <div class="center">
+      <div class="s1-tag">KNOWLEDGE SHARE</div>
+      <h1>伏見の<br><span class="hl">Codexの使用方法</span></h1>
+      <div class="s1-rule"></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: イントロ・自己紹介 -->
+  <div class="slide" id="s2">
+    <div class="pad">
+      <div class="eyebrow">INTRO</div>
+      <h2>皆さん、Codex使っていますか？</h2>
+      <div class="s2-list">
+        <div class="s2-item" data-step="1"><span class="si-num">1</span><p>プライベート先行で使い始めて、<b>だいたい2ヶ月くらい</b></p></div>
+        <div class="s2-item" data-step="2"><span class="si-num">2</span><p>仕事で使うようになったのは、<b>ここ3週間くらい</b></p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: ClaudeCodeが忘れられない -->
+  <div class="slide" id="s3">
+    <div class="pad">
+      <div class="eyebrow">正直な告白</div>
+      <h2>ClaudeCodeが忘れられない🥹</h2>
+      <p class="lead">プライベートも会社も、ずっとClaudeCodeを使ってきた。<br>移行するのがなんだか寂しくて、「面倒くさいから」を言い訳にして、<br>Codexに手を出さずにいた。</p>
+      <div class="s3-quote" data-step="1">
+        <span class="qmark">“</span>
+        <p>沢山の愛のあるエージェントや制作物、<br>使いやすさの点で、ClaudeCodeから離れられなかった。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 最近のCodexさんすごい -->
+  <div class="slide" id="s4">
+    <div class="center">
+      <div class="eyebrow">とはいえ最近は…</div>
+      <h2>最近のCodexさん、<br>すごくない！？！？</h2>
+      <p class="lead">Astraをはじめ、最近できることがどんどん増えている。</p>
+      <p class="s4-weak" data-step="1">でも「なんか色々あって、難しそうやな…」というのが正直な感想だった。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: だったら、AIにやらせよ -->
+  <div class="slide" id="s5">
+    <div class="center">
+      <p class="s5-murmur">めんどいことはどうするんだっけか…</p>
+      <h1 data-step="1">だったら、<span class="accent-o">AIにやらせよ</span></h1>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: ClaudeCodeにCodexを使わせる -->
+  <div class="slide" id="s6">
+    <div class="pad">
+      <div class="eyebrow">思いついたこと</div>
+      <h2>ClaudeCodeにCodexを使わせる</h2>
+      <p class="lead">CursorにCodexの拡張機能があるのを見て、「これできるんじゃね？」と思った。</p>
+      <div class="s6-bubble">
+        <div class="s6-line" data-step="1">
+          <span class="sl-tag">俺</span>
+          <p>秘書丸（Claudeのエージェント）に<br>「秘書丸が俺の代わりにCodex使ってくれない？」と聞いたら</p>
+        </div>
+        <div class="s6-line reply" data-step="2">
+          <span class="sl-tag">秘書丸</span>
+          <p>→「承知しました」</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 結論 -->
+  <div class="slide" id="s7">
+    <div class="center">
+      <h1><span class="neg">"僕は"Codex使えないです！</span><br><span data-step="1">でも</span><br><span class="pos" data-step="2">ClaudeがCodexを使えます！</span></h1>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 橋渡し（長々とすみません） -->
+  <div class="slide" id="s8">
+    <div class="center">
+      <h2>長々とすみません！</h2>
+      <p class="lead">使い方を共有します！</p>
+      <p class="s8-hint">ここから、実際にどう役割分担してるかの中身です。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 仕事の分担表 -->
+  <div class="slide" id="s9">
+    <div class="pad">
+      <div class="eyebrow">俺のClaudeの仕事とCodexの仕事</div>
+      <h2>Claudeが自分でやる仕事／デックス経由でCodexに任せる仕事</h2>
+      <div class="s9-cols2">
+        <div class="s9-col2 claude">
+          <div class="s9-col2-title">Claudeが自分でやる仕事</div>
+          <ul class="s9-col2-list">
+            <li>ユーザーとの壁打ち</li>
+            <li>要件・仕様の整理</li>
+            <li>実装方針の比較</li>
+            <li>小規模で明確な修正</li>
+            <li>文章・ドキュメント作成</li>
+            <li>Codexへ渡す指示文の作成</li>
+            <li>Codexが行った変更のレビュー</li>
+            <li>曖昧な依頼への確認</li>
+            <li>機密情報を含む判断</li>
+          </ul>
+        </div>
+        <div class="s9-col2 codex">
+          <div class="s9-col2-title">デックス経由でCodexに任せる仕事</div>
+          <ul class="s9-col2-list">
+            <li>プロジェクト全体の構造調査</li>
+            <li>複数ファイルにまたがる実装</li>
+            <li>エラー・ログからの原因調査</li>
+            <li>Docker・サーバー・ブラウザ・CLIのデバッグ</li>
+            <li>リファクタリング</li>
+            <li>テストの作成と実行</li>
+            <li>修正〜動作確認〜再修正のサイクル</li>
+            <li>大量ファイルの検索・整合性確認</li>
+            <li>コードレビュー・不具合調査</li>
+          </ul>
+        </div>
+      </div>
+      <div class="s9-note">ただし、これまでClaudeで作った既存ツールの改修は、明示的にCodexへの委任を指示されない限りClaudeが優先して担当するというルールもあり</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Claude Codeの得意分野とCodex CLIの得意分野 -->
+  <div class="slide" id="s10">
+    <div class="pad">
+      <div class="eyebrow">比較①</div>
+      <h2 class="tbl-title">Claude Codeの得意分野とCodex CLIの得意分野</h2>
+      <table class="tbl">
+        <colgroup>
+          <col style="width:20%"><col style="width:29%"><col style="width:29%"><col style="width:22%">
+        </colgroup>
+        <tr><th>観点</th><th>Claude Code</th><th>Codex CLI</th><th>確からしさ</th></tr>
+        <tr><td>実行環境</td><td>ローカル完結・フルファイルアクセス</td><td>デフォルトはOpenAI管理のクラウドサンドボックスでdiffを返す方式</td><td><span class="conf conf-unclear">要確認</span></td></tr>
+        <tr><td>ソース公開性</td><td>クローズドソース</td><td>Apache 2.0でオープンソース（Rust製）</td><td><span class="conf conf-unclear">評判レベル</span></td></tr>
+        <tr><td>ベンチマーク</td><td>SWE-bench Verified最高スコアという情報あり</td><td>Terminal-Bench 2.0最高スコアという情報あり</td><td><span class="conf conf-unclear">断定不可（出典ブログのみ）</span></td></tr>
+        <tr><td>マルチエージェント運用</td><td>subagent・hooks・MCPなど拡張エコシステムが厚い</td><td>2026年3月にsubagents機能がGA。マネージャー/ワーカー型で並列実行</td><td><span class="conf conf-unclear">要確認</span></td></tr>
+        <tr><td>向いてる作業</td><td>深い推論・コード品質重視という評判</td><td>速度・トークン効率重視、自律実行向きという評判</td><td><span class="conf conf-unclear">体感・評判レベル</span></td></tr>
+        <tr><td>料金体系</td><td>Pro $20/月〜</td><td>Plus $20/月〜</td><td><span class="conf conf-ok">ほぼ同水準（公式ページで概ね確認）</span></td></tr>
+      </table>
+      <div class="tbl-note">一言まとめ：一次情報で確実に言えるのは<b>「料金帯はほぼ同水準」「Codexはオープンソース」</b>程度。それ以外は評判・ブログレベルなので、あくまで参考程度に。</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: アプリ／直接呼び出しでないとできない機能 -->
+  <div class="slide" id="s11">
+    <div class="pad">
+      <div class="eyebrow">比較②</div>
+      <h2 class="tbl-title">ChatGPTアプリ／Codex直接呼び出しでないとできない機能</h2>
+      <table class="tbl">
+        <colgroup>
+          <col style="width:30%"><col style="width:35%"><col style="width:35%">
+        </colgroup>
+        <tr><th>機能</th><th>Codex CLI（codex exec）</th><th>ChatGPTアプリ・直接API呼び出し</th></tr>
+        <tr><td>Voice Mode（音声対話）</td><td><span class="avail avail-no">なし</span></td><td><span class="avail avail-yes">あり</span></td></tr>
+        <tr><td>メモリ機能（過去のやり取りを記憶）</td><td><span class="avail avail-no">なし</span></td><td><span class="avail avail-yes">あり</span></td></tr>
+        <tr><td>GPTs（カスタムGPT）・GPT Store</td><td><span class="avail avail-no">なし</span></td><td><span class="avail avail-yes">あり</span></td></tr>
+        <tr><td>Canvas（共同編集）</td><td><span class="avail avail-no">なし</span></td><td><span class="avail avail-yes">あり</span></td></tr>
+        <tr><td>画像生成</td><td><span class="avail avail-no">原則なし</span>（一部間接対応が進みつつある・要確認）</td><td><span class="avail avail-yes">ネイティブ搭載</span></td></tr>
+        <tr><td>Web検索・ブラウジング</td><td>デフォルトは制限あり（要確認）</td><td><span class="avail avail-yes">標準搭載</span></td></tr>
+      </table>
+      <div class="tbl-note">一言まとめ：確実に言えるのは<b>「Voice・メモリ・GPTs・Canvasの4つはCLIには存在せずアプリ専用」</b>という点。画像生成とWeb検索は過渡期。</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: おまけ デックス配布 -->
+  <div class="slide" id="s12">
+    <div class="pad">
+      <div class="eyebrow">おまけ</div>
+      <h2>AIエージェント「デックス」を配ります</h2>
+      <div class="s12-sub">ClaudeにCodexを使わせるための設定ファイルです。</div>
+      <div class="s12-steps">
+        <div class="s12-step" data-step="1">
+          <div class="ss-num">1</div>
+          <div>
+            <div class="ss-title">ダウンロード</div>
+            <div class="ss-desc">下記のリンクから <code>dekkusu.md</code> をダウンロードしてください</div>
+            <a class="ss-link" href="https://drive.google.com/drive/u/0/folders/1t6KwU0IhYFmFsh3FK8sbvKr4D5WBK8sI" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">ダウンロードはこちら</a>
+          </div>
+        </div>
+        <div class="s12-step" data-step="2">
+          <div class="ss-num">2</div>
+          <div>
+            <div class="ss-title">配置場所</div>
+            <div class="ss-desc">ダウンロードした <code>dekkusu.md</code> を <code>~/.claude/agents/</code> フォルダに置くだけで使えるようになります</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: 締め -->
+  <div class="slide" id="s13">
+    <div class="center">
+      <h1>僕はCodex使えない。<br>でも、ClaudeがCodexを使ってくれる。</h1>
+      <div class="s13-sub" data-step="1">得意なことは、得意な人（AI）にやらせる。</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav" id="nav"></div>
+
+<script>
+  const total = document.querySelectorAll('.slide').length;
+  let current = 0;
+  let stepIndex = 0;
+
+  const nav = document.getElementById('nav');
+
+  // ページ番号
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    const p = document.createElement('div');
+    p.className = 'pageno';
+    p.innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b> / ' + String(total).padStart(2, '0');
+    s.appendChild(p);
+  });
+
+  // 段階表示（data-step）まわりのヘルパー
+  function stepsOf(slideEl) {
+    return Array.from(slideEl.querySelectorAll('[data-step]'));
+  }
+  function maxStepOf(slideEl) {
+    const steps = stepsOf(slideEl);
+    return steps.length ? Math.max(...steps.map(el => Number(el.dataset.step))) : 0;
+  }
+  function applyStepState(slideEl) {
+    stepsOf(slideEl).forEach(el => {
+      el.classList.toggle('shown', Number(el.dataset.step) <= stepIndex);
+    });
+  }
+
+  // 前へボタン
+  const prev = document.createElement('button');
+  prev.className = 'nav-arrow'; prev.textContent = '←';
+  prev.onclick = (e) => { e.stopPropagation(); goPrev(); };
+  nav.appendChild(prev);
+
+  // ドット
+  const dots = [];
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = (e) => { e.stopPropagation(); setSlide(i, true); };
+    dots.push(d);
+    nav.appendChild(d);
+  }
+
+  // 次へボタン
+  const next = document.createElement('button');
+  next.className = 'nav-arrow'; next.textContent = '→';
+  next.onclick = (e) => { e.stopPropagation(); goNext(); };
+  nav.appendChild(next);
+
+  // スライドを切り替える（ドットからの直接ジャンプ時は revealAllSteps=true で全step表示済みにする）
+  function setSlide(n, revealAllSteps) {
+    if (n < 0 || n >= total) return;
+    const slides = document.querySelectorAll('.slide');
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    const slideEl = slides[current];
+    slideEl.classList.add('active');
+    dots[current].classList.add('active');
+
+    stepIndex = revealAllSteps ? maxStepOf(slideEl) : 0;
+    applyStepState(slideEl);
+  }
+
+  // 次へ：現在のスライドに未表示のstepがあれば1個だけ表示、無ければ次のスライドへ
+  function goNext() {
+    const slideEl = document.querySelectorAll('.slide')[current];
+    const max = maxStepOf(slideEl);
+    if (stepIndex < max) {
+      stepIndex++;
+      applyStepState(slideEl);
+      return;
+    }
+    setSlide(current + 1, false);
+  }
+
+  // 前へ：表示済みstepがあれば1個戻す、無ければ前のスライドへ（全step表示済み状態で）
+  function goPrev() {
+    const slideEl = document.querySelectorAll('.slide')[current];
+    if (stepIndex > 0) {
+      stepIndex--;
+      applyStepState(slideEl);
+      return;
+    }
+    setSlide(current - 1, true);
+  }
+
+  // 初期スライド（1枚目）のstep状態を初期化
+  applyStepState(document.querySelectorAll('.slide')[current]);
+
+  document.getElementById('deck').addEventListener('click', () => goNext());
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') goNext();
+    if (e.key === 'ArrowLeft') goPrev();
+  });
+</script>
+</body>
+</html>
