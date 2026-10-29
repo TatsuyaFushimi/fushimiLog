@@ -1,0 +1,1618 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cursor × Claude Code × Codex 環境構築ガイド</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root {
+    --bg: #FAFAF8; --panel: #F2F1EA; --ink: #2B2B2B; --ink-soft: #74746C; --ink-faint: #A6A59B;
+    --indigo: #3B4A9E; --indigo-soft: #E8EAF6; --indigo-line: #C6CCEA;
+    --orange: #F97316; --orange-soft: #FFEEE0; --line: #E2E0D6;
+    --green: #1E8A4C; --green-soft: #DCF5E6; --red: #B42318; --red-soft: #FDECEA;
+    --code-bg: #2B2B2B; --code-ink: #F2F1EA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.85; overflow-wrap: anywhere; }
+
+  .back-nav {
+    position: fixed; bottom: 20px; right: 20px; z-index: 200;
+    background: #FF6B2B; color: #fff; text-decoration: none;
+    padding: 10px 18px; border-radius: 24px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 4px 16px rgba(255,107,43,0.35); transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .back-nav:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,43,0.45); }
+
+  .page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 96px; display: grid; grid-template-columns: 250px minmax(0, 1fr); grid-template-areas: "toc hero" "toc body"; column-gap: 40px; }
+  .hero { grid-area: hero; }
+  .toc-nav { grid-area: toc; }
+  main { grid-area: body; }
+  .toc-nav { position: sticky; top: 20px; align-self: start; grid-row: 1 / span 2; max-height: calc(100vh - 40px); overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 14px; }
+  .toc-nav .toc-label { font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink-faint); margin-bottom: 8px; }
+  .toc-nav ol { list-style: none; padding-left: 0; margin: 0; }
+  .toc-nav li { margin: 0; }
+  .toc-nav a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 13px; line-height: 1.5; }
+  .toc-nav a:hover { background: var(--indigo-soft); color: var(--indigo); }
+  main { min-width: 0; }
+
+  .hero { margin-bottom: 28px; }
+  .hero .kicker { font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--orange); }
+  .hero h1 { font-family: 'Zen Kaku Gothic New', sans-serif; font-weight: 900; font-size: 30px; line-height: 1.4; margin: 6px 0 10px; }
+  .hero .lead { color: var(--ink-soft); }
+
+  section.chapter { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 28px 30px; margin-bottom: 28px; }
+  h2 { font-family: 'Zen Kaku Gothic New', sans-serif; font-weight: 900; font-size: 22px; line-height: 1.5; color: var(--indigo); border-bottom: 3px solid var(--indigo-line); padding-bottom: 8px; margin-bottom: 16px; }
+  h3 { font-family: 'Zen Kaku Gothic New', sans-serif; font-weight: 700; font-size: 18px; margin: 28px 0 10px; padding-left: 10px; border-left: 5px solid var(--orange); }
+  h4 { font-weight: 700; font-size: 15.5px; margin: 18px 0 8px; }
+  p { margin: 8px 0 12px; }
+  ul, ol { padding-left: 24px; margin: 8px 0 12px; }
+  li { margin-bottom: 6px; }
+  b { font-weight: 700; }
+  .ui { font-weight: 700; color: var(--indigo); }
+  .term { color: var(--ink-soft); font-size: 13.5px; }
+  .tbc { display: inline-block; font-size: 11px; background: #EEEEEA; color: var(--ink-soft); border: 1px solid #D5D4CC; border-radius: 4px; padding: 0 6px; margin-left: 4px; line-height: 1.7; }
+
+  code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; font-size: 13px; line-height: 1.65; margin: 8px 0 14px; padding: 12px 16px; border-radius: 10px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: 13px; }
+  pre::before { display: block; font-family: 'Noto Sans JP', sans-serif; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+  pre.cmd { background: var(--code-bg); color: var(--code-ink); }
+  pre.cmd::before { content: "▶ ターミナルに貼って Enter"; color: #8FD3A8; }
+  pre.say { background: var(--indigo-soft); color: var(--ink); border: 1.5px solid var(--indigo-line); }
+  pre.say::before { content: "💬 Claude のチャット欄に送る文"; color: var(--indigo); }
+  pre.sample { background: #FBF7EC; color: var(--ink); border: 1.5px dashed #CDBB8B; }
+  pre.sample::before { content: "見本：ターミナルに貼らない（画面表示・ファイルの中身の例）"; color: #8A6D1E; }
+
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 18px; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--panel); font-weight: 700; }
+  td code { overflow-wrap: anywhere; }
+
+  .note, .warn, .check, .goal { margin: 12px 0; padding: 12px 16px; border-radius: 10px; font-size: 14.5px; }
+  .note { background: var(--green-soft); border-left: 5px solid var(--green); }
+  .warn { background: var(--orange-soft); border-left: 5px solid var(--orange); }
+  .check { background: var(--panel); border-left: 5px solid var(--ink-soft); }
+  .note::before { content: "💡 "; }
+  .goal { background: #FFF8DB; border: 2px solid #E2C044; }
+  .ok, .ng { margin: 8px 0 12px; padding: 10px 14px; border-radius: 10px; font-size: 14.5px; line-height: 1.75; }
+  .ok { background: var(--green-soft); border: 1px solid #A8DDBD; }
+  .ng { background: var(--red-soft); border: 1px solid #F1B8B2; margin-bottom: 16px; }
+  .ok .t, .ng .t { display: block; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .ok .t { color: var(--green); }
+  .ng .t { color: var(--red); }
+  .ok ul, .ng ul { margin: 4px 0; }
+
+  .figure { margin: 12px 0 18px; text-align: center; overflow-x: auto; }
+  .fig0-mobile { display: none; }
+  .fig0-mobile .box { border-radius: 12px; padding: 12px 14px; margin: 0 auto; max-width: 320px; text-align: center; }
+  .fig0-mobile .arrow { color: var(--ink-soft); font-size: 13px; margin: 6px 0; }
+  .fig0-mobile .room { border: 2px solid #999; background: #f7f7f7; border-radius: 14px; padding: 12px; }
+  .fig0-mobile .room-t { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .caption { font-size: 13px; color: var(--ink-soft); }
+  .legend td { vertical-align: middle; }
+  .sw { display: inline-block; width: 46px; height: 18px; border-radius: 4px; vertical-align: middle; }
+
+  .dl-wrap { margin: 14px 0; }
+  .dl-btn { display: inline-block; background: var(--orange); color: #fff; text-decoration: none; font-weight: 700; font-size: 15px; padding: 12px 20px; border-radius: 10px; box-shadow: 0 3px 10px rgba(249,115,22,0.3); }
+  .dl-btn:hover { filter: brightness(1.05); }
+  .to-toc { text-align: left; margin-top: 18px; font-size: 13px; }
+  .to-toc a { color: var(--indigo); text-decoration: none; font-weight: 700; }
+  .usage h3:first-child { margin-top: 0; }
+  .footer { margin: 8px 4px 24px; font-size: 12px; color: var(--ink-faint); }
+  pre.cmd, pre.say { position: relative; padding-top: 12px; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; font-family: inherit; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.12); color: #fff; cursor: pointer; }
+  pre.say .copy-btn { border-color: var(--indigo-line); background: #fff; color: var(--indigo); }
+  .copy-btn.done { background: var(--green); border-color: var(--green); color: #fff; }
+  details.later { margin: 14px 0; border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; background: #fff; }
+  details.later summary { cursor: pointer; font-weight: 700; }
+  table:not(.legend):not(.cl) td:first-child, table:not(.legend):not(.cl) th:first-child { overflow-wrap: normal; word-break: normal; }
+  .toc-nav a.active { background: var(--orange-soft); color: var(--orange); font-weight: 700; }
+  .toc-nav ul.sub { list-style: none; padding-left: 10px; margin: 2px 0 6px; display: none; }
+  .toc-nav li.open > ul.sub { display: block; }
+  .toc-nav ul.sub a { font-size: 12px; padding: 3px 8px; color: var(--ink-soft); }
+  .toc-nav ul.sub a.active { background: none; color: var(--orange); }
+  .toc-fab { display: none; }
+  .toc-legend { font-size: 11px; color: #C2255C; background: #FFF0F5; border-radius: 6px; padding: 4px 8px; margin-bottom: 8px; line-height: 1.5; }
+  .toc-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #D6336C; margin-right: 6px; vertical-align: 1px; }
+  .toc-nav li.later > a { color: #C2255C; }
+  .toc-nav li.later > a:hover { background: #FFF0F5; color: #A61E4D; }
+  .toc-nav li.later > a.active { background: #FFDEEB; color: #A61E4D; }
+  .toc-nav li.later ul.sub a { color: #D6336C; }
+  .toc-nav li.later ul.sub a.active { color: #A61E4D; }
+
+  @media (max-width: 900px) {
+    .page { grid-template-columns: minmax(0, 1fr); grid-template-areas: "hero" "toc" "body"; row-gap: 20px; padding: 20px 16px 96px; }
+    .toc-nav { position: static; max-height: none; grid-row: auto; }
+    .toc-nav ul.sub { display: none !important; }
+    .toc-fab { display: block; position: fixed; bottom: 20px; left: 16px; z-index: 200; background: var(--indigo); color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 24px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 16px rgba(59,74,158,0.35); }
+    section.chapter { padding-bottom: 64px; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 14.5px; }
+    .hero h1 { font-size: 23px; }
+    section.chapter { padding: 20px 16px; border-radius: 12px; }
+    h2 { font-size: 19px; }
+    h3 { font-size: 16.5px; }
+    table { font-size: 13px; }
+    th, td { padding: 6px 7px; }
+    pre, pre code { font-size: 12px; }
+    .sw { width: 30px; }
+    .dl-btn { display: block; text-align: center; font-size: 14px; }
+    .fig0-desktop { display: none; }
+    .fig0-mobile { display: block; }
+    .figure svg { min-width: 600px; }
+    pre.cmd { white-space: pre; overflow-x: auto; overflow-wrap: normal; word-break: normal; }
+    table:not(.legend):not(.cl) td:first-child, table:not(.legend):not(.cl) th:first-child { min-width: 5.5em; }
+  }
+
+  .ch-goal { background: #FFF8DB; border: 1.5px solid #E2C044; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 14.5px; margin: 6px 0 14px; }
+  .doing { border-left: 4px solid var(--orange); background: #FFFCF8; padding: 4px 12px; font-weight: 700; font-size: 14px; margin: 6px 0 12px; }
+  .who { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; vertical-align: 2px; white-space: nowrap; border: 1.5px solid; }
+  .who-chat { background: var(--indigo-soft); color: var(--indigo); border-color: var(--indigo); }
+  .who-term { background: #fff; color: #2B2B2B; border-color: #2B2B2B; }
+  .who-hand { background: #FFF8DB; color: #7A5B00; border-color: #D4A72C; }
+  .who-read { background: #fff; color: var(--ink-soft); border-color: #B8B7AE; border-style: dashed; }
+  h3 .who { margin-left: 6px; }
+  .who-list { list-style: none; padding-left: 4px; }
+  .fig-mobile { display: none; }
+  .fig-list { margin: 8px 0 4px; }
+  .fig-list-x { color: var(--red); font-weight: 700; font-size: 14px; margin: 2px 0 8px; }
+  .scroll-hint { display: none; font-size: 12px; color: var(--ink-soft); }
+  .fig-note { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  .goal-steps { margin: 6px 0 8px; }
+  .pink { color: #C2255C; font-weight: 700; }
+  .tree { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; text-align: left; }
+  .tree-box { background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 16px; min-width: 260px; font-size: 14px; line-height: 1.9; }
+  .tree-title { font-weight: 700; color: var(--ink-soft); font-size: 13px; margin-bottom: 4px; }
+  .tree .t0 { padding-left: 0; }
+  .tree .t1 { padding-left: 22px; border-left: 2px solid var(--line); margin-left: 8px; }
+  .tree .t2 { padding-left: 44px; border-left: 2px solid var(--line); margin-left: 8px; }
+  .tree-tag { font-size: 11px; background: var(--panel); color: var(--ink-soft); border-radius: 4px; padding: 0 5px; }
+  .tree-note { font-size: 12px; color: var(--indigo); }
+  @media (max-width: 600px) {
+    .fig-desktop { display: none; }
+    .fig-mobile { display: block; margin: 12px 0 18px; }
+    .scroll-hint { display: block; }
+    .tree-box { min-width: 0; width: 100%; padding: 10px 12px; font-size: 13px; }
+    .tree .t2 { padding-left: 30px; }
+    .tree-note { display: block; padding-left: 20px; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-nav">← 一覧へ戻る</a>
+<a href="#toc" class="toc-fab">☰ 目次</a>
+<div class="page">
+<header class="hero">
+<div class="kicker">伏見勉強録 #22 ／ 環境構築ガイド</div>
+<h1>Cursor × Claude Code × Codex<br>環境構築ガイド</h1>
+<p class="lead">最初の準備だけ自分でやれば、あとは <b>Claude にチャットでお願いするだけ</b>。そんな流れで、AI と一緒に開発する環境を作ります。</p>
+
+<div class="goal"><b>今日のゴール</b>
+<ol class="goal-steps">
+<li><b>2章</b>：Claude とチャットできるようにする（ここが最初の山場）</li>
+<li><b>3章</b>：残りの準備を Claude にお願いする</li>
+<li><b>5章</b>：配布キットを置いて、基準の記録（5-7）まで</li>
+</ol>
+始める前に読むのは<b>「はじめに」だけ</b>でOK。目次の<span class="pink">ピンクの章</span>は、慣れてから読めば大丈夫です。
+<p class="dl-wrap"><a class="dl-btn" href="files/22_dev_environment_kit.zip" download>⬇ 配布キットをダウンロード（22_dev_environment_kit.zip）</a></p>
+<span class="term">キットは5章で使います。先にダウンロードだけしておいてもOKです。</span></div>
+</header>
+<nav class="toc-nav" id="toc" aria-label="目次">
+<div class="toc-label">目次</div>
+<div class="toc-legend"><span class="dot"></span>ピンク＝今日は読まなくてOK<span style="display:block;padding-left:14px">（慣れてから）</span></div>
+<ol>
+<li><a href="#intro">はじめに. Cursor・Claude・Codex ってなに？</a></li>
+<li class="later"><a href="#ch1">1. 全体像</a></li>
+<li><a href="#ch2">2. Claude とチャットできるようにする</a></li>
+<li><a href="#ch3">3. ここからはチャットでお願い</a></li>
+<li class="later"><a href="#ch4">4. Claude Code の育て方</a></li>
+<li><a href="#ch5">5. 配布キットを置く</a></li>
+<li class="later"><a href="#ch6">6. Codex に任せる仕組み</a></li>
+<li class="later"><a href="#ch7">7. 運用のコツとハマりどころ</a></li>
+<li class="later"><a href="#appendix">付録. 上級設定（慣れてから）</a></li>
+<li><a href="#checklist">最後に. 困ったときのチェック</a></li>
+</ol>
+</nav>
+<main>
+<section class="chapter usage" id="usage">
+<h3>このページの使い方</h3>
+<ul>
+<li><b>2章 → 3章 → 5章</b>の順に進めてください。</li>
+<li>このページの手順のほとんどは、<b>青い箱の文を Claude に送るだけ</b>です。</li>
+</ul>
+<table class="legend">
+<tr><td style="width:62px"><span class="sw" style="background:#E8EAF6;border:1.5px solid #C6CCEA"></span></td><td><b>青い箱「💬 Claude のチャット欄に送る文」（主役）</b><br>右上の <span class="ui">コピー</span> を押して、Claude のチャット欄に <b>command＋V</b> で貼り、Enter で送ります。</td></tr>
+<tr><td><span class="sw" style="background:#2B2B2B"></span></td><td><b>黒い箱「▶ ターミナルに貼って Enter」（少しだけ）</b><br>黒い箱にも右上に <span class="ui">コピー</span> があります。ターミナルに <b>command＋V</b> で貼って Enter。Claude にはできない作業だけに使います。</td></tr>
+<tr><td><span class="sw" style="background:#FBF7EC;border:1.5px dashed #CDBB8B"></span></td><td><b>クリーム色の点線の箱「見本」</b><br>画面の表示やファイルの中身の見本です。<b>どこにも貼りません</b>。</td></tr>
+</table>
+<p>各手順には、だれがやるかの目印が付いています。</p>
+<ul class="who-list">
+<li><span class="who who-chat">💬 チャットで</span>　Claude にお願いする</li>
+<li><span class="who who-term">⌨️ ターミナルで</span>　自分で貼って実行する</li>
+<li><span class="who who-hand">🖱️ 手作業</span>　クリックなど</li>
+<li><span class="who who-read">📖 読むだけ</span>　読んで知っておく</li>
+</ul>
+<ul>
+<li>緑の枠は「<b>成功するとこう見える</b>」、赤の枠は「<b>うまくいかないとき</b>」です。</li>
+<li><span class="ui">太字の青い文字</span>は、画面でクリックする場所です。</li>
+<li><span class="tbc">要確認</span> は、バージョンによって画面や文言が違うかもしれない所です。近い表示を探してください。</li>
+<li>図はすべて<b>イメージ</b>です。実際の画面とは細かいところが違います。</li>
+<li>困ったら、最後の章「困ったら伏見さんに聞く前にチェックすること」へ。</li>
+</ul>
+<div class="warn">このページに秘密情報（パスワードなど）は載っていません。皆さんも、パスワードやログイン情報を Claude のチャットや資料に貼らないでください。</div>
+</section>
+
+<!-- ===================== はじめに ===================== -->
+<section class="chapter" id="intro">
+<h2>はじめに. Cursor・Claude・Codex ってなに？ なぜ一緒に使うの？</h2>
+
+<p>この資料で準備するのは、3つの道具です。むずかしい言葉は使わずに、<b>「家のリフォームを頼む」</b>たとえで説明します。</p>
+
+<div class="figure fig0-desktop">
+<svg viewBox="0 0 740 250" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="10" y="10" width="720" height="230" rx="14" fill="#f7f7f7" stroke="#999" stroke-width="2"/>
+  <text x="30" y="40" font-size="15" font-weight="bold" fill="#333">🏠 Cursor ＝ 作業部屋（図面も現場も全部ここで見られる）</text>
+  <rect x="35" y="65" width="150" height="150" rx="12" fill="#fff" stroke="#666"/>
+  <text x="110" y="110" font-size="34" text-anchor="middle">🙋</text>
+  <text x="110" y="150" font-size="15" font-weight="bold" text-anchor="middle">あなた</text>
+  <text x="110" y="175" font-size="11.5" text-anchor="middle" fill="#555">「こうしたい」と</text>
+  <text x="110" y="192" font-size="11.5" text-anchor="middle" fill="#555">相談するだけ</text>
+  <rect x="290" y="65" width="170" height="150" rx="12" fill="#fff4e8" stroke="#d9822b" stroke-width="2"/>
+  <text x="375" y="110" font-size="34" text-anchor="middle">🧑‍💼</text>
+  <text x="375" y="150" font-size="15" font-weight="bold" text-anchor="middle" fill="#a85a10">Claude</text>
+  <text x="375" y="175" font-size="11.5" text-anchor="middle" fill="#555">相談に乗る現場監督</text>
+  <text x="375" y="192" font-size="11.5" text-anchor="middle" fill="#555">段取り・確認が得意</text>
+  <rect x="555" y="65" width="160" height="150" rx="12" fill="#eaf1fb" stroke="#3a6fb5" stroke-width="2"/>
+  <text x="635" y="110" font-size="34" text-anchor="middle">🔨</text>
+  <text x="635" y="150" font-size="15" font-weight="bold" text-anchor="middle" fill="#1d4f91">Codex</text>
+  <text x="635" y="175" font-size="11.5" text-anchor="middle" fill="#555">腕のいい職人さん</text>
+  <text x="635" y="192" font-size="11.5" text-anchor="middle" fill="#555">大がかりな作業が得意</text>
+  <text x="237" y="125" font-size="22" text-anchor="middle" fill="#666">⇄</text>
+  <text x="237" y="150" font-size="10.5" text-anchor="middle" fill="#666">会話</text>
+  <text x="507" y="125" font-size="22" text-anchor="middle" fill="#666">⇄</text>
+  <text x="507" y="150" font-size="10.5" text-anchor="middle" fill="#666">依頼と</text>
+  <text x="507" y="165" font-size="10.5" text-anchor="middle" fill="#666">仕上がり確認</text>
+</svg>
+<div class="caption">図0：あなたは現場監督（Claude）に相談するだけ。大きな作業は監督が職人（Codex）に頼み、仕上がりを監督が確認してから報告してくれる</div>
+</div>
+<div class="fig0-mobile">
+<div class="room"><div class="room-t">🏠 Cursor ＝ 作業部屋</div>
+<div class="box" style="background:#fff;border:1px solid #666"><b>🙋 あなた</b><br><span class="term">「こうしたい」と相談するだけ</span></div>
+<div class="arrow">⇅ 会話</div>
+<div class="box" style="background:#fff4e8;border:2px solid #d9822b"><b style="color:#a85a10">🧑‍💼 Claude</b><br><span class="term">相談に乗る現場監督。段取り・確認が得意</span></div>
+<div class="arrow">⇅ 依頼と仕上がり確認</div>
+<div class="box" style="background:#eaf1fb;border:2px solid #3a6fb5"><b style="color:#1d4f91">🔨 Codex</b><br><span class="term">腕のいい職人さん。大がかりな作業が得意</span></div>
+</div>
+<div class="caption" style="margin-top:8px">図0：あなたは現場監督（Claude）に相談するだけ。大きな作業は監督が職人（Codex）に頼み、仕上がりを監督が確認してから報告してくれる</div>
+</div>
+
+<table>
+<tr><th style="width:16%">道具</th><th style="width:24%">たとえると</th><th>どんなもの？</th></tr>
+<tr><td><b>Cursor</b><br>（カーソル）</td><td>🏠 作業部屋</td><td>ファイル（書類や図面にあたるもの）を広げて見るための部屋。ここに Claude を呼んで、同じ部屋で一緒に作業する</td></tr>
+<tr><td><b>Claude</b><br>（クロード）</td><td>🧑‍💼 相談に乗る現場監督</td><td>あなたが話しかける相手。やりたいことを聞いて整理し、小さな作業は自分でこなし、大きな作業は職人に頼む。職人の仕上がりもチェックしてくれる。この資料では、作業部屋で働く Claude を「Claude Code」と呼びます</td></tr>
+<tr><td><b>Codex</b><br>（コーデックス）</td><td>🔨 腕のいい職人さん</td><td>別の会社（OpenAI）の AI。たくさんのファイルにまたがる大がかりな作業を黙々とこなす。あなたと直接は話さず、Claude からの依頼で動く。<b>別の会社の職人だからこそ、監督とは違う目で作業し、それを監督が点検できる＝ダブルチェックになる</b>。この資料では、Mac に入れて使う Codex を「Codex CLI」と呼びます</td></tr>
+</table>
+
+<h3>なぜ Cursor の上で Claude と Codex を使うといいの？</h3>
+<table>
+<tr><th style="width:30%">いいところ</th><th>たとえると</th></tr>
+<tr><td>👀 <b>見ながら相談できる</b></td><td>図面を机に広げたまま、横にいる監督に「ここをこうしたい」と指さして相談できる。別の窓を行ったり来たりしなくていい</td></tr>
+<tr><td>🤝 <b>得意なことを分担できる</b></td><td>相談や段取りは監督（Claude）、力仕事は職人（Codex）。それぞれが得意なことをするので、速くて丁寧</td></tr>
+<tr><td>✅ <b>ダブルチェックになる</b></td><td>職人の「終わりました」をそのまま信じず、監督が仕上がりを見て確かめる。2人の目が入るので、見落としが減る</td></tr>
+<tr><td>🖍️ <b>何が変わったか目で見える</b></td><td>リフォーム前と後を並べて見比べるように、変わった場所に色が付いて見える。知らないうちに変わっている、が起きにくい</td></tr>
+<tr><td>🗂️ <b>記録が残る</b></td><td>監督が作業日誌（メモ）をつけてくれるので、次に頼むときに一から説明し直さなくていい</td></tr>
+</table>
+<div class="note">次の1章では、同じ3つの道具を、もう少し実際の使い方に近い形で説明します（1章は慣れてから読めばOKです）。</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 1章 ===================== -->
+<section class="chapter" id="ch1">
+<h2>1. 全体像 ― 3つの道具の役割分担</h2>
+
+<p>この環境は「はじめに」と同じく、<b>作業部屋（Cursor）・現場監督（Claude Code）・職人さん（Codex CLI）</b>の3つでできています。</p>
+
+<div class="figure">
+<svg viewBox="0 0 740 400" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#444"/></marker>
+  </defs>
+  <rect x="10" y="10" width="720" height="380" rx="12" fill="#f7f7f7" stroke="#888" stroke-width="2"/>
+  <text x="28" y="40" font-size="17" font-weight="bold" fill="#333">🏠 Cursor（作業部屋）</text>
+  <text x="28" y="60" font-size="12" fill="#666">ファイルを開く・コードを見る・ターミナルを使う部屋。この中で Claude Code を動かす</text>
+
+  <rect x="30" y="95" width="130" height="70" rx="10" fill="#fff" stroke="#555" stroke-width="1.5"/>
+  <text x="95" y="125" font-size="15" font-weight="bold" text-anchor="middle">あなた</text>
+  <text x="95" y="147" font-size="11" text-anchor="middle" fill="#555">やりたいことを話す</text>
+
+  <rect x="245" y="80" width="230" height="280" rx="10" fill="#fff4e8" stroke="#d9822b" stroke-width="2"/>
+  <text x="360" y="108" font-size="16" font-weight="bold" text-anchor="middle" fill="#a85a10">Claude Code</text>
+  <text x="360" y="127" font-size="12" text-anchor="middle" fill="#a85a10">🧑‍💼 現場監督</text>
+  <text x="262" y="155" font-size="11.5" fill="#333">・相談、要件整理、方針の比較</text>
+  <text x="262" y="175" font-size="11.5" fill="#333">・小さく明確な修正</text>
+  <text x="262" y="195" font-size="11.5" fill="#333">・文章、ドキュメント作成</text>
+  <text x="262" y="215" font-size="11.5" fill="#333">・Codex への指示書づくり</text>
+  <text x="262" y="235" font-size="11.5" fill="#333">・Codex の結果のチェック</text>
+  <rect x="262" y="258" width="196" height="84" rx="6" fill="#fff" stroke="#d9a76b"/>
+  <text x="360" y="280" font-size="11" text-anchor="middle" fill="#555">サブエージェント（役割分担）</text>
+  <text x="360" y="300" font-size="11" text-anchor="middle" fill="#555">記録係 / 相談役 /</text>
+  <text x="360" y="322" font-size="11" text-anchor="middle" fill="#a85a10" font-weight="bold">Codex 窓口役</text>
+
+  <rect x="555" y="130" width="160" height="230" rx="10" fill="#eaf1fb" stroke="#3a6fb5" stroke-width="2"/>
+  <text x="635" y="158" font-size="16" font-weight="bold" text-anchor="middle" fill="#1d4f91">Codex CLI</text>
+  <text x="635" y="177" font-size="12" text-anchor="middle" fill="#1d4f91">🔨 職人さん</text>
+  <text x="567" y="205" font-size="11" fill="#333">・複数ファイルの実装</text>
+  <text x="567" y="225" font-size="11" fill="#333">・ログからの原因調査</text>
+  <text x="567" y="245" font-size="11" fill="#333">・リファクタリング</text>
+  <text x="567" y="265" font-size="11" fill="#333">・テスト作成と実行</text>
+  <text x="567" y="285" font-size="11" fill="#333">・大量ファイルの調査</text>
+  <text x="567" y="340" font-size="10.5" fill="#666">あなたとは直接話さない</text>
+
+  <!-- あなた ⇄ Claude -->
+  <line x1="160" y1="118" x2="243" y2="118" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="245" y1="142" x2="162" y2="142" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="160" y="178" width="84" height="38" rx="4" fill="#fff" stroke="#ccc"/>
+  <text x="202" y="194" font-size="10.5" text-anchor="middle" fill="#555">話す相手は</text>
+  <text x="202" y="209" font-size="10.5" text-anchor="middle" fill="#555">Claude だけ</text>
+
+  <!-- Claude → Codex -->
+  <line x1="477" y1="190" x2="553" y2="190" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="482" y="150" width="68" height="34" rx="4" fill="#fff" stroke="#ccc"/>
+  <text x="516" y="164" font-size="10" text-anchor="middle" fill="#555">codex exec</text>
+  <text x="516" y="178" font-size="10" text-anchor="middle" fill="#555">で依頼</text>
+  <!-- Codex → Claude -->
+  <line x1="553" y1="300" x2="479" y2="300" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="480" y="308" width="72" height="44" rx="4" fill="#fff" stroke="#ccc"/>
+  <text x="516" y="324" font-size="10" text-anchor="middle" fill="#555">結果を diff と</text>
+  <text x="516" y="340" font-size="10" text-anchor="middle" fill="#555">テストで検証</text>
+</svg>
+<div class="caption">図1：あなたが話すのは Claude Code だけ。<br>Claude Code が必要に応じて Codex に仕事を回し、結果を自分で確かめてから報告する</div>
+</div>
+
+<table>
+<tr><th style="width:18%">道具</th><th style="width:20%">たとえ</th><th>役割</th></tr>
+<tr><td><b>Cursor</b></td><td>🏠 作業部屋</td><td>コードやファイルを開いて見るエディタ。Claude Code の拡張機能を入れて、その画面の中で Claude と会話する。今回 Cursor 自身の AI 機能は使わない（あくまで「器」として使う）</td></tr>
+<tr><td><b>Claude Code</b></td><td>🧑‍💼 現場監督</td><td>あなたの話し相手。相談・整理・小さな修正・文章作成を自分でこなし、重い作業は Codex に依頼して、返ってきた結果を自分で確認してから報告する</td></tr>
+<tr><td><b>Codex CLI</b></td><td>🔨 職人さん</td><td>OpenAI のコーディングエージェント。Claude Code から <code>codex exec</code> というコマンドで仕事を受け、複数ファイルの実装・調査・テストなどを黙々とこなす</td></tr>
+</table>
+
+<h4>図に出てくる言葉</h4>
+<table>
+<tr><th style="width:30%">言葉</th><th>ひとことで</th></tr>
+<tr><td>サブエージェント</td><td>監督の下で働く専門担当（記録係・相談役・Codex 窓口役など）。4章で説明</td></tr>
+<tr><td>codex exec</td><td>監督（Claude）が職人（Codex）に仕事を頼むときの合図（コマンド）</td></tr>
+<tr><td>リファクタリング</td><td>動きは変えずに、中身を整理し直すこと（部屋の配線をきれいに引き直すようなもの）</td></tr>
+<tr><td>テスト</td><td>ちゃんと動くかの確認</td></tr>
+<tr><td>diff（ディフ）</td><td>変更前と変更後の違い。どこが変わったかに色が付いて見える</td></tr>
+<tr><td>ログ</td><td>プログラムが残す作業記録。エラーの手がかりになる</td></tr>
+</table>
+<div class="note"><b>ポイント：</b>あなたが直接 Codex に話しかける必要はありません。窓口は常に Claude Code。Codex の出力を Claude がそのまま転送することもしません（必ず中身を確認してから報告させる）。</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 2章 ===================== -->
+<section class="chapter" id="ch2">
+<h2>2. Claude とチャットできるようにする</h2>
+<p class="ch-goal">この章のゴール：Cursor の中で Claude とチャットできる状態にする。<b>ここが最初の山場</b>です。ここを越えれば、あとはほとんど Claude にお願いできます。</p>
+
+<h3>2-1. 使うアカウント <span class="who who-read">📖 読むだけ</span></h3>
+<p class="doing">ここでやること：使うアカウントを確認するだけ。</p>
+<table>
+<tr><th style="width:36%">アカウント</th><th>使う場面</th></tr>
+<tr><td>会社の <b>Google アカウント</b></td><td>Cursor にログインする（無料プランでOK）</td></tr>
+<tr><td>会社の <b>Claude アカウント</b></td><td>Claude にログインする（手順5）</td></tr>
+<tr><td>会社の <b>ChatGPT アカウント</b></td><td>Codex にログインする（3章）</td></tr>
+</table>
+<div class="warn">個人のアカウントは使いません。ログインのときは、<b>会社のアカウントが選ばれているか</b>を必ず確かめてください。</div>
+
+<h3>手順1. Cursor を入れる <span class="who who-hand">🖱️ 手作業</span></h3>
+<p class="doing">ここでやること：Cursor（作業部屋になるアプリ）を Mac に入れる。</p>
+<ol>
+<li>ブラウザで <b>https://cursor.com</b> を開き、<span class="ui">Download</span> をクリック</li>
+<li>ダウンロードした <b>.dmg ファイル</b>（<span class="term">＝ Mac のアプリの配布ファイル</span>）をダブルクリック</li>
+<li>出てきた窓で、<b>Cursor のアイコンを「Applications」フォルダへドラッグ</b></li>
+<li>Finder の左にある「Cursor Installer」の横の <span class="ui">⏏</span> をクリックして片付ける</li>
+<li>Finder の <span class="ui">アプリケーション</span> から <span class="ui">Cursor</span> をダブルクリックして起動（確認が出たら <span class="ui">開く</span>）</li>
+<li>ログインを求められたら、Google でログインする方法（<span class="ui">Continue with Google</span> など <span class="tbc">要確認</span>）を選び、<b>会社の Google アカウント</b>で入る。<b>無料プランのままでOK</b></li>
+<li>そのほかの最初の案内（色の好みなど）は、好きに選んで進めてOK</li>
+</ol>
+<div class="warn"><b>やらないこと：</b>dmg の窓の中の Cursor をそのまま起動して使うこと。片付けた瞬間に起動できなくなります。</div>
+<div class="ok"><span class="t">手順1：成功するとこう見える</span>Finder の「アプリケーション」に Cursor があり、そこから起動できる。</div>
+<div class="ng"><span class="t">手順1：うまくいかないとき</span><ul>
+<li>「開発元を検証できない」と出る → <span class="ui">りんごマーク</span> → <span class="ui">システム設定</span> → <span class="ui">プライバシーとセキュリティ</span> → 「Cursor はブロックされました」の横の <span class="ui">このまま開く</span></li>
+<li>アプリケーションに Cursor が無い → dmg を開き直して、3 からやり直す</li>
+</ul></div>
+<p><b>（任意）日本語にしたいとき：</b>手順2と同じ画面で「Japanese Language Pack」を検索して入れ、右下の <span class="ui">Change Language and Restart</span> を押します。</p>
+
+<h3>手順2. Cursor に Claude Code を入れる <span class="who who-hand">🖱️ 手作業</span></h3>
+<p class="doing">ここでやること：Cursor に「Claude と話せる部品（拡張機能）」を足す。</p>
+<ol>
+<li>Cursor の左端の <span class="ui">四角が4つ並んだアイコン</span>（拡張機能）をクリック</li>
+<li>上の検索欄に <b>Claude Code</b> と入力</li>
+<li><b>発行元が「Anthropic」</b>のものを選ぶ（似た名前の別物に注意）</li>
+<li><span class="ui">インストール</span>（Install）をクリック</li>
+</ol>
+<div class="figure fig-desktop">
+<svg viewBox="0 0 740 300" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <defs><filter id="shA" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-opacity="0.18"/></filter></defs>
+  <rect x="10" y="10" width="720" height="280" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="10" y="10" width="44" height="280" rx="12" fill="#E4E3DD"/>
+  <rect x="21" y="34" width="22" height="18" rx="3" fill="#bbb"/>
+  <rect x="21" y="70" width="22" height="18" rx="3" fill="#bbb"/>
+  <g transform="translate(20,104)"><rect width="24" height="24" rx="4" fill="#FFE8D6" stroke="#F97316" stroke-width="2"/><rect x="5" y="5" width="6" height="6" fill="#F97316"/><rect x="13" y="5" width="6" height="6" fill="#F97316"/><rect x="5" y="13" width="6" height="6" fill="#F97316"/><rect x="13" y="13" width="6" height="6" fill="#F97316"/></g>
+  <rect x="64" y="28" width="300" height="34" rx="6" fill="#fff" stroke="#3B4A9E" stroke-width="2"/>
+  <text x="76" y="50" font-size="14" fill="#2B2B2B">🔍 Claude Code</text>
+  <rect x="64" y="76" width="300" height="86" rx="8" fill="#fff" stroke="#1E8A4C" stroke-width="2.5"/>
+  <rect x="76" y="90" width="40" height="40" rx="8" fill="#F4C9A8"/>
+  <text x="96" y="116" font-size="16" text-anchor="middle">✳︎</text>
+  <text x="128" y="104" font-size="14" font-weight="bold" fill="#2B2B2B">Claude Code</text>
+  <text x="128" y="124" font-size="12" fill="#1E8A4C">Anthropic ✓</text>
+  <rect x="270" y="126" width="82" height="26" rx="5" fill="#3B4A9E"/>
+  <text x="311" y="144" font-size="12" text-anchor="middle" fill="#fff">インストール</text>
+  <rect x="64" y="174" width="300" height="70" rx="8" fill="#fff" stroke="#ddd" opacity="0.55"/>
+  <rect x="76" y="186" width="40" height="40" rx="8" fill="#ddd" opacity="0.6"/>
+  <text x="128" y="202" font-size="14" fill="#999">Claude Code ○○○</text>
+  <text x="128" y="222" font-size="12" fill="#B42318">別の発行元 ✗</text>
+  <g filter="url(#shA)">
+  <rect x="16" y="252" width="190" height="30" rx="8" fill="#FFE8D6" stroke="#fff" stroke-width="2"/>
+  <text x="28" y="272" font-size="12.5" font-weight="bold" fill="#C2410C">① 四角4つのアイコン</text>
+  <rect x="400" y="28" width="310" height="34" rx="8" fill="#E8EAF6" stroke="#fff" stroke-width="2"/>
+  <text x="412" y="50" font-size="12.5" font-weight="bold" fill="#3B4A9E">② 検索欄に「Claude Code」と入力</text>
+  <rect x="400" y="80" width="310" height="44" rx="8" fill="#DCF5E6" stroke="#fff" stroke-width="2"/>
+  <text x="412" y="100" font-size="12.5" font-weight="bold" fill="#1E8A4C">③ 発行元が「Anthropic」のものを選ぶ</text>
+  <text x="412" y="116" font-size="11" fill="#2B2B2B">✓ マークが目印（要確認）</text>
+  <rect x="400" y="132" width="310" height="34" rx="8" fill="#E8EAF6" stroke="#fff" stroke-width="2"/>
+  <text x="412" y="154" font-size="12.5" font-weight="bold" fill="#3B4A9E">④ インストール を押す</text>
+  <rect x="400" y="192" width="310" height="34" rx="8" fill="#FDECEA" stroke="#fff" stroke-width="2"/>
+  <text x="412" y="214" font-size="12.5" font-weight="bold" fill="#B42318">✗ 似た名前の別物は選ばない</text>
+  </g>
+  <line x1="32" y1="250" x2="32" y2="130" stroke="#C2410C" stroke-width="2"/>
+  <line x1="398" y1="45" x2="366" y2="45" stroke="#3B4A9E" stroke-width="2"/>
+  <line x1="398" y1="102" x2="366" y2="110" stroke="#1E8A4C" stroke-width="2"/>
+  <line x1="398" y1="149" x2="354" y2="140" stroke="#3B4A9E" stroke-width="2"/>
+  <line x1="398" y1="209" x2="366" y2="209" stroke="#B42318" stroke-width="2"/>
+</svg>
+<div class="caption">図A：拡張機能の画面で「Claude Code」を探すところ（番号は上の手順と同じ）</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります</div>
+</div>
+<div class="fig-mobile">
+<svg viewBox="0 0 380 250" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="5" y="5" width="370" height="240" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="5" y="5" width="44" height="240" rx="12" fill="#E4E3DD"/>
+  <rect x="16" y="26" width="22" height="16" rx="3" fill="#bbb"/>
+  <g transform="translate(15,58)"><rect width="24" height="24" rx="4" fill="#FFE8D6" stroke="#F97316" stroke-width="2"/><rect x="5" y="5" width="6" height="6" fill="#F97316"/><rect x="13" y="5" width="6" height="6" fill="#F97316"/><rect x="5" y="13" width="6" height="6" fill="#F97316"/><rect x="13" y="13" width="6" height="6" fill="#F97316"/></g>
+  <rect x="60" y="20" width="300" height="32" rx="6" fill="#fff" stroke="#3B4A9E" stroke-width="2"/>
+  <text x="72" y="41" font-size="14" fill="#2B2B2B">🔍 Claude Code</text>
+  <rect x="60" y="64" width="300" height="84" rx="8" fill="#fff" stroke="#1E8A4C" stroke-width="2.5"/>
+  <rect x="70" y="76" width="38" height="38" rx="8" fill="#F4C9A8"/>
+  <text x="89" y="101" font-size="15" text-anchor="middle">✳︎</text>
+  <text x="118" y="90" font-size="14" font-weight="bold" fill="#2B2B2B">Claude Code</text>
+  <text x="118" y="110" font-size="12" fill="#1E8A4C">Anthropic ✓</text>
+  <rect x="262" y="114" width="86" height="26" rx="5" fill="#3B4A9E"/>
+  <text x="305" y="132" font-size="12" text-anchor="middle" fill="#fff">インストール</text>
+  <rect x="60" y="160" width="300" height="70" rx="8" fill="#fff" stroke="#ddd" opacity="0.55"/>
+  <text x="72" y="190" font-size="14" fill="#999">Claude Code ○○○</text>
+  <text x="72" y="212" font-size="12" fill="#B42318">別の発行元 ✗</text>
+  <g font-size="13" font-weight="bold" text-anchor="middle" fill="#fff">
+  <circle cx="44" cy="96" r="11" fill="#C2410C"/><text x="44" y="101">1</text>
+  <circle cx="348" cy="36" r="11" fill="#3B4A9E"/><text x="348" y="41">2</text>
+  <circle cx="240" cy="90" r="11" fill="#1E8A4C"/><text x="240" y="95">3</text>
+  <circle cx="250" cy="127" r="11" fill="#3B4A9E"/><text x="250" y="132">4</text>
+  <circle cx="340" cy="195" r="11" fill="#B42318"/><text x="340" y="200">✗</text>
+  </g>
+</svg>
+<ol class="fig-list">
+<li>左端の<b>四角4つのアイコン</b></li>
+<li>検索欄に「Claude Code」と入力</li>
+<li>発行元が<b>「Anthropic」</b>のものを選ぶ</li>
+<li><b>インストール</b>を押す</li>
+</ol>
+<p class="fig-list-x">✗ 似た名前の別物は選ばない</p>
+<div class="caption">図A：拡張機能の画面で「Claude Code」を探すところ</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります</div>
+</div>
+<div class="ok"><span class="t">手順2：成功するとこう見える</span>ボタンが <span class="ui">アンインストール</span>（または歯車マーク）に変わる。</div>
+<div class="ng"><span class="t">手順2：うまくいかないとき</span><ul>
+<li>見つからない → つづりを確認。Cursor を <b>command＋Q</b> で終了して起動し直し、もう一度検索</li>
+<li>別のものを入れてしまった → その拡張の <span class="ui">アンインストール</span> を押す</li>
+</ul></div>
+
+<h3>手順3. 練習用のフォルダを作って開く <span class="who who-hand">🖱️ 手作業</span></h3>
+<p class="doing">ここでやること：Claude と一緒に作業する「練習部屋」を用意する。</p>
+<ol>
+<li>Finder で <span class="ui">書類</span> を開き、<b>command＋shift＋N</b>（新しいフォルダ）→ 名前を <code>claude-practice</code> にする</li>
+<li>Cursor の上のメニュー <span class="ui">ファイル</span> → <span class="ui">フォルダーを開く</span> → <code>claude-practice</code> を選んで <span class="ui">開く</span></li>
+<li>「このフォルダを信頼しますか」と聞かれたら <span class="ui">信頼する</span></li>
+</ol>
+<div class="ok"><span class="t">手順3：成功するとこう見える</span>Cursor の左側に <code>CLAUDE-PRACTICE</code>（空のフォルダ）が表示される。</div>
+
+<h3>手順4. ターミナルで Claude Code 本体を入れる <span class="who who-term">⌨️ ターミナルで</span></h3>
+<p class="doing">ここでやること：コマンドを貼って、Claude Code 本体を入れる。</p>
+<p>手順2の部品だけでもチャットはできますが、<b>うまくいかないときにターミナルから状態を確かめられるように</b>、本体も入れておきます。ターミナルは、文字で Mac に指示を出す画面です。Cursor の中で開けます。</p>
+<ol>
+<li>Cursor の上のメニュー <span class="ui">ターミナル</span> → <span class="ui">新しいターミナル</span> をクリック（英語表示なら Terminal → New Terminal）</li>
+<li>画面の下にターミナルが開く</li>
+</ol>
+<div class="figure fig-desktop">
+<svg viewBox="0 0 740 280" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="10" y="10" width="720" height="260" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="10" y="10" width="720" height="32" rx="12" fill="#E4E3DD"/>
+  <text x="30" y="31" font-size="13" fill="#444">Cursor　ファイル　編集　選択　表示　移動　実行</text>
+  <rect x="372" y="15" width="78" height="24" rx="5" fill="#F97316"/>
+  <text x="411" y="32" font-size="13" text-anchor="middle" fill="#fff" font-weight="bold">ターミナル</text>
+  <text x="462" y="31" font-size="13" fill="#444">ウインドウ　ヘルプ</text>
+  <rect x="372" y="42" width="240" height="78" rx="6" fill="#fff" stroke="#bbb"/>
+  <rect x="378" y="50" width="228" height="28" rx="4" fill="#FFE8D6"/>
+  <text x="390" y="69" font-size="13" font-weight="bold" fill="#2B2B2B">新しいターミナル</text>
+  <text x="598" y="69" font-size="11" text-anchor="end" fill="#888">⌃⇧`</text>
+  <text x="390" y="104" font-size="13" fill="#999">ターミナルの分割</text>
+  <text x="200" y="60" font-size="13" font-weight="bold" fill="#F97316">① ここ</text>
+  <line x1="245" y1="55" x2="368" y2="30" stroke="#F97316" stroke-width="2"/>
+  <text x="630" y="98" font-size="13" font-weight="bold" fill="#F97316">② ここ</text>
+  <line x1="628" y1="92" x2="610" y2="70" stroke="#F97316" stroke-width="2"/>
+  <rect x="30" y="160" width="680" height="96" rx="6" fill="#2B2B2B"/>
+  <text x="44" y="182" font-size="12" fill="#bbb">ターミナル</text>
+  <text x="44" y="210" font-size="13" fill="#F2F1EA" font-family="Menlo, monospace">あなたの名前@Mac claude-practice %</text>
+  <rect x="330" y="198" width="9" height="16" fill="#F2F1EA"/>
+  <text x="44" y="240" font-size="12" fill="#8FD3A8">③ 画面の下にこれが開く。ここにコマンドを貼って Enter</text>
+</svg>
+<div class="caption">図B：Cursor でターミナルを開く（メニュー → ターミナル → 新しいターミナル）</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります。メニューの並びは表示言語やバージョンで変わります（要確認）</div>
+</div>
+<div class="fig-mobile">
+<svg viewBox="0 0 380 260" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="5" y="5" width="370" height="250" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="5" y="5" width="370" height="32" rx="12" fill="#E4E3DD"/>
+  <text x="18" y="26" font-size="12" fill="#444">… 実行</text>
+  <rect x="70" y="10" width="86" height="22" rx="5" fill="#F97316"/>
+  <text x="113" y="26" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="bold">ターミナル</text>
+  <text x="164" y="26" font-size="12" fill="#444">ウインドウ …</text>
+  <rect x="70" y="38" width="200" height="70" rx="6" fill="#fff" stroke="#bbb"/>
+  <rect x="76" y="46" width="188" height="26" rx="4" fill="#FFE8D6"/>
+  <text x="86" y="64" font-size="12.5" font-weight="bold" fill="#2B2B2B">新しいターミナル</text>
+  <text x="86" y="96" font-size="12" fill="#999">ターミナルの分割</text>
+  <rect x="20" y="150" width="340" height="92" rx="6" fill="#2B2B2B"/>
+  <text x="32" y="172" font-size="11" fill="#bbb">ターミナル</text>
+  <text x="32" y="200" font-size="12" fill="#F2F1EA" font-family="Menlo, monospace">… claude-practice %</text>
+  <g font-size="13" font-weight="bold" text-anchor="middle" fill="#fff">
+  <circle cx="170" cy="21" r="0" fill="none"/>
+  <circle cx="58" cy="21" r="11" fill="#C2410C"/><text x="58" y="26">1</text>
+  <circle cx="284" cy="59" r="11" fill="#C2410C"/><text x="284" y="64">2</text>
+  <circle cx="340" cy="170" r="11" fill="#1E8A4C"/><text x="340" y="175">3</text>
+  </g>
+</svg>
+<ol class="fig-list">
+<li>上のメニューの <b>ターミナル</b> をクリック</li>
+<li><b>新しいターミナル</b> をクリック</li>
+<li>画面の下にターミナルが開く。ここにコマンドを貼って Enter</li>
+</ol>
+<div class="caption">図B：Cursor でターミナルを開く</div>
+<div class="fig-note">※イメージです。メニューの並びは表示言語やバージョンで変わります（要確認）</div>
+</div>
+<p>開いたターミナルに、次の1行を貼って（<b>command＋V</b>）Enter を押します。</p>
+<pre class="cmd"><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+<p><b>終わりの合図：</b>1〜2分で文字が止まり、最後の行が <code>… claude-practice %</code> の形に戻ります。途中で英語の案内が出ます。たとえばこんな感じです。</p>
+<pre class="sample"><code>✔ Claude Code successfully installed!
+  Version: 2.x.x
+⚠ Setup notes:
+  ~/.local/bin is not in your PATH. ……</code></pre>
+<p class="term">（文言は要確認。人によって違います）</p>
+<p>続けて、次の2行を貼って Enter。「PATH に追加して」という案内が<b>出ても出なくても、貼って大丈夫</b>です（PATH ＝ <span class="term">Mac がコマンドを探しに行く場所の一覧</span>）。</p>
+<pre class="cmd"><code>echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+<div class="ok"><span class="t">手順4：成功するとこう見える</span>次を貼って Enter すると、<code>2.x.x (Claude Code)</code> のように数字が出る。
+<pre class="cmd"><code>claude --version</code></pre></div>
+<div class="ng"><span class="t">手順4：うまくいかないとき</span><ul>
+<li><code>command not found: claude</code> → PATH の2行を貼ったか確認。ターミナル右上の <span class="ui">ゴミ箱</span> で閉じて、もう一度 <span class="ui">新しいターミナル</span> を開く</li>
+<li><code>Could not resolve host</code> → ネットにつながっていない。Wi-Fi を確認</li>
+</ul></div>
+<div class="warn">ネットの記事にある <code>npm install -g @anthropic-ai/claude-code</code> は<b>実行しないでください</b>。2つ入ると、どちらが動いているか分からなくなります。</div>
+
+<h3>手順5. Claude のチャット欄を開いて、ログインして、話しかける <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：Cursor の右側に Claude のチャット欄を開き、会社のアカウントでログインして、初めてお願いしてみる。</p>
+<ol>
+<li><b>command＋shift＋P</b> を押す（画面の上に入力欄が出る）→「<b>Claude Code</b>」と入力 → 出てきた中から<b>開く（Open）系のもの</b>を選ぶ <span class="tbc">要確認：コマンド名</span><br><span class="term">Cursor の左端や右上に Claude のアイコンが出ていれば、それを押しても開けます。</span></li>
+<li>右側に Claude の<b>チャット欄</b>が開く</li>
+<li>ログインの案内が出たら、<b>会社の Claude アカウント</b>を選んでログイン（ブラウザが開いたら、会社のアカウントで <span class="ui">承認</span>）<span class="tbc">要確認：画面の流れ</span></li>
+<li>チャット欄の下の入力欄に、次の文を貼って Enter</li>
+</ol>
+<div class="figure fig-desktop">
+<svg viewBox="0 0 740 400" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <defs><filter id="shC" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-opacity="0.2"/></filter></defs>
+  <rect x="10" y="10" width="720" height="380" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="10" y="10" width="720" height="28" rx="12" fill="#E4E3DD"/>
+  <circle cx="30" cy="24" r="5" fill="#E06C5B"/><circle cx="46" cy="24" r="5" fill="#E6B94A"/><circle cx="62" cy="24" r="5" fill="#6BBF59"/>
+  <rect x="10" y="38" width="40" height="352" fill="#E4E3DD"/>
+  <rect x="20" y="52" width="20" height="16" rx="3" fill="#bbb"/><rect x="20" y="82" width="20" height="16" rx="3" fill="#bbb"/><rect x="20" y="112" width="20" height="16" rx="3" fill="#bbb"/>
+  <rect x="50" y="38" width="150" height="352" fill="#EDECE7"/>
+  <text x="60" y="58" font-size="11" fill="#777">CLAUDE-PRACTICE</text>
+  <text x="66" y="80" font-size="11" fill="#999">（まだ空っぽ）</text>
+  <rect x="200" y="38" width="300" height="230" fill="#FAFAF8"/>
+  <rect x="200" y="38" width="300" height="26" fill="#EDECE7"/>
+  <text x="212" y="56" font-size="11" fill="#666">ようこそ</text>
+  <rect x="200" y="268" width="300" height="122" fill="#2B2B2B"/>
+  <text x="210" y="288" font-size="11" fill="#bbb">ターミナル</text>
+  <text x="210" y="310" font-size="11" fill="#F2F1EA" font-family="Menlo, monospace">claude-practice %</text>
+  <rect x="500" y="38" width="230" height="352" fill="#fff"/>
+  <line x1="500" y1="38" x2="500" y2="390" stroke="#ccc"/>
+  <text x="512" y="58" font-size="12" font-weight="bold" fill="#a85a10">Claude Code</text>
+  <rect x="696" y="44" width="22" height="20" rx="4" fill="#fff" stroke="#3B4A9E" stroke-width="1.5"/>
+  <text x="707" y="59" font-size="14" text-anchor="middle" fill="#3B4A9E">＋</text>
+  <rect x="540" y="76" width="178" height="44" rx="10" fill="#E8EAF6"/>
+  <text x="550" y="95" font-size="11" fill="#2B2B2B">こんにちは。今どのフォルダで</text>
+  <text x="550" y="111" font-size="11" fill="#2B2B2B">作業しているか教えてください</text>
+  <rect x="512" y="132" width="190" height="44" rx="10" fill="#FFF4E8"/>
+  <text x="522" y="151" font-size="11" fill="#2B2B2B">書類の claude-practice</text>
+  <text x="522" y="167" font-size="11" fill="#2B2B2B">フォルダで作業しています。</text>
+  <rect x="510" y="318" width="210" height="58" rx="8" fill="#fff" stroke="#3B4A9E" stroke-width="2"/>
+  <text x="520" y="340" font-size="11" fill="#999">ここにお願い文を貼る</text>
+  <circle cx="704" cy="360" r="10" fill="#3B4A9E"/>
+  <text x="704" y="364" font-size="11" text-anchor="middle" fill="#fff">↑</text>
+  <g filter="url(#shC)">
+  <rect x="214" y="78" width="272" height="46" rx="8" fill="#FFE8D6" stroke="#fff" stroke-width="2"/>
+  <text x="224" y="97" font-size="11" font-weight="bold" fill="#C2410C">① command＋shift＋P →「Claude Code」</text>
+  <text x="226" y="114" font-size="10.5" fill="#C2410C">（アイコンからも開けます。位置は要確認）</text>
+  <rect x="214" y="150" width="210" height="32" rx="8" fill="#E8EAF6" stroke="#fff" stroke-width="2"/>
+  <text x="226" y="171" font-size="12" font-weight="bold" fill="#3B4A9E">② 右側にチャット欄が開く</text>
+  <rect x="512" y="250" width="208" height="54" rx="8" fill="#DCF5E6" stroke="#fff" stroke-width="2"/>
+  <text x="522" y="270" font-size="12" font-weight="bold" fill="#1E8A4C">③ ここに貼って（command＋V）</text>
+  <text x="522" y="290" font-size="12" font-weight="bold" fill="#1E8A4C">Enter で送る ↓</text>
+  <rect x="470" y="12" width="250" height="24" rx="6" fill="#F2F1EA" stroke="#fff" stroke-width="2"/>
+  <text x="480" y="29" font-size="11.5" font-weight="bold" fill="#444">④ ＋ ＝ 新しい会話（位置は要確認）↓</text>
+  </g>
+  <line x1="424" y1="166" x2="508" y2="140" stroke="#3B4A9E" stroke-width="2"/>
+</svg>
+<div class="caption">図C：Cursor の画面全体。左＝ファイル一覧、真ん中＝作業する所、下＝ターミナル、右＝Claude のチャット欄</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります。あなたの吹き出し＝右、Claude の吹き出し＝左</div>
+</div>
+<div class="fig-mobile">
+<svg viewBox="0 0 380 300" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="5" y="5" width="370" height="290" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="5" y="5" width="28" height="290" rx="10" fill="#E4E3DD"/>
+  <rect x="33" y="5" width="80" height="290" fill="#EDECE7"/>
+  <text x="40" y="26" font-size="9" fill="#777">ファイル一覧</text>
+  <rect x="113" y="5" width="110" height="200" fill="#FAFAF8"/>
+  <text x="120" y="26" font-size="9" fill="#666">作業する所</text>
+  <rect x="113" y="205" width="110" height="90" fill="#2B2B2B"/>
+  <text x="120" y="224" font-size="9" fill="#bbb">ターミナル</text>
+  <rect x="223" y="5" width="152" height="290" fill="#fff"/>
+  <line x1="223" y1="5" x2="223" y2="295" stroke="#ccc"/>
+  <text x="232" y="26" font-size="10" font-weight="bold" fill="#a85a10">Claude Code</text>
+  <rect x="346" y="13" width="20" height="18" rx="4" fill="#fff" stroke="#3B4A9E" stroke-width="1.5"/>
+  <text x="356" y="27" font-size="13" text-anchor="middle" fill="#3B4A9E">＋</text>
+  <rect x="270" y="44" width="96" height="30" rx="8" fill="#E8EAF6"/>
+  <text x="278" y="63" font-size="9" fill="#2B2B2B">あなたのお願い</text>
+  <rect x="232" y="84" width="100" height="30" rx="8" fill="#FFF4E8"/>
+  <text x="240" y="103" font-size="9" fill="#2B2B2B">Claude の答え</text>
+  <rect x="230" y="236" width="138" height="48" rx="8" fill="#fff" stroke="#3B4A9E" stroke-width="2"/>
+  <text x="238" y="256" font-size="9" fill="#999">入力欄</text>
+  <g font-size="13" font-weight="bold" text-anchor="middle" fill="#fff">
+  <circle cx="168" cy="90" r="12" fill="#C2410C"/><text x="168" y="95">1</text>
+  <circle cx="300" cy="150" r="12" fill="#3B4A9E"/><text x="300" y="155">2</text>
+  <circle cx="300" cy="222" r="12" fill="#1E8A4C"/><text x="300" y="227">3</text>
+  <circle cx="330" cy="22" r="10" fill="#555"/><text x="330" y="27" font-size="11">4</text>
+  </g>
+</svg>
+<ol class="fig-list">
+<li><b>command＋shift＋P</b> を押して「Claude Code」と入れ、開くものを選ぶ（アイコンからも開けます）</li>
+<li>右側に<b>チャット欄</b>が開く（あなた＝右の青、Claude＝左のオレンジ）</li>
+<li>下の<b>入力欄</b>に貼って（command＋V）Enter</li>
+<li><b>＋</b> ＝ 新しい会話（位置は要確認）</li>
+</ol>
+<div class="caption">図C：Cursor の画面全体</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります</div>
+</div>
+<pre class="say"><code>こんにちは。今どのフォルダで作業しているか教えてください。ファイルは何も変更しないでください。</code></pre>
+<div class="ok"><span class="t">手順5：成功するとこう見える</span>Claude が「書類の claude-practice フォルダです」のように答えてくれる。</div>
+<div class="ng"><span class="t">手順5：うまくいかないとき</span><ul>
+<li>チャット欄が開かない → <b>command＋shift＋P</b> で「Reload Window」を選んで画面を読み込み直し、もう一度 1 から</li>
+<li>個人のアカウントでログインしてしまった → チャット欄で <code>/logout</code> と送ってから、もう一度ログイン <span class="tbc">要確認</span></li>
+<li>「権限がない」と出る → 会社アカウントの設定の問題かもしれません。伏見さんに相談</li>
+<li>違うフォルダの名前が出る → 手順3 の「フォルダーを開く」をやり直す</li>
+</ul></div>
+<div class="note">ターミナルで動く Claude（手順4）と、このチャット欄の Claude は<b>同じもの</b>です。<b>ここから先はチャット欄だけ</b>を使います（ログインもチャット欄で済ませればOK。ターミナルの Claude は今日は使わないので、気にしなくて大丈夫です）。</div>
+<div class="goal">🎉 <b>最初の山場クリア！</b> ここから先は、ほとんど Claude にお願いするだけです。3章へ進みましょう。</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 3章 ===================== -->
+<section class="chapter" id="ch3">
+<h2>3. ここからはチャットでお願い</h2>
+<p class="ch-goal">この章のゴール：残りの準備（道具の確認・Codex の準備・練習部屋の準備）を Claude にお願いして終わらせる。</p>
+<p>やり方はどれも同じです。<b>青い箱の文をコピーして、Claude のチャット欄に貼って送るだけ</b>。2つだけ、Claude にはできないのでターミナルで自分で実行します（理由も書いてあります）。</p>
+
+<table>
+<tr><th style="width:12%">#</th><th>やること</th><th style="width:34%">だれが</th></tr>
+<tr><td>3-1</td><td>「実行していいですか？」の答え方を知る</td><td><span class="who who-read">📖 読むだけ</span></td></tr>
+<tr><td>3-2</td><td>基本の道具（Xcode コマンドラインツール）の確認</td><td><span class="who who-chat">💬 チャット</span></td></tr>
+<tr><td>3-3</td><td>Homebrew の確認と準備</td><td><span class="who who-chat">💬 チャット</span> <span class="who who-term">⌨️ ターミナル</span></td></tr>
+<tr><td>3-4</td><td>Codex を入れる</td><td><span class="who who-chat">💬 チャット</span></td></tr>
+<tr><td>3-5</td><td>Codex にログインする</td><td><span class="who who-term">⌨️ ターミナル</span> <span class="who who-chat">💬 チャット</span></td></tr>
+<tr><td>3-6</td><td>練習部屋に「記録帳」を用意する</td><td><span class="who who-chat">💬 チャット</span></td></tr>
+</table>
+
+<h3 id="yes-no">3-1. Claude に「実行していいですか？」と聞かれたら <span class="who who-read">📖 読むだけ</span></h3>
+<p class="doing">ここでやること：答え方を知る（この先、何度も聞かれます）。</p>
+<p>Claude は、Mac で何かを実行する前や、ファイルを書き換える前に「いいですか？」と聞いてきます。<b>怖がらなくて大丈夫</b>。</p>
+<div class="check"><b>いちばん大事な見分け方</b>
+<ul>
+<li>画面に出た英字（コマンド）が、<b>さっき送ったお願い文の中にそのまま書いてあれば Yes</b></li>
+<li>または、<b>中を見て確かめるだけの英字</b>（<code>ls</code>・<code>cat</code>・<code>grep</code>・<code>head</code>・<code>which</code>・<code>--version</code>・<code>git status</code> など）<b>なら Yes</b><br><span class="term">※ただし、ログイン情報や秘密のファイル（<code>~/.codex/auth.json</code>、<code>.env</code> など）の中身を表示するものは No</span></li>
+<li><b>それ以外の英字が出たら No</b>。そして Claude に「<b>これは何をするものですか？</b>」と聞く</li>
+<li>ファイルを書き換える確認なら、<b>お願いした場所</b>（ファイル名）なら Yes</li>
+</ul>
+迷ったら No でOK。No を押しても壊れることはありません。</div>
+<div class="figure fig-desktop">
+<svg viewBox="0 0 740 330" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <defs><filter id="shD" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-opacity="0.18"/></filter></defs>
+  <rect x="10" y="10" width="720" height="310" rx="12" fill="#F4F4F2" stroke="#999" stroke-width="1.5"/>
+  <rect x="30" y="26" width="330" height="278" rx="10" fill="#fff" stroke="#ccc"/>
+  <text x="44" y="48" font-size="12" font-weight="bold" fill="#a85a10">Claude Code</text>
+  <rect x="44" y="60" width="300" height="30" rx="8" fill="#FFF4E8"/>
+  <text x="54" y="80" font-size="11.5" fill="#2B2B2B">入っているか確認します。</text>
+  <rect x="44" y="102" width="300" height="186" rx="8" fill="#FAFAF8" stroke="#3B4A9E" stroke-width="1.5"/>
+  <text x="56" y="124" font-size="11.5" fill="#666">Bash コマンド</text>
+  <rect x="56" y="132" width="276" height="28" rx="5" fill="#2B2B2B"/>
+  <text x="66" y="151" font-size="12" fill="#F2F1EA" font-family="Menlo, monospace">xcode-select -p</text>
+  <text x="56" y="180" font-size="11.5" fill="#2B2B2B">実行しますか？</text>
+  <rect x="56" y="190" width="276" height="26" rx="5" fill="#DCF5E6"/>
+  <text x="66" y="208" font-size="12" fill="#1E8A4C" font-weight="bold">1. Yes</text>
+  <text x="66" y="236" font-size="12" fill="#888">2. Yes, and don't ask again…</text>
+  <rect x="56" y="250" width="276" height="26" rx="5" fill="#FDECEA"/>
+  <text x="66" y="268" font-size="12" fill="#B42318" font-weight="bold">3. No</text>
+  <g filter="url(#shD)">
+  <rect x="390" y="120" width="320" height="50" rx="8" fill="#E8EAF6" stroke="#fff" stroke-width="2"/>
+  <text x="402" y="141" font-size="12" font-weight="bold" fill="#3B4A9E">① 英字が、お願い文に書いてあるか</text>
+  <text x="402" y="160" font-size="12" font-weight="bold" fill="#3B4A9E">　 確かめるだけのもの（ls など）か見る</text>
+  <rect x="390" y="180" width="320" height="34" rx="8" fill="#DCF5E6" stroke="#fff" stroke-width="2"/>
+  <text x="402" y="202" font-size="12.5" font-weight="bold" fill="#1E8A4C">② どちらかなら Yes</text>
+  <rect x="390" y="222" width="320" height="30" rx="8" fill="#F2F1EA" stroke="#fff" stroke-width="2"/>
+  <text x="402" y="242" font-size="11.5" fill="#555">「次から聞かない」は、慣れるまで選ばない</text>
+  <rect x="390" y="260" width="320" height="38" rx="8" fill="#FDECEA" stroke="#fff" stroke-width="2"/>
+  <text x="402" y="284" font-size="12.5" font-weight="bold" fill="#B42318">③ それ以外なら No → 何をするか聞く</text>
+  </g>
+  <line x1="388" y1="145" x2="334" y2="146" stroke="#3B4A9E" stroke-width="2"/>
+  <line x1="388" y1="197" x2="334" y2="203" stroke="#1E8A4C" stroke-width="2"/>
+  <line x1="388" y1="237" x2="270" y2="232" stroke="#888" stroke-width="2"/>
+  <line x1="388" y1="279" x2="334" y2="264" stroke="#B42318" stroke-width="2"/>
+</svg>
+<div class="caption">図D：Claude が「実行していいですか？」と聞いてくる画面</div>
+<div class="fig-note">※イメージです。実際の画面と細部は異なります。見出しの文言・選択肢の文言や数は要確認</div>
+</div>
+<div class="fig-mobile">
+<svg viewBox="0 0 380 270" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" font-family="Hiragino Sans, sans-serif">
+  <rect x="5" y="5" width="370" height="260" rx="12" fill="#fff" stroke="#ccc"/>
+  <text x="20" y="28" font-size="12" font-weight="bold" fill="#a85a10">Claude Code</text>
+  <rect x="20" y="40" width="340" height="212" rx="8" fill="#FAFAF8" stroke="#3B4A9E" stroke-width="1.5"/>
+  <text x="32" y="62" font-size="11.5" fill="#666">Bash コマンド</text>
+  <rect x="32" y="70" width="290" height="28" rx="5" fill="#2B2B2B"/>
+  <text x="42" y="89" font-size="12" fill="#F2F1EA" font-family="Menlo, monospace">xcode-select -p</text>
+  <text x="32" y="118" font-size="11.5" fill="#2B2B2B">実行しますか？</text>
+  <rect x="32" y="128" width="290" height="26" rx="5" fill="#DCF5E6"/>
+  <text x="42" y="146" font-size="12" fill="#1E8A4C" font-weight="bold">1. Yes</text>
+  <text x="42" y="178" font-size="12" fill="#888">2. Yes, and don't ask again…</text>
+  <rect x="32" y="196" width="290" height="26" rx="5" fill="#FDECEA"/>
+  <text x="42" y="214" font-size="12" fill="#B42318" font-weight="bold">3. No</text>
+  <g font-size="13" font-weight="bold" text-anchor="middle" fill="#fff">
+  <circle cx="340" cy="84" r="12" fill="#3B4A9E"/><text x="340" y="89">1</text>
+  <circle cx="340" cy="141" r="12" fill="#1E8A4C"/><text x="340" y="146">2</text>
+  <circle cx="340" cy="174" r="12" fill="#888"/><text x="340" y="179">!</text>
+  <circle cx="340" cy="209" r="12" fill="#B42318"/><text x="340" y="214">3</text>
+  </g>
+</svg>
+<ol class="fig-list">
+<li>英字（コマンド）が、送ったお願い文に書いてあるか／確かめるだけのもの（<code>ls</code> など）か見る</li>
+<li>どちらかなら <b>Yes</b></li>
+<li>それ以外なら <b>No</b> → Claude に「これは何をするものですか？」と聞く</li>
+</ol>
+<p class="fig-list-x">! 「次から聞かない」は、慣れるまで選ばない</p>
+<div class="caption">図D：「実行していいですか？」の画面</div>
+<div class="fig-note">※イメージです。文言や選択肢の数は要確認</div>
+</div>
+<p>ファイルを書き換えるときは、たとえばこんな確認が出ます。</p>
+<pre class="sample"><code>Edit file
+  ~/Downloads/kit/global/CLAUDE.md
+  （変わる行が赤と緑で表示される）
+Do you want to make this edit?
+  1. Yes
+  2. Yes, allow all edits during this session
+  3. No</code></pre>
+<p class="term">（文言は要確認）お願いした場所（ここなら <code>Downloads/kit</code>）なら 1. Yes。</p>
+<details class="later">
+<summary>補足：よく出る英字の意味（気になる人だけ）</summary>
+<table>
+<tr><th style="width:50%">✅ お願いしたなら Yes でOK</th><th>🛑 No にして伏見さんに相談</th></tr>
+<tr><td>
+・確認するだけ（<code>--version</code>、<code>ls</code>、<code>which</code>、<code>cat</code>、<code>grep</code>）<br>
+・お願いしたインストール（<code>brew install</code>、<code>xcode-select --install</code>）<br>
+・お願いしたコピー・フォルダ作り（<code>cp</code>、<code>mkdir</code>）<br>
+・お願いした <code>git init</code>、<code>git add -A</code><br>
+・お願いした場所のファイルの編集・作成
+</td><td>
+・削除（<code>rm</code>）・移動（<code>mv</code>）・権限変更（<code>chmod</code>）<br>
+・<code>sudo</code> が付いているもの（Mac の管理者として実行）<br>
+・<code>curl … | bash</code> や <code>| sh</code>（ネットから取ってきてそのまま実行）<br>
+・<code>git push</code>、<code>git reset</code>、<code>git checkout --</code>、<code>git clean</code><br>
+・<code>~/.zshrc</code> などの設定ファイルへの書き込み<br>
+・<code>--dangerously</code> が付いているもの<br>
+・<code>codex logout</code><br>
+・ログイン情報や秘密のファイル（<code>~/.codex/auth.json</code>、<code>.env</code> など）の中身を表示するもの（<code>cat</code> でも No）<br>
+・お願いしていない場所・作業、意味が分からないもの
+</td></tr>
+</table>
+</details>
+<p class="term">どの手順でも迷ったら、この 3-1 に戻ってきてください。</p>
+
+<h3>3-2. 基本の道具を確認する <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：Mac の基本の道具（Xcode コマンドラインツール）が入っているか、Claude に見てもらう。</p>
+<pre class="say"><code>Xcode コマンドラインツールが入っているか確認してください。xcode-select -p を実行して、入っていなければ xcode-select --install を実行してください。ほかのファイルは変更しないでください。</code></pre>
+<ul>
+<li><b>起きること：</b>「実行していいですか？」→ 英字が <code>xcode-select</code> なら <span class="ui">Yes</span>（<a href="#yes-no">3-1</a>）</li>
+<li>入っていなかった場合は、<b>画面にインストールの窓が出ます</b>。<span class="ui">インストール</span> → <span class="ui">同意する</span> を押して、終わるまで待つ（数分〜十数分）</li>
+<li>終わったら、チャットで「インストールが終わりました。もう一度確認してください」と送る</li>
+</ul>
+<div class="ok"><span class="t">3-2：成功するとこう見える</span>Claude が「入っています」と答える。</div>
+<div class="ng"><span class="t">3-2：うまくいかないとき</span><ul>
+<li>インストールの窓が出ない → 画面の後ろに隠れていないか確認。それでも出なければ、<span class="ui">りんごマーク</span> → <span class="ui">システム設定</span> → <span class="ui">一般</span> → <span class="ui">ソフトウェアアップデート</span> で Mac を最新にしてから、もう一度お願いする</li>
+</ul></div>
+
+<h3>3-3. Homebrew を確認して、なければ入れる <span class="who who-chat">💬 チャットで</span> <span class="who who-term">⌨️ ターミナルで</span></h3>
+<p class="doing">ここでやること：Homebrew（<span class="term">＝ Mac にアプリや道具を入れるための道具</span>）があるか確認し、なければ自分で入れる。</p>
+<pre class="say"><code>Homebrew が入っているか、brew --version で確認してください。入っていなければ、私がターミナルで実行するコマンドを教えてください。あなたは実行しないでください。</code></pre>
+<p><b>入っていた場合：</b>3-4 へ進みます。</p>
+<p><b>入っていなかった場合：</b>Homebrew を入れるには <b>Mac のパスワードを入力する必要があり、それは Claude にはできません</b>。ここだけ自分でターミナルでやります。</p>
+<ol>
+<li>Cursor の下のターミナル（なければ <span class="ui">ターミナル</span> → <span class="ui">新しいターミナル</span>）に、次の1行を貼って Enter
+<pre class="cmd"><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre></li>
+<li>パスワードを聞かれたら、<b>Mac にログインするときのパスワード</b>を入力して Enter（<b>入力しても画面に何も出ませんが正常</b>です）</li>
+<li><code>Press RETURN/ENTER</code> と出たら Enter</li>
+<li>数分で終わると、最後に「<b>Next steps</b>」が出ます。たとえばこんな表示です。
+<pre class="sample"><code>==> Next steps:
+- Run these commands in your terminal to add Homebrew to your PATH:
+    echo >> /Users/あなたの名前/.zprofile
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/あなたの名前/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"</code></pre></li>
+<li>「Run these commands…」の<b>下にある字下げされた行</b>を、マウスでなぞって選び <b>command＋C</b> → ターミナルに <b>command＋V</b> → Enter（意味を知りたければ、チャットで「この行の意味を説明だけしてください」と聞いてOK）</li>
+<li>Cursor を <b>command＋Q</b> で終了して、もう一度起動する（新しい設定を読み込むため）</li>
+<li>起動すると、たいてい <code>claude-practice</code> が開いた状態で戻ります。戻らなければ<a href="#ch2">2章 手順3</a>の「フォルダーを開く」で開く</li>
+<li>Claude のチャット欄を開き直す（<b>command＋shift＋P</b> →「Claude Code」）。前の会話が見えなくても大丈夫です</li>
+<li>チャットで次を送る</li>
+</ol>
+<pre class="say"><code>Homebrew を入れました。brew --version を実行して確認してください。</code></pre>
+<div class="ok"><span class="t">3-3：成功するとこう見える</span>Claude が <code>Homebrew 4.x.x</code> のような数字を教えてくれる。</div>
+<div class="ng"><span class="t">3-3：うまくいかないとき</span><ul>
+<li>「brew が見つからない」と言われる → Next steps の行を実行したか確認。Cursor を command＋Q で終了して起動し直し、チャット欄を開き直してから、もう一度お願いする</li>
+<li>パスワードが通らない・<code>Need sudo access</code> と出る → Mac の管理者になっていないアカウントかもしれません。伏見さんに相談</li>
+</ul></div>
+
+<h3>3-4. Codex を入れる <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：職人さん役の Codex を Mac に入れてもらう（1〜3分ほど）。</p>
+<pre class="say"><code>Codex CLI を Homebrew で入れてください（brew install --cask codex）。終わったら codex --version でバージョンを確認して教えてください。</code></pre>
+<ul>
+<li><b>起きること：</b>「実行していいですか？」→ 英字が <code>brew install --cask codex</code> なら <span class="ui">Yes</span></li>
+</ul>
+<div class="ok"><span class="t">3-4：成功するとこう見える</span>Claude が <code>codex-cli 0.xxx.x</code> のような数字を教えてくれる。</div>
+<div class="ng"><span class="t">3-4：うまくいかないとき</span><ul>
+<li>「時間切れ」「タイムアウト」と言われた → 裏で入っていることが多いです。少し待ってから「もう一度 codex --version で確認して」と送る</li>
+<li>「brew が見つからない」と言われる → 3-3 に戻る</li>
+<li>エラーが出た → Claude に「原因と対処を教えて。まだ何も実行しないで」と聞く</li>
+</ul></div>
+
+<h3>3-5. Codex にログインする <span class="who who-term">⌨️ ターミナルで</span> <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：会社の ChatGPT アカウントで Codex にログインする。</p>
+<p>ログインは<b>ブラウザでの操作が必要で、Claude にはできない</b>ので、ターミナルで自分でやります。</p>
+<ol>
+<li>Cursor の下のターミナルに次を貼って Enter
+<pre class="cmd"><code>codex login</code></pre></li>
+<li>ブラウザが開いたら、<span class="ui">Sign in with ChatGPT</span> を押して、<b>会社の ChatGPT アカウント</b>でログイン <span class="tbc">要確認：文言</span><br>
+<span class="term">・「API key」を入れる欄が見えても、そちらは<b>選ばない</b><br>・会社の名前と個人の名前を選ぶ画面が出たら、<b>会社の方</b>を選ぶ</span></li>
+<li>チャットで次を送る</li>
+</ol>
+<pre class="say"><code>codex login status を実行して、結果を教えてください。</code></pre>
+<div class="ok"><span class="t">3-5：成功するとこう見える</span>Claude が「<code>Logged in using ChatGPT</code> と出ています」と教えてくれる。<b>これで Claude から Codex に仕事を頼めるようになりました。</b></div>
+<div class="ng"><span class="t">3-5：うまくいかないとき</span><ul>
+<li>ブラウザが開かない → ターミナルに出た URL を <b>command を押しながらクリック</b></li>
+<li><code>Not logged in</code> → もう一度 <code>codex login</code></li>
+<li>個人のアカウントや <code>API key</code> で入ってしまった → ターミナルで <code>codex logout</code> → <code>codex login</code> でやり直す</li>
+</ul></div>
+<div class="warn">ログインの情報は、Mac の中の専用のファイルに保存されます。そのファイルを人に渡したり、チャットに貼ったりしないでください。</div>
+
+<h3>3-6. 練習部屋に「記録帳」を用意する <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：Codex の作業の前後を比べられるように、練習部屋に記録帳（Git）を用意してもらう。</p>
+<div class="note"><b>なぜ必要？</b> Git は「Codex に作業させる前と後で何が変わったかを比べて、ダメなら元に戻すための記録帳」です（GitHub とは別物で、Mac の中だけで動きます）。工事の前に部屋の写真を撮っておくのと同じで、写真がないと職人の「ちゃんと直しました」を信じるしかありません。Codex は記録帳が無いフォルダでは、そもそも動きません。ここでは<b>記録帳を用意するだけ</b>。写真を撮る（基準を記録する）のは、キットを置いたあとの <a href="#ch5-7">5-7</a> です。詳しくは <a href="#ch6-git">6-5</a> へ。</div>
+<pre class="say"><code>このフォルダで git init を実行してください。ほかのファイルは変更しないでください。</code></pre>
+<ul>
+<li><b>起きること：</b>「実行していいですか？」→ 英字が <code>git init</code> なら <span class="ui">Yes</span></li>
+<li>GitHub とは関係なく、名前の登録もいりません</li>
+</ul>
+<div class="ok"><span class="t">3-6：成功するとこう見える</span>Claude が「Git の準備ができました」のように答える。</div>
+<div class="ng"><span class="t">3-6：うまくいかないとき</span><ul>
+<li>「git が見つからない」と言われる → 3-2 に戻る</li>
+</ul></div>
+
+<div class="check"><b>3章が終わったかのチェック</b>
+<ul>
+<li>□ Claude のチャット欄でお願いできる</li>
+<li>□ 3-2 で「Xcode コマンドラインツールが入っている」と言われた</li>
+<li>□ 3-3 で Homebrew の数字が出た</li>
+<li>□ 3-4 で Codex の数字が出た</li>
+<li>□ 3-5 で <code>Logged in using ChatGPT</code> と言われた</li>
+<li>□ 3-6 で Git の準備ができた</li>
+</ul>
+→ 次は <b>5章</b>（配布キット）へ。4章はピンクなので、後で読めばOKです。</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 4章 ===================== -->
+<section class="chapter" id="ch4">
+<h2>4. Claude Code の育て方</h2>
+
+<div class="check"><b>配布キット（5章）を使う人へ：</b>
+<ul>
+<li>下の 4-1 の「順1（グローバル CLAUDE.md を自分で書く）」は<b>やらずに、キットの CLAUDE.md を使ってください</b>。置き方は <b>5章</b>。順5（Codex 窓口）もキットに入っています</li>
+<li>この章は「キットの中身がどういう仕組みか」を理解するために、慣れてきてから読めばOKです。順2・3・4（プロジェクトの CLAUDE.md・記録の受け皿・レビュー役／壊れパターン役）は自分で足していきます</li>
+<li><b>すでに自分で <code>~/.claude/CLAUDE.md</code> を書いてしまった人：</b>キットの <code>~/Downloads/kit/global/CLAUDE.md</code> を Cursor で開き、<b>その末尾に自分で書いた内容を貼り付け</b> → キットと同じ意味の行（「日本語で答える」など）が重複していたら自分の方を削除 → 5章へ。<b>5-5 で「同じ名前のファイルがあります」と言われたら、合体済みなので「上書きしてOK」と答える</b></li>
+</ul></div>
+
+<p>インストール直後の Claude Code は「優秀だけど、あなたのやり方を知らない新人」です。指示書・役割分担・記憶・手順書を少しずつ足して「自分仕様の相棒」に育てます。<b>最初から全部作らない</b>のがコツです。</p>
+
+<h3>4-1. おすすめの始め方（この順番で）</h3>
+<table>
+<tr><th style="width:8%">順</th><th style="width:34%">やること</th><th>ポイント</th></tr>
+<tr><td>1</td><td>グローバル CLAUDE.md を1枚だけ書く</td><td>30行程度で十分。1〜2週間使い、「毎回言っていること」を追記していく（キット受領者はキットを使う）</td></tr>
+<tr><td>2</td><td>プロジェクトの CLAUDE.md を作る</td><td>Claude Code で <code>/init</code> と打つと雛形を作ってくれる。技術スタック・コマンド・フォルダ構成だけ書けばOK</td></tr>
+<tr><td>3</td><td>記録の受け皿を作る</td><td><code>knowhow.md</code>（ハマりメモ）と <code>仕様書/[ツール名].md</code>（1ツール1枚）。7章参照</td></tr>
+<tr><td>4</td><td>サブエージェントを2体作る</td><td>「レビュー役」と「壊れパターン確認役」から</td></tr>
+<tr><td>5</td><td>Codex 連携</td><td>Codex 窓口エージェントを1体作る。最初は読み取り専用の調査だけ任せる（6章）</td></tr>
+<tr><td>6</td><td>長くなったら rules/ に分割・スキル化</td><td>手順書は <code>.claude/rules/</code> へ。繰り返す作業はスキルにする</td></tr>
+<tr><td>7</td><td>（任意）フック・権限の緩和</td><td>最後に、リスクを理解してから（付録参照）</td></tr>
+</table>
+
+<h3>4-2. CLAUDE.md の階層 ― 「どう振る舞うか」の指示書</h3>
+<p>CLAUDE.md は Claude Code が会話の最初に自動で読む指示書です。Markdown（<span class="term">＝ <code>#</code> で見出し、<code>-</code> で箇条書きを書く、拡張子 .md のテキストファイル</span>）で書きます。置く場所によって効く範囲が変わり、<b>全部が合算されて</b>読み込まれます。<code>~</code> はホームフォルダ（<span class="term">＝ 自分専用のフォルダ。Finder の家のマーク</span>）のことです。</p>
+<table>
+<tr><th style="width:22%">階層</th><th style="width:30%">場所</th><th>書くこと</th></tr>
+<tr><td>① グローバル</td><td><code>~/.claude/<wbr>CLAUDE.md</code></td><td>全プロジェクト共通の「作法」：日本語で答える、編集前にファイルを読む、頼んでいないリファクタをしない、など</td></tr>
+<tr><td>② プロジェクト</td><td><code>プロジェクト/<wbr>CLAUDE.md</code></td><td>そのプロジェクトの「事実」：概要、技術スタック、フォルダ構成、よく使うコマンド</td></tr>
+<tr><td>③ プロジェクトの行動ルール</td><td><code>プロジェクト/<wbr>.claude/<wbr>CLAUDE.md</code></td><td>そのプロジェクトでの「Claude の動き方」：Claude と Codex の担当の分け方、禁止事項など</td></tr>
+<tr><td>④ ルール分割</td><td><code>プロジェクト/<wbr>.claude/<wbr>rules/<wbr>*.md</code></td><td>長くなった手順書（作業フロー、命名規則など）</td></tr>
+</table>
+
+<h4>グローバル CLAUDE.md の最初の1枚（例）</h4>
+<pre class="sample"><code># 共通ルール
+
+## 言語
+応答は日本語で行う。
+
+## 作業スタイル
+- ファイルを編集する前に必ず読む
+- 頼まれていないリファクタリング・機能追加はしない
+- 変更が終わったら「何が変わったか・次は何か」を1〜2文で伝える
+
+## 実装前の確認
+実装に入る前に次の3つを提示して、私の確認を待つ
+1. 完了済みのこと
+2. これからやること（変更するファイル）
+3. 未解決の疑問
+
+## 禁止
+- 指示なしの git push
+- 秘密情報（APIキー・パスワード等）をファイルやログに書くこと</code></pre>
+
+<h3>4-3. サブエージェント ― 「役割分担」</h3>
+<p>サブエージェントは、特定の仕事だけを担当する Claude の分身です。<code>~/.claude/agents/</code>（全プロジェクト共通）または <code>プロジェクト/.claude/agents/</code>（そのプロジェクトだけ）に Markdown ファイルを1つ置くと使えるようになります。Claude に「〇〇役のサブエージェントを作って」と頼んで作ってもらうこともできます（ファイルを直接作っても同じです）。</p>
+<ul>
+<li>先頭の <b>frontmatter</b>（<span class="term">＝ ファイル先頭の <code>---</code> で囲まれた設定部分</span>）は <code>name</code> と <code>description</code> の2つだけでOK</li>
+<li><code>description</code> には「<b>いつ呼ぶか</b>」を書く。メインの Claude はファイルの本文ではなく、<b>ここ（name と description）だけを見て</b>呼び分ける</li>
+<li>本文は「役割」「チェック観点」「出力形式」の3節で十分</li>
+</ul>
+
+<h4>例1：レビュー役（~/.claude/agents/reviewer.md）</h4>
+<pre class="sample"><code>---
+name: reviewer
+description: Use before delivering any answer or code to the user. Final check for correctness, safety and completeness.
+---
+
+あなたは最終チェック担当。
+
+## 役割
+ユーザーに渡す前の回答・成果物を確認し、GO/NG を判定する。
+
+## チェック観点
+- 依頼された内容にすべて答えているか
+- 事実や手順に誤りがないか
+- 秘密情報が含まれていないか
+
+## 出力形式
+判定：GO / NG
+指摘：（NGの理由と直し方）</code></pre>
+
+<h4>例2：壊れパターン確認役（~/.claude/agents/tester.md）</h4>
+<pre class="sample"><code>---
+name: tester
+description: Use after implementation is complete to find edge cases and inputs that could break the feature.
+---
+
+あなたは壊れパターン確認担当。
+
+## 役割
+実装後のコードについて、壊れそうな使い方を洗い出し、実際に試せるものは試す。
+
+## チェック観点
+- 空の入力・巨大な入力・想定外の文字
+- 二重クリック・連続実行
+- ファイルが無い・ネットが切れている
+
+## 出力形式
+| パターン | 結果 | 対応要否 |</code></pre>
+
+<div class="check"><b>キットを使っている人が reviewer / tester を自作したら：</b>キットの <code>~/.claude/CLAUDE.md</code> には、<code>&lt;!--</code> と <code>--&gt;</code> で囲まれた（＝コメントアウトされて効いていない）reviewer と tester の行が<b>2か所</b>あります。<b>①「チーム構成」の表の下</b>と、<b>②「サブエージェントの呼び出し」の表の下</b>です。<b>両方とも</b>、「（自分で決めた名前）」「（自分で決めたマーク）」などを書き換え、<b><code>&lt;!--</code> で始まる行から表の行（<code>|</code> で始まる行）の手前までの説明の行と、<code>--&gt;</code> の行を消してください</b>（表の行そのものは残します）。これで司令塔が2体をチームの一員として呼ぶようになります。</div>
+
+<div class="note"><b>キャラクター設定は「続けるための味付け」：</b>伏見さんの環境では、エージェントに名前・口調・担当カラーを付けています（例：レビュー役の「レビュアン」、Codex 窓口の「デックス」）。誰が何をしているか一目で分かり、使っていて楽しくなるので長続きします。ただし<b>本質は「役割分担・記録・委任判断」の仕組み</b>の方。キャラは慣れてから好きに足せばOKです。</div>
+
+<h3>4-4. メモリ ― 「好みと状況の記憶」</h3>
+<ul>
+<li>Claude Code は、会話の中で分かったあなたの好みやプロジェクトの状況を<b>メモリ</b>として自動で書き溜めます（保存先：<code>~/.claude/projects/<wbr>&lt;プロジェクト名&gt;/<wbr>memory/</code>。目次ファイル <code>MEMORY.md</code> が会話の最初に読まれる）<span class="tbc">要確認：保存先・挙動はバージョンで変わる</span></li>
+<li>中身は Claude Code で <code>/memory</code> と打つと確認・編集できます</li>
+<li>運用の型：<b>指摘したことはメモリに残させる → 何度も効かせたい恒久ルールは CLAUDE.md にも書く</b></li>
+<li>やることは「ときどき MEMORY.md を眺めて、古い・間違った記憶を消す」だけで十分</li>
+<li>注意：プロジェクトのフォルダ名を変えると、メモリが引き継がれないことがあります</li>
+</ul>
+
+<div class="keep">
+<h3>4-5. スキル ― 「再利用できる手順書」</h3>
+<ul>
+<li><code>.claude/skills/<wbr>&lt;スキル名&gt;/<wbr>SKILL.md</code> に「いつ使うか」と「手順」を書いておくと、該当する作業のときに Claude Code が読み込んで手順どおりに動きます</li>
+<li>作り方のコツ：<b>先に作ろうとしない</b>。実際に作業してうまくいったパターンを、後から「今の手順をスキルにして」と頼んで保存する</li>
+</ul>
+<pre class="sample"><code>---
+name: new-tool-setup
+description: 新しいツール用フォルダを作るときに使う。フォルダ・CLAUDE.md・仕様書の雛形を作成する。
+---
+
+## 手順
+1. ツール名を kebab-case で決める
+2. フォルダと CLAUDE.md を作る
+3. 仕様書/[ツール名].md を雛形から作る</code></pre>
+</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 5章 ===================== -->
+<section class="chapter" id="ch5">
+<h2>5. 配布キットを置く</h2>
+<p class="ch-goal">この章のゴール：ルールと専門担当（エージェント）のセット「配布キット」を Claude に置いてもらい、動くことを確かめる。</p>
+<p class="term">この章で出てくる言葉：<code>~</code> は<b>自分のホームフォルダ</b>（Finder の家のマーク）のこと。画面には <code>/Users/あなたの名前/</code> と出ることもあります。「このフォルダ」は、<b>今 Cursor で開いている claude-practice</b> のことです。</p>
+
+<h3>5-1. キットの中身 <span class="who who-read">📖 読むだけ</span></h3>
+<p class="doing">ここでやること：何が入っているかを知るだけ。</p>
+<table>
+<tr><th style="width:38%">キットの中のファイル</th><th>役割</th></tr>
+<tr><td><code>global/<wbr>CLAUDE.md</code></td><td>司令塔（あなたと話す Claude）のルール。全部のフォルダで効く</td></tr>
+<tr><td><code>agents/<wbr>codex-delegate.md</code></td><td>Codex に仕事を頼む窓口役</td></tr>
+<tr><td><code>agents/<wbr>claude-keeper.md</code></td><td>記録係（メモやルールを整理する）</td></tr>
+<tr><td><code>agents/<wbr>se-partner.md</code></td><td>相談役（やりたいことを一緒に整理する）</td></tr>
+<tr><td><code>project/<wbr>project-CLAUDE.md</code></td><td>その作業フォルダだけのルール（Claude と Codex の分担など）</td></tr>
+</table>
+<ul>
+<li>危ない設定（確認なしで何でも実行できる設定など）は入っていません</li>
+</ul>
+<div class="warn">自分で <code>~/.claude/CLAUDE.md</code> を作ったことがある人は、先に<a href="#ch4">4章</a>の最初の枠を読んでください。上書きしないよう、5-5 で Claude が確認してくれます。</div>
+
+<h3>5-2. キットをダウンロードして開く <span class="who who-hand">🖱️ 手作業</span></h3>
+<p class="doing">ここでやること：キットを「ダウンロード」フォルダに用意する。</p>
+<p class="dl-wrap"><a class="dl-btn" href="files/22_dev_environment_kit.zip" download>⬇ 配布キットをダウンロード（22_dev_environment_kit.zip）</a></p>
+<ol>
+<li>上のボタンを押す</li>
+<li>Finder の「ダウンロード」フォルダで <code>22_dev_environment_kit.zip</code> をダブルクリック（Safari では自動で開くこともあります）</li>
+<li>「ダウンロード」フォルダに <code>kit</code> フォルダができる。<b>この kit フォルダは動かさないでください</b></li>
+</ol>
+<div class="ng"><span class="t">5-2：うまくいかないとき</span><ul>
+<li><code>kit 2</code> のような名前になった → 前の <code>kit</code> が残っている。古い方をゴミ箱に入れて、<code>kit 2</code> を <code>kit</code> に名前変更</li>
+</ul></div>
+
+<h3>5-3. 名前とマークを決める <span class="who who-hand">🖱️ 手作業</span></h3>
+<p class="doing">ここでやること：4人分の「呼び名」と「目印の絵文字」を決めて、メモしておく。</p>
+<p>決めた名前で話しかけると、その担当が動きます。作業中は「📒 記録係が確認中…」のように、<b>だれが何をしているかが目印つきで表示</b>されます。<b>マークも必ず決めてください</b>（この資料の手順はマークがある前提です）。</p>
+<table>
+<tr><th style="width:36%">役割</th><th>名前とマークの例</th></tr>
+<tr><td>司令塔（あなたと話す Claude）</td><td>🧭 ナビ ／ 🧑‍✈️ 番頭 ／ 秘書丸（伏見さんの場合）</td></tr>
+<tr><td>Codex 窓口</td><td>📦 外注くん ／ 🛰️ リレー ／ 🌜 デックス（伏見さんの場合）</td></tr>
+<tr><td>記録係</td><td>📒 記録係 ／ 🗂️ ファイル番 ／ 🟡 ドットさん（伏見さんの場合）</td></tr>
+<tr><td>相談役</td><td>🧩 相談役 ／ 💡 ピース ／ ⭐️ 新田さん（伏見さんの場合）</td></tr>
+</table>
+<ul>
+<li>呼びやすい短い名前に。「さん」を付けるかどうかは自由です</li>
+<li>絵文字は4つともちがうものに。<b>control＋command＋スペース</b>で絵文字の一覧が出ます。上の表の絵文字をコピーして使ってもOK</li>
+<li>名前に記号（<code>"</code> <code>'</code> <code>#</code> <code>[</code> <code>&amp;</code> <code>*</code> や「<code>: </code>」）は使わない</li>
+<li>実在の同僚の名前は避ける</li>
+</ul>
+
+<h3>5-4. 名前とマークを Claude に入れてもらう <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：キットの中の「【 】で囲まれた空欄」を、決めた名前とマークで埋めてもらう。</p>
+<pre class="say"><code>~/Downloads/kit の中のファイルにある【 】で囲まれた空欄を、私の決めた名前とマークで置き換えたいです。
+まず、必要な名前とマークを1つずつ私に質問してください。質問するときは、codex-delegate は「Codex 窓口」、claude-keeper は「記録係」、se-partner は「相談役」と、日本語の役割名で聞いてください。
+全部答えたら、kit フォルダの中のすべてのファイルで置き換えてください。
+ファイルの先頭にある name: の英字と、&lt;モデル名&gt; はそのままにしてください。
+置き換えたあと、各ファイルの冒頭にある「ここを自分で決めて置き換える」という説明のコメントは消してかまいません。ただし reviewer / tester の行が入っているコメントは消さないでください。</code></pre>
+<ul>
+<li><b>起きること：</b>Claude が「司令塔の名前は何にしますか？」のように<b>質問してくる</b> → 5-3 のメモを見て答える</li>
+<li>Mac から「Cursor がダウンロードフォルダにアクセスしようとしています」のような確認が出たら <span class="ui">許可</span></li>
+<li><code>~/Downloads/kit</code> の中なら、<b>読む確認も書き換える確認も <span class="ui">Yes</span></b>（<a href="#yes-no">3-1</a>）。「このセッション中は編集を許可」のような選択肢を選んでもOK（この場面だけ。文言は要確認）</li>
+<li>確認は何度も出ることがあります。中を見るための <code>ls</code>・<code>grep</code>・<code>cat</code> などが出たら、それも <span class="ui">Yes</span></li>
+</ul>
+<pre class="sample"><code>Claude：司令塔（あなたと話す Claude）の名前を教えてください。
+あなた：ナビ
+Claude：司令塔のマーク（絵文字1つ）を教えてください。
+あなた：🧭
+　　　…（あと6つ続きます）…
+Claude：kit フォルダの5つのファイルで置き換えました。</code></pre>
+<div class="ok"><span class="t">5-4：成功するとこう見える</span>Claude が「置き換えました」と報告し、どのファイルを変えたか教えてくれる。</div>
+<div class="ng"><span class="t">5-4：うまくいかないとき</span><ul>
+<li><code>Operation not permitted</code> と言われる → Cursor に「ダウンロード」フォルダを見る許可が無い。<span class="ui">りんごマーク</span> → <span class="ui">システム設定</span> → <span class="ui">プライバシーとセキュリティ</span> → <span class="ui">ファイルとフォルダ</span> → <span class="ui">Cursor</span> の <span class="ui">ダウンロードフォルダ</span> をオン → もう一度お願いする</li>
+<li>名前を間違えた → 「〇〇を△△に直してください」と頼めばOK</li>
+</ul></div>
+
+<h3>5-5. キットを置いてもらう <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：キットのファイルを、決まった場所にコピーしてもらう。</p>
+<pre class="say"><code>~/Downloads/kit の配布キットを、次のとおりコピーしてください。
+・kit/global/CLAUDE.md → ~/.claude/CLAUDE.md
+・kit/agents/ の3つの .md ファイル → ~/.claude/agents/
+・kit/project/project-CLAUDE.md → このフォルダの .claude/CLAUDE.md
+コピーには cp -n（上書きしないコピー）を使い、中身は1文字も変えずにコピーしてください。
+コピーする前に、同じ名前のファイルがもうあるか確認してください。あったら上書きせずに、私に知らせてください。
+最後に、置いた結果を一覧で見せてください。</code></pre>
+<ul>
+<li><b>起きること：</b>「実行していいですか？」→ 英字がフォルダ作り（<code>mkdir</code>）やコピー（<code>cp -n</code>）なら <span class="ui">Yes</span>（<a href="#yes-no">3-1</a>）。中を見るための <code>ls</code>・<code>grep</code>・<code>cat</code> などが出たら、それも <span class="ui">Yes</span></li>
+<li>「同じ名前のファイルがあります」と言われたら、そこで止めて伏見さんに相談（4章の手順で<b>中身を合体済みの人</b>は「上書きしてOK」と答える）</li>
+</ul>
+<div class="figure">
+<div class="tree" role="img" aria-label="キットを置いた後のフォルダの中身">
+<div class="tree-box">
+<div class="tree-title">🏠 ホームフォルダ（~）</div>
+<div class="t0">📁 <b>.claude</b> <span class="tree-tag">隠しフォルダ</span></div>
+<div class="t1">📄 CLAUDE.md <span class="tree-note">← 司令塔のルール</span></div>
+<div class="t1">📁 agents</div>
+<div class="t2">📄 claude-keeper.md <span class="tree-note">← 記録係</span></div>
+<div class="t2">📄 codex-delegate.md <span class="tree-note">← Codex 窓口</span></div>
+<div class="t2">📄 se-partner.md <span class="tree-note">← 相談役</span></div>
+</div>
+<div class="tree-box">
+<div class="tree-title">📁 書類</div>
+<div class="t0">📁 <b>claude-practice</b> <span class="tree-tag">練習部屋</span></div>
+<div class="t1">📁 .claude <span class="tree-tag">隠しフォルダ</span></div>
+<div class="t2">📄 CLAUDE.md <span class="tree-note">← 部屋のルール</span></div>
+</div>
+</div>
+<div class="caption">図E：キットを置いたあとのフォルダの中身</div>
+<div class="fig-note">※イメージです。名前が「.」で始まるフォルダは隠しフォルダなので、Finder では普段見えません</div>
+</div>
+<div class="ok"><span class="t">5-5：成功するとこう見える</span>Claude が見せてくれる一覧が、上の図Eと同じになっている。</div>
+
+<h3>5-6. 空欄の残りチェックと、動作確認 <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：埋め忘れがないか見てもらい、新しいルールで Claude が動くか試す。</p>
+<p><b>① 空欄の残りチェック</b></p>
+<pre class="say"><code>~/.claude/CLAUDE.md、~/.claude/agents/ の3つのファイル、このフォルダの .claude/CLAUDE.md の中に「【」が残っていないか検索して、結果を教えてください。ファイルは変更しないでください。</code></pre>
+<p class="term">起きること：中を見るための <code>ls</code>・<code>grep</code>・<code>cat</code> などが出たら、それも <span class="ui">Yes</span>。</p>
+<p><b>② 新しい会話を始める</b>（ルールは会話の始めに読み込まれるため）</p>
+<ul>
+<li>チャット欄の上の <span class="ui">＋</span>（新しい会話）を押す <span class="tbc">要確認：位置</span></li>
+<li>見つからなければ、Cursor を <b>command＋Q</b> で終了して起動し直し、チャット欄を開き直す（これで新しい会話になります）</li>
+</ul>
+<p><b>③ 担当がそろっているか見てもらう</b></p>
+<pre class="say"><code>~/.claude/agents/ にあるサブエージェントの name と description を一覧にしてください。ファイルは変更しないでください。</code></pre>
+<p class="term">起きること：中を見るための <code>ls</code>・<code>grep</code>・<code>cat</code> などが出たら、それも <span class="ui">Yes</span>。</p>
+<p><b>④ 記録係を呼んでみる</b>（〇〇を記録係に付けた名前に変えて送る）</p>
+<pre class="say"><code>〇〇を呼んで、このフォルダの .claude/ の中身を確認してもらってください。</code></pre>
+<div class="ok"><span class="t">5-6：成功するとこう見える</span><ul>
+<li>①「残っていません」と言われる</li>
+<li>③ codex-delegate・claude-keeper・se-partner の3つが、決めた名前つきで並ぶ</li>
+<li>④ 返事の最初に<b>司令塔のマーク＋名前</b>が付き、「📒 記録係が確認中…」のように<b>記録係のマーク＋名前</b>で作業が始まる</li>
+</ul></div>
+<div class="ng"><span class="t">5-6：うまくいかないとき</span><ul>
+<li>「【」が残っていると言われた → 「残っている所を、私に聞いてから埋めてください」と頼む</li>
+<li>③で3つ出てこない → 「~/.claude/agents/ に3つのファイルがあるか確認して」と頼む。無ければ 5-5 をもう一度</li>
+<li>名前やマークが出ない → 新しい会話を始めたか確認（②）</li>
+</ul></div>
+
+<h3 id="ch5-7">5-7. 今の状態を「基準」として記録する <span class="who who-chat">💬 チャットで</span></h3>
+<p class="doing">ここでやること：練習部屋の今の状態を、比べるための「基準（写真）」として記録してもらう。</p>
+<p>3-6 で用意した記録帳に、今の部屋の写真を撮るイメージです。これで Codex に作業させたとき、何が変わったかを比べられます。</p>
+<pre class="say"><code>このフォルダの今の状態を、git add -A で「基準」として記録してください。コミットはしないでください。その前に、パスワードなどの秘密のファイル（.env など）が混ざっていないか確認して、あれば実行せずに教えてください。</code></pre>
+<ul>
+<li><b>起きること：</b>「実行していいですか？」→ 英字が <code>git add -A</code> なら <span class="ui">Yes</span>。中を見るための <code>ls</code>・<code>grep</code>・<code>cat</code> などが出たら、それも <span class="ui">Yes</span>（<code>git status</code> も確認だけなので Yes）</li>
+</ul>
+<div class="ok"><span class="t">5-7：成功するとこう見える</span>Claude が「基準として記録しました」のように答える。</div>
+
+<details class="later">
+<summary>（今日はやらなくてOK）モデル名を設定する</summary>
+<p>Codex に使わせる AI の種類（モデル）を選べます。設定しなくても、いつもの（既定の）モデルで動くので大丈夫です。</p>
+<pre class="say"><code>codex debug models で、私のアカウントで使えるモデル名の一覧を出してください。そのうえで、~/.claude/agents/codex-delegate.md の、モデル表の「モデル（例）」欄とコマンド例の &lt;モデル名&gt; を、どう書き換えるとよいか提案してください。書き換えは、私が OK してからにしてください。</code></pre>
+<p class="term">自分でターミナルで一覧を見る場合：</p>
+<pre class="cmd"><code>codex debug models | python3 -c "import json,sys;[print(m['slug']) for m in json.load(sys.stdin)['models'] if m.get('visibility')=='list']"</code></pre>
+<p class="term">一覧に無い名前を書くと、思っていないモデルで動くことがあります。必ず一覧にある名前を使ってください。</p>
+</details>
+
+<details class="later">
+<summary>（チャットがうまくいかないときだけ）ターミナルで自分で置く方法</summary>
+<p>5-4（名前の置き換え）が済んでいる前提です。置き換えも自分でやる場合は、Cursor で <span class="ui">ファイル</span> → <span class="ui">フォルダーを開く</span> → ダウンロードの <code>kit</code> を開き、<b>command＋shift＋H</b>（フォルダ全体の置換）で【 】ごと置き換えます。</p>
+<p><b>① ホームフォルダへ置く</b>（ターミナルに貼って Enter）</p>
+<pre class="cmd"><code>mkdir -p ~/.claude/agents
+cp -i ~/Downloads/kit/global/CLAUDE.md ~/.claude/CLAUDE.md
+cp -i ~/Downloads/kit/agents/*.md ~/.claude/agents/</code></pre>
+<p class="term">「overwrite ...? (y/n)」と聞かれたら、すでにファイルがあるということです。<b>n</b> を押して止め、伏見さんに相談してください。</p>
+<p><b>② 練習部屋へ置く</b>：Cursor で claude-practice を開いた状態のターミナルで、次を貼って Enter</p>
+<pre class="cmd"><code>pwd</code></pre>
+<p class="term"><code>…/claude-practice</code> と出たのを確認してから：</p>
+<pre class="cmd"><code>mkdir -p .claude && cp -i ~/Downloads/kit/project/project-CLAUDE.md .claude/CLAUDE.md</code></pre>
+<p><b>③ 空欄の残りチェック</b>（何も出なければOK）</p>
+<pre class="cmd"><code>grep -rn "【" ~/.claude/CLAUDE.md ~/.claude/agents/ .claude/CLAUDE.md</code></pre>
+<p class="term"><code>Operation not permitted</code> と出たら、システム設定 → プライバシーとセキュリティ → ファイルとフォルダ → Cursor の「ダウンロードフォルダ」をオンにしてください。</p>
+</details>
+
+<div class="goal">🎉 <b>これで今日のゴール達成です！</b> おつかれさまでした。ピンクの章（4・6・7章と付録）は、使いながら少しずつ読んでください。</div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 6章 ===================== -->
+<section class="chapter" id="ch6">
+<h2>6. Codex に任せる仕組み</h2>
+
+<h3>6-1. どっちに任せる？判断表</h3>
+<table>
+<tr><th style="width:50%">Claude Code が自分でやる</th><th>Codex に任せる</th></tr>
+<tr><td>・相談・壁打ち<br>・要件や仕様の整理<br>・実装方針の比較<br>・小さく明確な修正<br>・文章・ドキュメント作成<br>・Codex への指示書づくり<br>・Codex の変更のレビュー<br>・曖昧な依頼の確認<br>・機密情報・外部送信が絡む判断</td><td>・プロジェクト全体の構造調査<br>・複数ファイルにまたがる実装<br>・エラーやログからの原因調査<br>・サーバー・ブラウザ・CLI が絡むデバッグ<br>・リファクタリング<br>・テストの作成と実行<br>・修正→確認→再修正のくり返し<br>・大量ファイルの検索・整合性確認</td></tr>
+</table>
+<table>
+<tr><th>依頼の例</th><th style="width:28%">担当</th></tr>
+<tr><td>この仕様について相談したい</td><td>Claude</td></tr>
+<tr><td>この1行の文言を変えて</td><td>Claude</td></tr>
+<tr><td>このエラーの原因を調べて直して</td><td>Codex</td></tr>
+<tr><td>新機能を複数ファイルに実装してテストして</td><td>Codex</td></tr>
+<tr><td>Codex の修正内容が正しいか確認して</td><td>Claude</td></tr>
+</table>
+<p>規模だけで機械的に決めず、必要な精度・変更リスクで判断します。<b>迷ったら Claude があなたに確認する</b>ようにルールを書いておきます。キットの <code>project-CLAUDE.md</code> には、この判断表がすでに入っています。</p>
+<div class="check"><b>Claude が「Codex を使いたいです！」と言ってきたら：</b>キットの司令塔のルールで、Codex の方が向いている作業は、Claude が理由を添えて先に聞いてくるようになっています。理由を読んで OK なら「お願いします」と返せば、Codex 窓口に頼んでくれます。</div>
+
+<h3>6-2. 窓口エージェント（キットの codex-delegate）の流れ</h3>
+<p>Codex への依頼は、専用のサブエージェント1体に任せます（伏見さんの環境では「デックス」）。メインの Claude が直接 Codex を叩くより、手順が毎回そろって事故が減ります。</p>
+<table>
+<tr><th style="width:8%">#</th><th style="width:20%">ステップ</th><th>やること</th></tr>
+<tr><td>1</td><td>前提確認</td><td><code>which codex</code> と <code>codex login status</code> を確認。依頼内容（下の項目）がそろっていなければ実行しない</td></tr>
+<tr><td>2</td><td>指示書を作る</td><td>目的／今起きている問題／対象フォルダ・ファイル／変更してよい範囲・ダメな範囲／完了条件／実行するテスト。さらに「<b>未コミットの変更を消さない</b>」「<b>関係ない修正をしない</b>」を必ず書く。秘密情報は入れない</td></tr>
+<tr><td>3</td><td>実行</td><td><code>codex exec</code> で非対話実行（6-3）</td></tr>
+<tr><td>4</td><td>検証</td><td>Codex の「できました」「テスト通りました」を信じない。<code>git status</code>・<code>git diff</code> で実際の変更を見て、テストを自分で実行する</td></tr>
+<tr><td>5</td><td>報告</td><td>変更ファイル・理由・テスト結果・残課題を要約して報告（Codex の生出力はそのまま渡さない）</td></tr>
+</table>
+
+<h4>窓口エージェントの骨組み（codex-delegate.md の要点）</h4>
+<p>キットの <code>codex-delegate.md</code> は、これに利用上限時の対応やモデル選定ルールなどを加えた完成版です。ここは「中身の骨組み」として読めばOKです。</p>
+<pre class="sample"><code>---
+name: codex-delegate
+description: Use when a task should be delegated to Codex CLI (codex exec): multi-file implementation, root-causing from logs, refactoring, or writing and running tests.
+---
+
+あなたは Codex への委任窓口。
+
+## 前提確認
+- which codex / codex login status を確認する。だめなら実行せず差し戻す
+- 依頼に「目的・対象ファイル・変更してよい/ダメな範囲・完了条件・テスト」が無ければ差し戻す
+
+## 実行
+- 調査だけ：codex exec --sandbox read-only
+- 変更あり：codex exec --sandbox workspace-write
+- --dangerously-bypass-approvals-and-sandbox は使わない
+- 指示文に「未コミット変更を保持」「無関係な修正をしない」を必ず入れる
+
+## 検証
+- git status / git diff で実際の変更を確認する
+- 指定テストを自分で実行する。実行できなければ成功と言わない
+
+## 出力形式
+変更ファイル / 検証結果（diff・テスト） / 残課題</code></pre>
+
+<div class="keep">
+<h3>6-3. <code>codex exec</code> の基本形</h3>
+<p>普段は窓口エージェントが実行するので、自分で打つ必要はありません。何をしているかの理解用です。</p>
+<table>
+<tr><th style="width:30%">用途</th><th>コマンドの形</th></tr>
+<tr><td>読むだけの調査（まずはこれ）</td><td><code>codex exec --sandbox read-only "依頼文"</code></td></tr>
+<tr><td>ファイルを変更する作業</td><td><code>codex exec --sandbox workspace-write "依頼文"</code></td></tr>
+<tr><td>対象フォルダを指定</td><td><code>codex exec -C 対象フォルダ --sandbox read-only "依頼文"</code></td></tr>
+<tr><td>Git 管理外のフォルダで実行</td><td><b>非推奨・使わない。</b><code>--skip-git-repo-check</code> を付けると動くが、前後を比べられず元にも戻せないため（<a href="#ch6-git">6-5</a> 参照）</td></tr>
+</table>
+<pre class="sample"><code># 例：調査だけ任せる
+codex exec --sandbox read-only "src/ 以下でログイン処理を担当しているファイルと、その呼び出し関係を説明して。ファイルは変更しないこと。"</code></pre>
+</div>
+
+<div class="warn">
+<b>使わないオプション：</b><code>--dangerously-bypass-approvals-and-sandbox</code>（安全装置を全部外すもの）は使いません。<br>
+<b>モデル名は推測しない：</b>モデルを指定するときは、5章の「モデル名を設定する」で出した一覧にある名前だけを使います。一覧に無い名前を渡すと、エラーにならず<b>意図しないモデルで動いてしまうことがあります</b>。指定しなければ既定のモデルで動きます。
+</div>
+
+<h3>6-4. Codex の報告を鵜呑みにしない</h3>
+<p>Codex は「全部できました」「テスト通りました」と言うことがありますが、実際には一部しか直っていなかったり、頼んでいないファイルまで変えていたりすることがあります。必ず次で確かめます（窓口エージェントにやらせる）。</p>
+<pre class="sample"><code>git status --untracked-files=all   # どのファイルが変わったか（新しく作られたファイルも全部出す）
+git diff          # 具体的に何が変わったか
+（プロジェクトのテストコマンド）   # 自分で実行して結果を見る</code></pre>
+<ul>
+<li>頼んでいない範囲が変わっていたら、その部分は採用しない</li>
+<li>変更を採用したら、窓口エージェントが「基準を更新してよいですか」と確認してくるので、OKなら任せる（中で <code>git add -A</code> を実行して、今の状態を新しい「基準」として記録します）。更新しないと、次回の確認に今回の変更が混ざります</li>
+<li>Codex が実装したコードも、Claude 側の実装と同じく<b>壊れパターン確認 → 最終チェック</b>を通してから受け取る</li>
+<li>Codex が作業している間は、Claude 側で同じファイルを編集しない（同時編集禁止）</li>
+</ul>
+
+<h3 id="ch6-git">6-5. なぜ Codex に Git が必要なの？</h3>
+<p><b>結論：</b>Git は「Codex に作業させる<b>前と後で何が変わったかを比べて、ダメなら元に戻すための記録帳</b>」です。GitHub（ネット上の置き場）とは別物で、<b>Mac の中だけで動きます</b>。</p>
+
+<h4>理由1：安全装置になっている</h4>
+<p><code>codex exec</code>（Claude が Codex に仕事を頼むときのコマンド）は、Git 管理されていないフォルダだと<b>エラーで止まって動きません</b>。<code>--skip-git-repo-check</code> という指定を付ければ動きますが、変更前の状態を記録していないので、比べることも戻すこともできません。普段は<b>Git 管理したフォルダで使うのが前提</b>です。</p>
+
+<h4>理由2：何が変わったか正確に分かる</h4>
+<p>Codex は「直しました」と報告しますが、本当かどうかは分かりません。作業前を記録しておけば、<code>git diff</code>（変更前と変更後の違いを出すコマンド）で「<b>どのファイルのどの行が変わったか</b>」を出せます。窓口エージェントが Codex の報告をうのみにせず確認できるのは、このおかげです。</p>
+<p class="term">※ 新しく作られたファイルは <code>git diff</code> には出ないので、<code>git status --untracked-files=all</code>（新しいファイルも含めて、変わったファイルの一覧を出すコマンド）と合わせて確認します。</p>
+
+<h4>理由3：失敗したら戻せる</h4>
+<p>記録しておいた状態に戻せます。書き換えられたファイルは元に戻せます。ただし、<b>新しく作られたファイルは別に消す必要があります</b>。</p>
+
+<h4>たとえると</h4>
+<table>
+<tr><th style="width:40%">リフォームでいうと</th><th>Git でいうと</th></tr>
+<tr><td>📒 写真をしまうアルバムを用意する</td><td><code>git init</code></td></tr>
+<tr><td>📷 工事前に部屋の写真を撮る</td><td><code>git add -A</code></td></tr>
+<tr><td>🔍 工事後に写真と見比べる</td><td><code>git diff</code></td></tr>
+<tr><td>↩️ ダメなら写真どおりに戻す</td><td>元に戻す</td></tr>
+</table>
+<p>写真がないと、職人の「ちゃんと直しました」を信じるしかありません。</p>
+
+<div class="check"><b>あなたがやること</b>
+<ul>
+<li>GitHub もコミット（変更を正式に保存する操作）も、覚えなくて大丈夫です</li>
+<li>練習用フォルダでは、<a href="#ch3">3-6</a> で <code>git init</code>（記録帳を用意）、<a href="#ch5-7">5-7</a> で <code>git add -A</code>（基準の写真を撮る）を、チャットで1回ずつお願いします</li>
+<li>実際の作業フォルダで <code>git add -A</code> が必要になったときは、Codex 窓口のエージェントが「記録してよいですか」と確認し、秘密のファイル（<code>.env</code> などのパスワードが入ったファイル）が混ざっていないかも確かめてくれます</li>
+</ul></div>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 7章 ===================== -->
+<section class="chapter" id="ch7">
+<h2>7. 運用のコツとハマりどころ</h2>
+
+<h3>7-1. 記録の型 ― 人間も読む3点セット</h3>
+<table>
+<tr><th style="width:24%">ファイル/フォルダ</th><th style="width:28%">役割</th><th>運用</th></tr>
+<tr><td><code>knowhow.md</code></td><td>ハマりポイントと解決策の蓄積</td><td>「## タイトル（ツール名、日付）」単位で追記。技術のハマりだけでなく「運用で起きた事故の教訓」も書く</td></tr>
+<tr><td><code>仕様書/<wbr>[ツール名].md</code></td><td>1ツール1枚の説明書</td><td>何をするツールか・どこに公開しているか・使っているサービス。ツール追加時に作成、改修時に更新</td></tr>
+<tr><td><code>確認資料/<wbr>[タスク名]/</code></td><td>自分が確認する成果物の置き場</td><td>提案書・調査結果などの PDF をここに置かせる。タスクごとにフォルダを分ける</td></tr>
+</table>
+<p>キットの記録係（claude-keeper）が、作業後にこれらを更新する担当です。「作業が終わったら記録して」と頼むだけで、記録が自然に溜まります。</p>
+
+<h3>7-2. Codex の利用上限に達したら</h3>
+<ul>
+<li>会社アカウントには利用上限があります。<code>usage limit</code>・<code>rate limit</code>・<code>429</code>・<code>quota</code> などのメッセージが出たら上限到達のサイン</li>
+<li>そのまま何度も再実行させない（キットの窓口エージェントは、上限メッセージが出たら止まって報告するようになっています）</li>
+<li>上限に達したら：作業を Claude 側で引き取るか、時間をおいて再開するかを判断。アカウントの切り替えなどは<b>自己判断でせず、伏見さんに相談</b></li>
+</ul>
+
+<h3>7-3. よくある失敗</h3>
+<table>
+<tr><th style="width:38%">失敗</th><th>こうする</th></tr>
+<tr><td>Cursor を dmg から直接起動している</td><td>「アプリケーション」へコピーして、そちらを起動する（2章 手順1）</td></tr>
+<tr><td>Claude Code を npm 版と公式インストーラ版の両方で入れた</td><td>公式インストーラ1本にする。どちらが動いているか分からなくなる</td></tr>
+<tr><td>自動アップデートを切って古いまま使う</td><td>自動更新は ON のまま</td></tr>
+<tr><td>最初から確認プロンプトを全部オフにする</td><td>最初は毎回確認が出る既定の状態で使い、何を許可しているか理解してから緩める（付録）</td></tr>
+<tr><td>人の settings.json をそのままコピーする</td><td>他人の許可リストには、自分の環境に不要・危険な許可が含まれる。自分で少しずつ育てる</td></tr>
+<tr><td>CLAUDE.md を最初から盛りすぎる</td><td>キット＋「毎回言っていること」だけ足す</td></tr>
+<tr><td>Codex の「できました」を信じて終わる</td><td><code>git diff</code> とテストで確認するまで完了としない</td></tr>
+<tr><td>Claude と Codex が同じファイルを同時に触る</td><td>Codex 作業中はその対象を Claude で編集しない</td></tr>
+<tr><td>一覧に無いモデル名で <code>codex exec</code> した</td><td>5章の「モデル名を設定する」で出した一覧にある名前だけ使う</td></tr>
+<tr><td>指示文やチャットに秘密情報を貼った</td><td>APIキー・パスワード・<code>~/.codex/auth.json</code> の中身は絶対に貼らない</td></tr>
+<tr><td>プロジェクトのフォルダ名を後から変えた</td><td>メモリが引き継がれないことがある。名前は最初に決める</td></tr>
+<tr><td>Git 管理していないフォルダで Codex に変更させた</td><td>先に <code>git init</code>（3-6）と <code>git add -A</code>（5-7）をチャットでお願いする。しないと変更前後を比べられない</td></tr>
+<tr><td>確認を挟まず最後まで作らせた</td><td>実装前に「完了済み・これから・疑問」の3点を出させ、節目で確認する</td></tr>
+</table>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 付録 ===================== -->
+<section class="chapter" id="appendix">
+<h2>付録. 伏見さんの上級設定（慣れてから）</h2>
+
+<div class="warn"><b>最初は真似しないでください。</b>ここに書いてあるのは、長く使って「何が起きるか」を分かったうえで入れている設定です。環境構築直後にこれを入れると、Claude や Codex が確認なしで何でも実行できる状態になり、事故のもとになります。また、<b>伏見さんの settings ファイルはそのまま配りません</b>（個人環境のフォルダ指定や、長年の「その場の許可」が千件単位で溜まっているため）。</div>
+
+<table>
+<tr><th style="width:32%">設定</th><th style="width:30%">何をしているか</th><th>入れるなら</th></tr>
+<tr><td><code>bypassPermissions</code><br>（settings.json の <code>permissions.<wbr>defaultMode</code>）</td><td>コマンド実行・ファイル編集の確認プロンプトを出さない</td><td>一番最後。確認プロンプトの意味が全部分かってから。「push 禁止」などは CLAUDE.md のルールだけで縛ることになる点を理解しておく</td></tr>
+<tr><td><code>claude</code> の alias（別名）に<br><code>--dangerously-<wbr>skip-<wbr>permissions</code></td><td>ターミナルから起動するときも確認なしで動かす</td><td>上と同じ。初心者には非推奨</td></tr>
+<tr><td>許可リスト<br>（<code>permissions.<wbr>allow</code>）</td><td>よく使うコマンドを確認なしで許可する</td><td>確認プロンプトで「今後も許可」を選ぶと自動で増える。自分で増やしていくもので、人のをコピーしない</td></tr>
+<tr><td>hooks<br>（settings.json）</td><td>応答が終わったら Mac の通知を出す、などの自動処理</td><td>「待ち時間に気づけない」と感じてから。外部送信しないものから始める</td></tr>
+<tr><td>Codex の <code>notify</code><br>（<code>~/.codex/<wbr>config.toml</code>）</td><td>Codex の作業が終わるたびに外部プログラムを動かし、作業ログを記録する</td><td>Codex 委任に慣れてから。最初は <code>config.toml</code> を触らなくてよい（<code>codex login</code> だけで動く）</td></tr>
+<tr><td>サブエージェント10体＋キャラ設定</td><td>調査・実装・テスト・レビュー・UI確認・Codex 窓口などを分業</td><td>キットの3体＋4章の2体から始めて、必要になったら1体ずつ足す</td></tr>
+</table>
+
+<h3>ステップアップの目安</h3>
+<ol>
+<li>確認プロンプトの内容を読んで、自分で判断できるようになった</li>
+<li>よく使うコマンドだけ「今後も許可」にした</li>
+<li>Codex に読み取り専用の調査を任せ、結果を <code>git diff</code> とテストで確かめる流れに慣れた</li>
+<li>Codex に変更作業（workspace-write）を任せられるようになった</li>
+<li>その上で、通知フックなどの便利機能を足す</li>
+</ol>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+
+<!-- ===================== 最後に ===================== -->
+<section class="chapter" id="checklist">
+<h2>最後に. 困ったら伏見さんに聞く前にチェックすること</h2>
+<p class="doing">ここでやること：上から順に試す。それでもダメなら、結果を添えて伏見さんに相談。</p>
+
+<h3>まず試すこと</h3>
+<table class="cl">
+<tr><th style="width:6%">✔</th><th>チェック項目</th></tr>
+<tr><td>□</td><td>エラーの文を<b>全部</b>コピー（またはスクリーンショット）したか</td></tr>
+<tr><td>□</td><td>Cursor を <b>command＋Q</b> で終了して、起動し直したか</td></tr>
+<tr><td>□</td><td>Claude のチャットで<b>新しい会話</b>を始めてみたか</td></tr>
+<tr><td>□</td><td>Cursor を「アプリケーション」フォルダから起動しているか</td></tr>
+<tr><td>□</td><td>その手順の赤い枠（うまくいかないとき）を読んだか</td></tr>
+<tr><td>□</td><td>Wi-Fi・社内ネットワークにつながっているか</td></tr>
+</table>
+
+<h3>Claude に聞いてみる</h3>
+<p>Claude のチャット欄が使えるなら、まず聞いてみるのが早いです。<b>パスワードやログイン情報は貼らないでください。</b></p>
+<pre class="say"><code>このエラーの原因と対処を、初心者向けに手順で教えてください。まだ何も実行しないでください。
+（ここにエラーの文を貼る）</code></pre>
+
+<h3>今の状態をまとめて確認する</h3>
+<p>チャットで次を送ると、道具がそろっているかを一度に見てもらえます。</p>
+<pre class="say"><code>次を実行して、結果をそのまま見せてください。ファイルは変更しないでください。
+sw_vers -productVersion
+which brew git claude codex
+which -a claude
+claude --version
+codex --version
+codex login status</code></pre>
+<p class="term">チャット欄が使えないときは、同じコマンドをターミナルに貼って実行してください（下の黒い箱）。</p>
+<pre class="cmd"><code>sw_vers -productVersion
+which brew git claude codex
+which -a claude
+claude --version
+codex --version
+codex login status</code></pre>
+<table>
+<tr><th style="width:42%">結果</th><th>意味と対処</th></tr>
+<tr><td><code>not found</code> と出たものがある</td><td>その道具が入っていない。2章・3章の該当する手順へ</td></tr>
+<tr><td><code>which -a claude</code> が2行以上</td><td>Claude Code が2つ入っているかもしれない。自分で消さずに伏見さんに相談</td></tr>
+<tr><td><code>Not logged in</code></td><td>3-5 の <code>codex login</code> をやり直す</td></tr>
+</table>
+
+<h3>アカウント</h3>
+<table class="cl">
+<tr><th style="width:6%">✔</th><th>チェック項目</th></tr>
+<tr><td>□</td><td>Claude に<b>会社のアカウント</b>でログインできているか（<code>/status</code> が使えなければ、伏見さんに相談）
+<ol>
+<li>チャット欄で <code>/status</code> と打つと、候補が出る</li>
+<li>候補の「<span class="ui">Slash Commands</span>」の下にある「<span class="ui">/status</span>」を選ぶ。上にある「<span class="ui">Customize ＞ Status</span>」は別のメニューなので選ばない</li>
+<li>「<span class="ui">Status</span>」画面が開く。次の2行を見る
+<ul>
+<li>「<span class="ui">Login method</span>」が「<span class="ui">Claude Team account</span>」なら、会社のアカウントでログインできている</li>
+<li>「<span class="ui">Model</span>」は、いま使っているモデルの名前</li>
+</ul></li>
+</ol>
+<span class="term">画面を共有するときの注意：Email や Session ID などは、ほかの人に見せなくてかまいません。</span></td></tr>
+<tr><td>□</td><td><code>codex login status</code> が <code>Logged in using ChatGPT</code> か</td></tr>
+<tr><td>□</td><td>Codex で <code>usage limit</code>（使える量の上限）が出ていないか。出ていたら作業を止めて相談（<a href="#ch7">7章</a>）</td></tr>
+</table>
+
+<h3>配布キット</h3>
+<table class="cl">
+<tr><th style="width:6%">✔</th><th>チェック項目</th></tr>
+<tr><td>□</td><td>5-5 の一覧が図Eと同じか</td></tr>
+<tr><td>□</td><td>5-6 の「【」チェックで「残っていない」と言われたか</td></tr>
+<tr><td>□</td><td>5-6 の③で、3つの担当が決めた名前つきで並んだか</td></tr>
+<tr><td>□</td><td>ファイル先頭の <code>name:</code> の英字を変えていないか</td></tr>
+<tr><td>□</td><td>置いた後に<b>新しい会話</b>を始めたか</td></tr>
+</table>
+
+<h3>伏見さんに相談するときに伝えること</h3>
+<ol>
+<li>何章のどの手順で止まったか</li>
+<li>何をしたら（どのお願い文・コマンドで）</li>
+<li>何が表示されたか（エラーの文・スクリーンショット）</li>
+<li>上の「今の状態をまとめて確認する」の結果</li>
+<li>このページで試したこと</li>
+</ol>
+<p class="to-toc"><a href="#toc">↑ 目次へ戻る</a></p>
+</section>
+<div class="footer">伏見勉強録 #22　―　内容は 2026年10月時点の環境にもとづきます。ツールの画面・コマンドは更新で変わることがあります。</div>
+
+</main>
+</div>
+<script>
+(function () {
+  // copy buttons
+  document.querySelectorAll('pre.cmd, pre.say').forEach(function (pre) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'コピー';
+    btn.addEventListener('click', function () {
+      var code = pre.querySelector('code');
+      var text = code ? code.innerText : pre.innerText;
+      function done() {
+        btn.textContent = 'コピーしました';
+        btn.classList.add('done');
+        setTimeout(function () { btn.textContent = 'コピー'; btn.classList.remove('done'); }, 1800);
+      }
+      function fallback() {
+        var r = document.createRange();
+        r.selectNodeContents(code || pre);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+        btn.textContent = '選択しました。command＋C でコピー';
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    });
+    pre.appendChild(btn);
+  });
+
+  // TOC: sub headings + current section highlight
+  var links = {};
+  document.querySelectorAll('.toc-nav > ol > li > a').forEach(function (a) {
+    var id = a.getAttribute('href').slice(1);
+    var sec = document.getElementById(id);
+    if (!sec) return;
+    links[id] = a;
+    var hs = sec.querySelectorAll('h3');
+    if (!hs.length) return;
+    var ul = document.createElement('ul');
+    ul.className = 'sub';
+    hs.forEach(function (h, i) {
+      if (!h.id) h.id = id + '-' + (i + 1);
+      var li = document.createElement('li');
+      var sa = document.createElement('a');
+      sa.href = '#' + h.id;
+      var hc = h.cloneNode(true);
+      hc.querySelectorAll('.who').forEach(function (w) { w.remove(); });
+      sa.textContent = hc.textContent.replace(/[\s＋]+$/, '').trim();
+      li.appendChild(sa);
+      ul.appendChild(li);
+      links[h.id] = sa;
+    });
+    a.parentNode.appendChild(ul);
+  });
+  if (!('IntersectionObserver' in window)) return;
+  var current = null, currentSub = null;
+  function setActive(id) {
+    var a = links[id];
+    if (!a) return;
+    var isSub = a.closest('ul.sub') !== null;
+    var top = isSub ? a.closest('ul.sub').parentNode.querySelector(':scope > a') : a;
+    if (current !== top) {
+      if (current) { current.classList.remove('active'); current.parentNode.classList.remove('open'); }
+      current = top;
+      current.classList.add('active');
+      current.parentNode.classList.add('open');
+    }
+    if (currentSub) currentSub.classList.remove('active');
+    currentSub = isSub ? a : null;
+    if (currentSub) currentSub.classList.add('active');
+  }
+  var targets = document.querySelectorAll('section.chapter, section.chapter h3');
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) setActive(e.target.id);
+    });
+  }, { rootMargin: '0px 0px -75% 0px' });
+  targets.forEach(function (t) { if (t.id) obs.observe(t); });
+})();
+</script>
+</body>
+</html>
