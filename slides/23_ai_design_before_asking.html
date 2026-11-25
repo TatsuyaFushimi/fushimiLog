@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIに頼む前に、何が何をしているか知っていますか？</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  :root {
+    --bg: #FAFAF8;
+    --panel: #F2F1EA;
+    --ink: #2B2B2B;
+    --ink-soft: #74746C;
+    --ink-faint: #A6A59B;
+    --indigo: #3B4A9E;
+    --indigo-soft: #E8EAF6;
+    --indigo-line: #C6CCEA;
+    --orange: #F97316;
+    --orange-soft: #FFEEE0;
+    --line: #E2E0D6;
+    --green: #1E8A4C;
+    --green-soft: #DCF5E6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 100%; height: 100%; }
+  body {
+    position: relative;
+    overflow: hidden;
+    font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    background: #ECEAE0;
+    color: var(--ink);
+    user-select: none;
+    cursor: pointer;
+  }
+
+  /* 960x540固定のままtransformで拡縮（fitDeckで計算）。ナビ分の高さは残して重ならないようにする */
+  .deck {
+    width: 960px; height: 540px;
+    position: absolute; left: 0; top: 0;
+    transform-origin: 0 0;
+    overflow: hidden;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.10);
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .slide.active { display: flex; }
+
+  /* ── ページ番号 ── */
+  .pageno {
+    position: absolute; top: 24px; right: 32px;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    z-index: 2;
+  }
+  .pageno b { color: var(--ink-soft); }
+
+  /* ── ナビゲーション ── */
+  .nav {
+    position: fixed; bottom: 16px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #D8D6C9;
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--indigo); transform: scale(1.5); }
+  .nav-arrow {
+    color: #C3C1B5; font-size: 14px;
+    cursor: pointer; padding: 4px 8px;
+    transition: color 0.2s;
+    background: none; border: none;
+    font-family: inherit;
+  }
+  .nav-arrow:hover { color: var(--indigo); }
+
+  /* ── 共通テキストパーツ ── */
+  .eyebrow {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--indigo);
+    margin-bottom: 14px;
+  }
+  .accent { color: var(--indigo); }
+  .accent-o { color: var(--orange); }
+
+  h1, h2, h3 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 900;
+    color: var(--ink);
+  }
+
+  .lead {
+    font-size: 15px; color: var(--ink-soft); line-height: 1.9;
+    font-weight: 500;
+  }
+
+  /* ── レイアウト共通 ── */
+  .center {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0 70px;
+  }
+  .pad {
+    flex: 1;
+    padding: 50px 64px 40px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── 段階表示（クリック／矢印キーで1個ずつ出す演出） ── */
+  [data-step] {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  [data-step].shown { opacity: 1; pointer-events: auto; }
+
+  /* ── 図解共通 ── */
+  .box {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 18px;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700; font-size: 15px; line-height: 1.55; color: var(--ink);
+    text-align: center;
+  }
+  .box small { display: block; font-size: 11.5px; color: var(--ink-soft); font-weight: 500; margin-top: 2px; }
+  .box.goal { background: var(--indigo-soft); border-color: var(--indigo-line); color: var(--indigo); }
+  .box.hot {
+    background: var(--orange-soft); border: 2px solid var(--orange); color: var(--orange);
+    box-shadow: 0 4px 22px rgba(249,115,22,0.18);
+  }
+  .box.good { background: var(--green-soft); border-color: #B5E3C8; color: var(--green); }
+  .box.bad { background: var(--orange-soft); border-color: #FBD0AE; color: var(--orange); }
+  .arrow { color: var(--ink-soft); font-size: 22px; font-weight: 700; line-height: 1; flex-shrink: 0; }
+
+  .note-list { display: flex; flex-direction: column; gap: 5px; list-style: none; }
+  .note-list li {
+    font-size: 12.5px; color: var(--ink-soft); line-height: 1.65; font-weight: 500;
+    padding-left: 14px; position: relative;
+  }
+  .note-list li::before { content: '・'; position: absolute; left: 0; color: var(--ink-faint); }
+  .note-list li b { color: var(--ink); font-weight: 700; }
+
+  /* ── 背景画像（全スライド共通：画像＋半透明オーバーレイ。21_codex_usageと同方式） ── */
+  .slide > .center, .slide > .pad { position: relative; z-index: 2; }
+  #s1 .s1-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s1 .s1-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.25); }
+  #s2 .s2-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; z-index: 0; }
+  #s2 .s2-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to right, rgba(250,250,248,0.40) 0%, rgba(250,250,248,0.28) 55%, rgba(250,250,248,0.15) 100%); }
+  #s3 .s3-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s3 .s3-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.2); }
+  #s4 .s4-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s4 .s4-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.2); }
+  #s5 .s5-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; z-index: 0; }
+  #s5 .s5-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.3); }
+  #s6 .s6-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s6 .s6-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.3); }
+  #s7 .s7-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s7 .s7-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.2); }
+  #s8 .s8-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; z-index: 0; }
+  #s8 .s8-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.3); }
+  #s9 .s9-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; z-index: 0; }
+  #s9 .s9-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.3); }
+  #s10 .s10-bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; z-index: 0; }
+  #s10 .s10-bgimg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(250,250,248,0.3); }
+
+  /* 絵を濃く見せるぶん、枠のない文字には白背景を付けて可読性を保つ */
+  .slide .note-list, #s3 .s3-desc, #s7 .s7-desc, #s3 .mid-cap {
+    background: rgba(255,255,255,0.88); border-radius: 10px; padding: 8px 14px;
+  }
+  .slide .note-list li { color: var(--ink); }
+  #s3 .s3-desc, #s7 .s7-desc { align-self: center; }
+  #s3 .mid-cap { padding: 2px 10px; }
+  #s1 h1, #s1 .lead, #s2 h1, #s2 .lead, #s10 h1, #s10 .lead {
+    background: rgba(255,255,255,0.86); border-radius: 12px; padding: 6px 20px;
+  }
+  #s1 h1, #s1 .lead { text-align: center; }
+  #s2 .center, #s10 .center { align-items: flex-start; }
+  #s2 h1 .neg { color: var(--ink-soft); }
+  #s10 h1 .q1 { color: var(--ink); }
+  #s2 .lead, #s10 .lead, #s1 .lead { color: var(--ink); }
+
+  .slide .pageno { background: rgba(255,255,255,0.85); border-radius: 10px; padding: 2px 8px; }
+  .slide .pad > .eyebrow, .slide .pad > h2 {
+    align-self: flex-start; background: rgba(255,255,255,0.88); border-radius: 10px;
+  }
+  /* 図解の部品をまとめて載せる白い下地（絵が濃く出ても読めるように） */
+  #s3 .flow, #s4 .routes, #s5 .lane, #s6 .cmp, #s7 .cols, #s8 .split, #s9 .qs {
+    background: rgba(255,255,255,0.75); border-radius: 14px; padding: 12px 16px;
+  }
+  #s3 .flow { padding-bottom: 42px; margin-bottom: 14px; }
+  #s5 .lane { margin-bottom: 8px; padding: 6px 10px 10px; }
+
+  .slide .pad > .eyebrow { padding: 3px 12px; margin-bottom: 8px; }
+  .slide .pad > h2 { padding: 4px 14px; }
+
+  /* ══════════ SLIDE 1 ══════════ */
+  #s1 .s1-tag {
+    display: inline-block;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.24em;
+    color: var(--indigo);
+    border: 1px solid var(--indigo-line);
+    background: var(--indigo-soft);
+    padding: 6px 18px; border-radius: 30px;
+    margin-bottom: 28px;
+  }
+  #s1 h1 { font-size: 38px; line-height: 1.6; }
+  #s1 h1 .hl { color: var(--indigo); }
+  #s1 .s1-rule { width: 40px; height: 3px; background: var(--indigo); margin: 28px auto 0; border-radius: 2px; }
+
+  #s1 .lead { margin-top: 22px; }
+
+  /* ══════════ SLIDE 2 ══════════ */
+  #s2 .center { align-items: flex-start; text-align: left; padding: 0 80px; }
+  #s2 h1 { font-size: 40px; line-height: 1.7; }
+  #s2 h1 .neg { color: var(--ink-faint); }
+  #s2 h1 .pos { color: var(--orange); }
+  #s2 .lead { margin-top: 22px; }
+
+  /* ══════════ SLIDE 3 ══════════ */
+  #s3 h2 { font-size: 25px; margin-bottom: 26px; line-height: 1.5; }
+  #s3 .flow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 6px 0 44px; }
+  #s3 .flow .box { padding: 22px 22px; }
+  #s3 .flow .box.hot { font-size: 18px; padding: 28px 26px; }
+  #s3 .flow .box.hot small { font-size: 12.5px; color: var(--orange); margin-top: 6px; }
+  #s3 .mid { position: relative; }
+  #s3 .mid-cap { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+  #s3 .s3-desc { font-size: 14.5px; color: var(--ink-soft); line-height: 1.9; font-weight: 500; text-align: center; }
+
+  /* ══════════ SLIDE 4 ══════════ */
+  #s4 h2 { font-size: 21px; margin-bottom: 14px; line-height: 1.5; }
+  #s4 .routes { display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
+  #s4 .routes .box.goal { width: 190px; padding: 28px 14px; flex-shrink: 0; }
+  #s4 .route-col { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  #s4 .route { display: flex; align-items: center; gap: 12px; }
+  #s4 .route .box { padding: 10px 16px; font-size: 13.5px; }
+  #s4 .route .rt { width: 190px; flex-shrink: 0; }
+  #s4 .route .rs { flex: 1; text-align: left; }
+
+  /* ══════════ SLIDE 5 ══════════ */
+  #s5 h2 { font-size: 18.5px; margin-bottom: 14px; line-height: 1.55; }
+  #s5 .lane { margin-bottom: 10px; }
+  #s5 .lane-title {
+    display: inline-block;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; font-weight: 900; color: #fff;
+    padding: 4px 14px; border-radius: 8px 8px 0 0;
+  }
+  #s5 .lane.a .lane-title { background: var(--indigo); }
+  #s5 .lane.b .lane-title { background: var(--orange); }
+  #s5 .lane-body {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--panel); border-radius: 0 10px 10px 10px; padding: 10px 12px;
+  }
+  #s5 .fl { display: flex; align-items: center; gap: 8px; }
+  #s5 .lane-body .box { padding: 8px 12px; font-size: 12.5px; }
+  #s5 .lane-body .box small { font-size: 10.5px; }
+
+  /* ══════════ SLIDE 6 ══════════ */
+  #s6 h2 { font-size: 24px; margin-bottom: 18px; }
+  #s6 .cmp { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  #s6 .cmp .box.goal { width: 170px; padding: 26px 12px; flex-shrink: 0; }
+  #s6 .cmp-col { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  #s6 .cmp-row { display: flex; align-items: center; gap: 12px; }
+  #s6 .cmp-row .box { padding: 12px 14px; font-size: 13.5px; }
+  #s6 .cmp-row .who { width: 170px; flex-shrink: 0; }
+  #s6 .cmp-row .res { flex: 1; text-align: left; }
+
+  /* ══════════ SLIDE 7 ══════════ */
+  #s7 h2 { font-size: 21px; margin-bottom: 14px; line-height: 1.5; }
+  #s7 .cols { display: flex; gap: 22px; margin-bottom: 12px; }
+  #s7 .colm { flex: 1; display: flex; flex-direction: column; align-items: stretch; gap: 5px; }
+  #s7 .colm .col-title {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12.5px; font-weight: 900; color: #fff;
+    padding: 8px 14px; border-radius: 10px; text-align: center;
+  }
+  #s7 .colm.l .col-title { background: var(--ink-soft); }
+  #s7 .colm.r .col-title { background: var(--indigo); }
+  #s7 .colm .box { padding: 9px 14px; font-size: 13px; }
+  #s7 .colm .arrow { text-align: center; font-size: 16px; }
+  #s7 .s7-desc { font-size: 13.5px; color: var(--ink); font-weight: 700; line-height: 1.7; text-align: center; }
+
+  /* ══════════ SLIDE 8 ══════════ */
+  #s8 h2 { font-size: 24px; margin-bottom: 14px; }
+  #s8 .ex {
+    background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--indigo);
+    border-radius: 6px; padding: 12px 18px; margin-bottom: 12px;
+    font-size: 12.5px; line-height: 1.75; color: var(--ink); font-weight: 500;
+  }
+  #s8 .ex b { color: var(--indigo); }
+  #s8 .split { display: flex; gap: 18px; margin-bottom: 12px; }
+  #s8 .sp { flex: 1; border-radius: 12px; padding: 12px 18px; }
+  #s8 .sp.known { background: var(--green-soft); }
+  #s8 .sp.todo { background: var(--orange-soft); }
+  #s8 .sp .sp-title { font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 13.5px; font-weight: 900; margin-bottom: 4px; }
+  #s8 .sp.known .sp-title { color: var(--green); }
+  #s8 .sp.todo .sp-title { color: var(--orange); }
+  #s8 .sp p { font-size: 13px; color: var(--ink); line-height: 1.65; font-weight: 500; }
+
+  /* ══════════ SLIDE 9 ══════════ */
+  #s9 h2 { font-size: 23px; margin-bottom: 16px; line-height: 1.5; }
+  #s9 .qs { display: flex; flex-direction: column; gap: 10px; }
+  #s9 .q {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 13px 20px;
+  }
+  #s9 .q .qn {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--indigo);
+    color: #fff; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 13px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #s9 .q .qwhen {
+    flex-shrink: 0; width: 92px;
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; font-weight: 900;
+    background: var(--indigo-soft); color: var(--indigo); border-radius: 20px; padding: 4px 0; text-align: center;
+  }
+  #s9 .q p { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.6; font-family: 'Zen Kaku Gothic New', sans-serif; }
+  #s9 .q p .sub { display: block; font-size: 12px; color: var(--orange); font-weight: 700; margin-top: 2px; }
+  #s9 .note-list { margin-top: 12px; }
+
+  /* ══════════ SLIDE 10 ══════════ */
+  #s10 .center { align-items: flex-start; text-align: left; padding: 0 80px; }
+  #s10 h1 { font-size: 28px; line-height: 1.85; }
+  #s10 .lead { margin-top: 22px; }
+  #s10 h1 .q1 { color: var(--ink-soft); }
+  #s10 h1 .pos { color: var(--indigo); }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: タイトル -->
+  <div class="slide active" id="s1">
+    <img class="s1-bgimg" src="images/23_ai_design_before_asking/s1_title.png" alt="">
+    <div class="s1-bgimg-overlay"></div>
+    <div class="center">
+      <div class="s1-tag">KNOWLEDGE SHARE</div>
+      <h1>AIに「やって」と頼む前に：<br><span class="hl">何が何をしているか知っていますか？</span></h1>
+      <div class="s1-rule"></div>
+      <p class="lead">AIを使う人が増え、共有や教える場面が増えました。<br>そのときの質を上げる話です。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: 問い -->
+  <div class="slide" id="s2">
+    <img class="s2-bgimg" src="images/23_ai_design_before_asking/s2_question.png" alt="">
+    <div class="s2-bgimg-overlay"></div>
+    <div class="center">
+      <h1><span class="neg">「〇〇やって」で</span><br><span class="pos" data-step="1">できた！で終わっていませんか？</span></h1>
+      <p class="lead" data-step="2">できたあとに「AIは何を使って、どうやったの？」と聞かれて、答えられますか？</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: AIの裏側 -->
+  <div class="slide" id="s3">
+    <img class="s3-bgimg" src="images/23_ai_design_before_asking/s3_black_box.png" alt="">
+    <div class="s3-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">AIの裏側</div>
+      <h2>頼んだ裏で、AIは手段を自分で選んでいる</h2>
+      <div class="flow">
+        <div class="box goal" data-step="1">ゴール<small>「〇〇やって」</small></div>
+        <span class="arrow" data-step="2">→</span>
+        <div class="mid"><div class="box hot" data-step="2">AIが選ぶ<small>ツール／方式／順序</small></div><div class="mid-cap" data-step="2">ユーザーからは見えない</div></div>
+        <span class="arrow" data-step="3">→</span>
+        <div class="box" data-step="3">結果</div>
+      </div>
+      <p class="s3-desc" data-step="4">同じ「〇〇やって」でも、AIや日や環境が違うと、<br>選ぶ手段が変わります。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: たとえ話 待ち合わせ -->
+  <div class="slide" id="s4">
+    <img class="s4-bgimg" src="images/23_ai_design_before_asking/s4_osaka_station.png" alt="">
+    <div class="s4-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">たとえ話</div>
+      <h2>「〇月〇日〇時に大阪駅で待ち合わせ！」<br>とだけ伝えたら</h2>
+      <div class="routes">
+        <div class="box goal" data-step="1">ゴール<small>大阪駅に集合</small></div>
+        <div class="route-col">
+          <div class="route" data-step="2">
+            <span class="arrow">→</span>
+            <div class="box rt">新幹線で来る</div>
+            <span class="arrow">→</span>
+            <div class="box good rs">ちょうどよく到着</div>
+          </div>
+          <div class="route" data-step="3">
+            <span class="arrow">→</span>
+            <div class="box rt">車で来る</div>
+            <span class="arrow">→</span>
+            <div class="box bad rs">想定外の渋滞で遅刻</div>
+          </div>
+          <div class="route" data-step="4">
+            <span class="arrow">→</span>
+            <div class="box rt">東京から歩いてくる</div>
+            <span class="arrow">→</span>
+            <div class="box bad rs">到着したが疲れ果てている</div>
+          </div>
+        </div>
+      </div>
+      <ul class="note-list" data-step="5">
+        <li>ゴールだけ渡すと、<b>方法や順序は相手任せ</b>になります。</li>
+        <li>しかも、ミスに気づくのは<b>結果が出てから</b>です。集合してはじめて「疲れてるな」「遅れてるな」と分かります。</li>
+        <li>AIへの依頼も同じです。<b>結果が出るまで、途中でどの手段を選んだかは分かりません。</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 実例① 画面操作（Codex） -->
+  <div class="slide" id="s5">
+    <img class="s5-bgimg" src="images/23_ai_design_before_asking/s5_screen_operate.png" alt="">
+    <div class="s5-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">実例①　画面操作（Codex）</div>
+      <h2>みなさんCodexが画面操作している？と思うんですが、<br>Codexがどうやって画面を操作しているか、知って使っていますか？</h2>
+      <div class="lane a">
+        <div class="lane-title">方式A：画面を見る</div>
+        <div class="lane-body">
+          <div class="fl" data-step="1"><div class="box">スクショ</div></div>
+          <div class="fl" data-step="2"><span class="arrow">→</span><div class="box">画面の状態を把握</div></div>
+          <div class="fl" data-step="3"><span class="arrow">→</span><div class="box">座標を決める</div></div>
+          <div class="fl" data-step="4"><span class="arrow">→</span><div class="box">マウスやキーを動かす</div></div>
+        </div>
+      </div>
+      <div class="lane b">
+        <div class="lane-title">方式B：構造を読む</div>
+        <div class="lane-body">
+          <div class="fl" data-step="5"><div class="box">アプリの中身を読む<small>macOSのアクセシビリティ</small></div></div>
+          <div class="fl" data-step="6"><span class="arrow">→</span><div class="box">要素を指定して操作<small>スクショは補助</small></div></div>
+        </div>
+      </div>
+      <ul class="note-list" data-step="7">
+        <li>Codexは画面を見て、ウィンドウやメニューを操作し、キー入力やクリップボードも扱えます（macOS限定・許可が必要）。</li>
+        <li>どちらの方式で動くかは、アプリや場面で変わりうると言われています。</li>
+        <li><b>「何で画面を見ているか」で、速さも精度も失敗の仕方も変わります。</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 実例② 同じ依頼文でも結果が違った -->
+  <div class="slide" id="s6">
+    <img class="s6-bgimg" src="images/23_ai_design_before_asking/s6_two_codex.png" alt="">
+    <div class="s6-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">実例②　同じ依頼文でも結果が違った</div>
+      <h2>平山さんの困り事（スライドと動画の発言比較）</h2>
+      <div class="cmp">
+        <div class="box goal" data-step="1">同じ文章<small>同じ依頼文で頼んだ</small></div>
+        <div class="cmp-col">
+          <div class="cmp-row" data-step="2">
+            <span class="arrow">→</span>
+            <div class="box who">平山さんのCodex</div>
+            <span class="arrow">→</span>
+            <div class="box res">結果A</div>
+          </div>
+          <div class="cmp-row" data-step="3">
+            <span class="arrow">→</span>
+            <div class="box hot who">伏見のCodex</div>
+            <span class="arrow">→</span>
+            <div class="box res">結果B<small>自己判断でOKの箇所と、担当者に確認すべき箇所を分けて出力</small></div>
+          </div>
+        </div>
+      </div>
+      <ul class="note-list" data-step="4">
+        <li>同じ文章で頼んでも、結果に差が出ました。伏見のほうが詳細でした。</li>
+        <li><b>推測：</b>これまでの作業の積み重ねや、内部で選んだ手順が違ったのではないか（実際の違いは未確認）。</li>
+        <li>「スライドは画面を直接見て操作するのか」「Canvaのプラグインで内部をプログラムから見るのか」を最初に決めていれば、差は小さかったかもしれません。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 実例③ 共有の仕方で変わる -->
+  <div class="slide" id="s7">
+    <img class="s7-bgimg" src="images/23_ai_design_before_asking/s7_share_file.png" alt="">
+    <div class="s7-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">実例③　共有の仕方で変わる</div>
+      <h2>HIRAIさんスライド生成は、方法を書いたファイルを共有した</h2>
+      <div class="cols">
+        <div class="colm l">
+          <div class="col-title" data-step="1">ゴールだけ渡す</div>
+          <div class="box" data-step="2">相手が他ツールの機能を1から調査</div>
+          <div class="arrow" data-step="3">↓</div>
+          <div class="box bad" data-step="3">何度もテスト</div>
+          <div class="arrow" data-step="4">↓</div>
+          <div class="box bad" data-step="4">時間もトークンも消費</div>
+        </div>
+        <div class="colm r">
+          <div class="col-title" data-step="5">方法を書いたファイルを渡す</div>
+          <div class="box" data-step="6">何を使って何をすると何ができるかが書いてある</div>
+          <div class="arrow" data-step="7">↓</div>
+          <div class="box good" data-step="7">すぐ使える<small>普段使っている機能を、相手が1から調べ直さなくて済む</small></div>
+        </div>
+      </div>
+      <p class="s7-desc" data-step="8">渡したのはプロンプトではなく、使うものと手順と、できることを書いたファイルです。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 頼み方の型 -->
+  <div class="slide" id="s8">
+    <img class="s8-bgimg" src="images/23_ai_design_before_asking/s8_split.png" alt="">
+    <div class="s8-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">頼み方の型</div>
+      <h2>「分かっていること」と「調べてほしいこと」を分ける</h2>
+      <div class="ex" data-step="1"><b>例：Box自動格納。</b>QR発行アプリで画像のBox自動格納をすでに実現していたので、宜保さんに「ABCはできると分かっている。DEはやったことがないので先に調査して」と伝えました。宜保さんは詳しいので、やり方までは指示せず、分けて伝えただけです。</div>
+      <div class="split">
+        <div class="sp known" data-step="2"><div class="sp-title">分かっていること</div><p>ABC：できると分かっている</p></div>
+        <div class="sp todo" data-step="3"><div class="sp-title">調べてほしいこと</div><p>DE：やったことがないので、先に調査して</p></div>
+      </div>
+      <ul class="note-list" data-step="4">
+        <li>分かっていることを伝えると、相手は<b>調べ直さなくて済み、調査が必要な部分だけに集中</b>できます。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 気軽にできる習慣 -->
+  <div class="slide" id="s9">
+    <img class="s9-bgimg" src="images/23_ai_design_before_asking/s9_ask.png" alt="">
+    <div class="s9-bgimg-overlay"></div>
+    <div class="pad">
+      <div class="eyebrow">気軽にできる習慣</div>
+      <h2>重い設計書は要りません。<br>3つの質問で十分です</h2>
+      <div class="qs">
+        <div class="q" data-step="1"><span class="qn">1</span><span class="qwhen">作っている最中に</span><p>「あなたはこれをどうやって動かしているの？」</p></div>
+        <div class="q" data-step="2"><span class="qn">2</span><span class="qwhen">同じく</span><p>「他に精度を上げる方法はない？」</p></div>
+        <div class="q" data-step="3"><span class="qn">3</span><span class="qwhen">共有する前に</span><p>「〇〇を出力するのは、何を使って何をしたの？」<span class="sub">→ 答えをメモにして、一緒に渡す</span></p></div>
+      </div>
+      <ul class="note-list" data-step="4">
+        <li>作っている最中でも、共有の直前でも、あとからでも聞けます。聞けば返ってきます。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: まとめ -->
+  <div class="slide" id="s10">
+    <img class="s10-bgimg" src="images/23_ai_design_before_asking/s10_matome.png" alt="">
+    <div class="s10-bgimg-overlay"></div>
+    <div class="center">
+      <h1><span class="q1">「この〇〇を使って〇〇をさせたら、<br>精度が良かったですよ」でもいい。</span><br><span class="pos" data-step="1">中身を知ったうえで共有しよう</span></h1>
+      <p class="lead" data-step="2">みんなが教える側に回るフェーズです。何が何をしているかを知っているだけで、共有の質が上がります。</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav" id="nav"></div>
+
+<script>
+  const total = document.querySelectorAll('.slide').length;
+  let current = 0;
+  let stepIndex = 0;
+
+  const nav = document.getElementById('nav');
+
+  // ページ番号
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    const p = document.createElement('div');
+    p.className = 'pageno';
+    p.innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b> / ' + String(total).padStart(2, '0');
+    s.appendChild(p);
+  });
+
+  // 段階表示（data-step）まわりのヘルパー
+  function stepsOf(slideEl) {
+    return Array.from(slideEl.querySelectorAll('[data-step]'));
+  }
+  function maxStepOf(slideEl) {
+    const steps = stepsOf(slideEl);
+    return steps.length ? Math.max(...steps.map(el => Number(el.dataset.step))) : 0;
+  }
+  function applyStepState(slideEl) {
+    stepsOf(slideEl).forEach(el => {
+      el.classList.toggle('shown', Number(el.dataset.step) <= stepIndex);
+    });
+  }
+
+  // 前へボタン
+  const prev = document.createElement('button');
+  prev.className = 'nav-arrow'; prev.textContent = '←';
+  prev.onclick = (e) => { e.stopPropagation(); goPrev(); };
+  nav.appendChild(prev);
+
+  // ドット
+  const dots = [];
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = (e) => { e.stopPropagation(); setSlide(i, true); };
+    dots.push(d);
+    nav.appendChild(d);
+  }
+
+  // 次へボタン
+  const next = document.createElement('button');
+  next.className = 'nav-arrow'; next.textContent = '→';
+  next.onclick = (e) => { e.stopPropagation(); goNext(); };
+  nav.appendChild(next);
+
+  // スライドを切り替える（ドットからの直接ジャンプ時は revealAllSteps=true で全step表示済みにする）
+  function setSlide(n, revealAllSteps) {
+    if (n < 0 || n >= total) return;
+    const slides = document.querySelectorAll('.slide');
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    const slideEl = slides[current];
+    slideEl.classList.add('active');
+    dots[current].classList.add('active');
+
+    stepIndex = revealAllSteps ? maxStepOf(slideEl) : 0;
+    applyStepState(slideEl);
+  }
+
+  // 次へ：現在のスライドに未表示のstepがあれば1個だけ表示、無ければ次のスライドへ
+  function goNext() {
+    const slideEl = document.querySelectorAll('.slide')[current];
+    const max = maxStepOf(slideEl);
+    if (stepIndex < max) {
+      stepIndex++;
+      applyStepState(slideEl);
+      return;
+    }
+    setSlide(current + 1, false);
+  }
+
+  // 前へ：表示済みstepがあれば1個戻す、無ければ前のスライドへ（全step表示済み状態で）
+  function goPrev() {
+    const slideEl = document.querySelectorAll('.slide')[current];
+    if (stepIndex > 0) {
+      stepIndex--;
+      applyStepState(slideEl);
+      return;
+    }
+    setSlide(current - 1, true);
+  }
+
+  // 初期スライド（1枚目）のstep状態を初期化
+  applyStepState(document.querySelectorAll('.slide')[current]);
+
+  document.getElementById('deck').addEventListener('click', () => goNext());
+
+  const NAV_RESERVE = 44;
+  function fitDeck() {
+    const w = window.innerWidth;
+    const h = window.innerHeight - NAV_RESERVE;
+    const scale = Math.max(0.1, Math.min(w / 960, h / 540));
+    const x = (w - 960 * scale) / 2;
+    const y = (h - 540 * scale) / 2;
+    document.getElementById('deck').style.transform =
+      'translate(' + x + 'px,' + y + 'px) scale(' + scale + ')';
+  }
+  fitDeck();
+  window.addEventListener('resize', fitDeck);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') goNext();
+    if (e.key === 'ArrowLeft') goPrev();
+  });
+</script>
+</body>
+</html>
